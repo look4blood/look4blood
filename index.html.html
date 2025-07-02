@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blood Donor Registration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    form {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #c62828;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #c62828;
+      color: white;
+      padding: 12px;
+      border: none;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #b71c1c;
+    }
+    .success {
+      text-align: center;
+      margin-top: 10px;
+      color: green;
+    }
+    .checkbox-group {
+      margin-top: 15px;
+    }
+    .checkbox-group input[type="checkbox"] {
+      margin-right: 8px;
+    }
+    .checkbox-group label {
+      display: inline;
+      font-weight: normal;
+    }
+  </style>
+</head>
+<body>
+
+<form id="donor-form" name="donor-form">
+  <h2>Donor Registration</h2>
+
+  <label>Full Name</label>
+  <input type="text" name="name" required>
+
+  <label>Age</label>
+  <input type="number" name="age" required>
+
+  <label>Gender</label>
+  <select name="gender" required>
+    <option value="">Select</option>
+    <option>Male</option>
+    <option>Female</option>
+    <option>Other</option>
+  </select>
+
+  <label>Blood Group</label>
+  <select name="bloodGroup" required>
+    <option value="">Select</option>
+    <option>A+</option>
+    <option>A-</option>
+    <option>B+</option>
+    <option>B-</option>
+    <option>AB+</option>
+    <option>AB-</option>
+    <option>O+</option>
+    <option>O-</option>
+  </select>
+
+  <label>Phone Number</label>
+  <input type="tel" name="phone" required>
+
+  <label>Email</label>
+  <input type="email" name="email">
+
+  <label>State</label>
+  <input type="text" name="state" value="Chottogram" readonly>
+
+  <label>City</label>
+  <select name="city" required>
+    <option value="">Select</option>
+    <option>Agrabad</option>
+    <option>Boalkhali</option>
+    <option>Bakalia</option>
+    <option>Bayazid</option>
+    <option>Chandgaon</option>
+    <option>Chawkbazar</option>
+    <option>Halishahar</option>
+    <option>Khulshi</option>
+    <option>Kotwali</option>
+    <option>Patiya</option>
+    <option>Panchlaish</option>
+    <option>Patenga</option>
+    <option>Rangunia</option>
+    <option>Raozan</option>
+  </select>
+
+  <label>ZIP Code</label>
+  <input type="text" name="zip">
+
+  <label>Last Donation Date</label>
+  <input type="date" name="lastDonation">
+
+  <label>How many times donated before?</label>
+  <input type="number" name="donationCount" min="0">
+
+  <label>Willing to Donate Now?</label>
+  <select name="available" required>
+    <option value="">Select</option>
+    <option>Yes</option>
+    <option>No</option>
+  </select>
+
+  <div class="checkbox-group">
+    <input type="checkbox" id="terms" name="terms" required>
+    <label for="terms">I agree to the <strong>Terms and Conditions</strong>: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible.</label>
+  </div>
+
+  <p style="margin-top:10px; font-style:italic; color:#444;">Your blood can be someone’s second chance at life. Be the reason someone smiles today.</p>
+
+  <button type="submit">Submit</button>
+  <div class="success" id="success-msg"></div>
+</form>
+
+<script>
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbyhfC69mV-dzgFXkjljRRzTu2cebmpv8Aoga5ygiUnP3VobFK90_AfTzQ3T_mghxR_4/exec';
+  const form = document.forms['donor-form'];
+  const successMsg = document.getElementById('success-msg');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    if (!form.terms.checked) {
+      alert("You must agree to the terms and conditions before submitting.");
+      return;
+    }
+    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+      .then(response => {
+        successMsg.innerHTML = "Thank you! Your information was submitted.";
+        form.reset();
+      })
+      .catch(error => console.error('Error!', error.message));
+  });
+</script>
+
+</body>
+</html>
