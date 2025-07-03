@@ -97,6 +97,11 @@
       background: #c62828;
       color: white;
     }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -191,81 +196,6 @@
   <div class="success" id="success-msg"></div>
 </form>
 
-<script>
-  // Translation Logic
-  function setLang(lang) {
-    document.querySelectorAll('[data-en]').forEach(el => {
-      el.textContent = el.getAttribute(`data-${lang}`);
-    });
-    document.querySelectorAll('.lang-toggle button').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
-  }
-
-  // Form Submission
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec';
-  const form = document.forms['donor-form'];
-  const successMsg = document.getElementById('success-msg');
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    if (!form.terms.checked) {
-      alert("You must agree to the terms and conditions before submitting.");
-      return;
-    }
-    fetch(scriptURL, { method: 'POST', body: new FormData(form) })
-      .then(response => {
-        successMsg.textContent = "Thank you! Your information was submitted.";
-        form.reset();
-        setLang('en'); // Reset to English
-      })
-      .catch(error => {
-        successMsg.textContent = "There was an error submitting the form.";
-        console.error('Error!', error.message);
-      });
-  });
-</script>
-
-</body>
-</html>
- 
-
-<script>
-  const scriptURL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
-  const form = document.forms['donor-form'];
-  const successMsg = document.getElementById('success-msg');
-  const submitBtn = form.querySelector('button[type="submit"]');
-
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-
-    if (!form.terms.checked) {
-      alert("You must agree to the terms and conditions before submitting.");
-      return;
-    }
-
-    // Disable button & show submitting text
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Submitting...";
-
-    fetch(scriptURL, { method: 'POST', body: new FormData(form) })
-      .then(response => {
-        successMsg.textContent = "✅ Thank you! Your information was submitted.";
-        form.reset();
-        setLang('en'); // Reset to English
-      })
-      .catch(error => {
-        successMsg.textContent = "❌ There was an error submitting the form.";
-        console.error('Error!', error.message);
-      })
-      .finally(() => {
-        // Re-enable button and restore text
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit";
-      });
-  });
-</script>
-
 <!-- Loading Overlay -->
 <div id="loading-overlay" style="
   display: none;
@@ -292,13 +222,51 @@
   <div style="margin-top: 10px;">Loading</div>
 </div>
 
-<style>
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+<script>
+  // Language toggle
+  function setLang(lang) {
+    document.querySelectorAll('[data-en]').forEach(el => {
+      el.textContent = el.getAttribute(`data-${lang}`);
+    });
+    document.querySelectorAll('.lang-toggle button').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
   }
-</style>
+
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec';
+  const form = document.forms['donor-form'];
+  const successMsg = document.getElementById('success-msg');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const loadingOverlay = document.getElementById("loading-overlay");
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    if (!form.terms.checked) {
+      alert("You must agree to the terms and conditions before submitting.");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+    loadingOverlay.style.display = "flex";
+
+    fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+      .then(response => {
+        successMsg.textContent = "✅ Thank you! Your information was submitted.";
+        form.reset();
+        setLang('en');
+      })
+      .catch(error => {
+        successMsg.textContent = "❌ There was an error submitting the form.";
+        console.error('Error!', error.message);
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
+        loadingOverlay.style.display = "none";
+      });
+  });
+</script>
 
 </body>
 </html>
-
