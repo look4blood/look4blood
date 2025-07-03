@@ -234,25 +234,35 @@
   const form = document.forms['donor-form'];
   const successMsg = document.getElementById('success-msg');
 
-  form.addEventListener('submit', e => {
-    e.preventDefault();
+ form.addEventListener('submit', e => {
+  e.preventDefault();
+  const submitButton = form.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  submitButton.textContent = "Submitting...";
 
-    fetch(scriptURL, {
-      method: 'POST',
-      body: new FormData(form),
-      mode: 'no-cors'
-    })
-    .then(() => {
-      successMsg.innerHTML = "Thank you! Your information was submitted.";
+  if (!form.terms.checked) {
+    alert("You must agree to the terms and conditions before submitting.");
+    submitButton.disabled = false;
+    submitButton.textContent = "Submit";
+    return;
+  }
+
+  fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+    .then(response => {
+      successMsg.textContent = "✅ Thank you! Your information was submitted.";
       form.reset();
+      setLang('en'); // Reset to English
     })
     .catch(error => {
-      successMsg.innerHTML = "Error submitting form.";
+      successMsg.textContent = "❌ There was an error submitting the form.";
       console.error('Error!', error.message);
+    })
+    .finally(() => {
+      submitButton.disabled = false;
+      submitButton.textContent = "Submit";
     });
-  });
+});
 </script>
 
 </body>
 </html>
-
