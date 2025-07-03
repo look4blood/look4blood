@@ -1,1 +1,237 @@
-REGISTER_HTML_PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Find a Blood Donor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff4f4;
+      padding: 20px;
+      margin: 0;
+    }
+    h1 {
+      text-align: center;
+      color: #c62828;
+    }
+    form {
+      background: white;
+      max-width: 600px;
+      margin: 0 auto 30px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+    button {
+      background: #c62828;
+      color: white;
+      padding: 12px;
+      border: none;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #b71c1c;
+    }
+    .result-summary {
+      margin: 20px auto 10px;
+      max-width: 900px;
+      font-weight: bold;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 900px;
+      margin: 10px auto;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: #c62828;
+      color: white;
+    }
+    .no-results {
+      text-align: center;
+      color: red;
+      margin-top: 20px;
+    }
+    .register-btn {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .register-btn a {
+      background: #388e3c;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .register-btn a:hover {
+      background: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Find a Blood Donor</h1>
+
+<form id="searchForm">
+  <label>Blood Group</label>
+  <select id="bloodGroup">
+    <option value="All">All</option>
+    <option>A+</option><option>A-</option>
+    <option>B+</option><option>B-</option>
+    <option>AB+</option><option>AB-</option>
+    <option>O+</option><option>O-</option>
+  </select>
+
+  <label>District</label>
+  <select id="district">
+    <option value="Chottogram">Chottogram</option>
+  </select>
+
+  <label>City</label>
+  <select id="city">
+    <option value="All">All</option>
+    <option>Agrabad</option>
+    <option>Boalkhali</option>
+    <option>Bakalia</option>
+    <option>Bayazid</option>
+    <option>Chandgaon</option>
+    <option>Chawkbazar</option>
+    <option>Halishahar</option>
+    <option>Khulshi</option>
+    <option>Kotwali</option>
+    <option>Patiya</option>
+    <option>Panchlaish</option>
+    <option>Patenga</option>
+    <option>Rangunia</option>
+    <option>Raozan</option>
+  </select>
+
+  <label>Donor Type</label>
+  <select id="donorType">
+    <option value="All">All</option>
+    <option value="Eligible">Eligible</option>
+  </select>
+
+  <button type="submit">Search</button>
+</form>
+
+<div class="result-summary" id="resultCount"></div>
+<div id="results"></div>
+
+<div class="register-btn">
+  <a href="https://look4blood.github.io/look4blood/" target="_blank">Register as a Donor</a>
+</div>
+
+<script>
+  const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0F5WzWm4luslj5EW-B2fI6Mq_UrOt53608tTjbteMLb470U0FnBNWZ25b-m5iocNlel_YvVw-fdKL/pub?gid=0&single=true&output=tsv";
+
+  function daysSince(dateStr) {
+    const date = new Date(dateStr);
+    if (isNaN(date)) return Infinity;
+    const today = new Date();
+    const diffTime = today - date;
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  document.getElementById("searchForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const bloodGroup = document.getElementById("bloodGroup").value;
+    const district = document.getElementById("district").value;
+    const city = document.getElementById("city").value;
+    const donorType = document.getElementById("donorType").value;
+
+    fetch(SHEET_URL)
+      .then(res => res.text())
+      .then(data => {
+        const rows = data.trim().split("\n").map(row => row.split("\t"));
+        const headers = rows[0];
+        const donors = rows.slice(1);
+        const filtered = donors.filter(d => {
+          const donorBlood = d[3];
+          const donorDistrict = d[6];
+          const donorCity = d[7];
+          const lastDonation = d[9]; // column J
+          const days = daysSince(lastDonation);
+
+          const matchesBlood = bloodGroup === "All" || donorBlood === bloodGroup;
+          const matchesDistrict = donorDistrict === district;
+          const matchesCity = city === "All" || donorCity === city;
+          const isEligible = donorType === "All" || (donorType === "Eligible" && days >= 90);
+
+          return matchesBlood && matchesDistrict && matchesCity && isEligible;
+        });
+
+        const resultsDiv = document.getElementById("results");
+        const resultCount = document.getElementById("resultCount");
+
+        if (filtered.length === 0) {
+          resultCount.textContent = "";
+          resultsDiv.innerHTML = "<div class='no-results'>❌ No matching donors found.</div>";
+          return;
+        }
+
+        resultCount.textContent = `✅ ${filtered.length} matching donor(s) found:`;
+
+        let table = "<table><tr>";
+        const headersToShow = ["Name", "Age", "Gender", "Blood Group", "Phone", "City", "Last Donation", "Times Donated"];
+        const headerIndexes = {
+          "Name": 0,
+          "Age": 1,
+          "Gender": 2,
+          "Blood Group": 3,
+          "Phone": 4,
+          "City": 7,
+          "Last Donation": 9,
+          "Times Donated": 10
+        };
+
+        headersToShow.forEach(h => table += `<th>${h}</th>`);
+        table += "</tr>";
+
+        filtered.forEach(d => {
+          table += "<tr>";
+          headersToShow.forEach(h => {
+            const val = d[headerIndexes[h]] || "-";
+            table += `<td>${val}</td>`;
+          });
+          table += "</tr>";
+        });
+
+        table += "</table>";
+        resultsDiv.innerHTML = table;
+      })
+      .catch(err => {
+        document.getElementById("results").innerHTML = "<div class='no-results'>❌ Error fetching data.</div>";
+        console.error(err);
+      });
+  });
+</script>
+
+</body>
+</html>
+
