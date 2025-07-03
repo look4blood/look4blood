@@ -233,36 +233,37 @@
   const scriptURL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
   const form = document.forms['donor-form'];
   const successMsg = document.getElementById('success-msg');
+  const submitBtn = form.querySelector('button[type="submit"]');
 
- form.addEventListener('submit', e => {
-  e.preventDefault();
-  const submitButton = form.querySelector('button[type="submit"]');
-  submitButton.disabled = true;
-  submitButton.textContent = "Submitting...";
 
-  if (!form.terms.checked) {
-    alert("You must agree to the terms and conditions before submitting.");
-    submitButton.disabled = false;
-    submitButton.textContent = "Submit";
-    return;
-  }
+  form.addEventListener('submit', e => {
+    e.preventDefault();
 
-  fetch(scriptURL, { method: 'POST', body: new FormData(form) })
-    .then(response => {
-      successMsg.textContent = "✅ Thank you! Your information was submitted.";
-      form.reset();
-      setLang('en'); // Reset to English
-    })
-    .catch(error => {
-      successMsg.textContent = "❌ There was an error submitting the form.";
-      console.error('Error!', error.message);
-    })
-    .finally(() => {
-      submitButton.disabled = false;
-      submitButton.textContent = "Submit";
-    });
-});
+    if (!form.terms.checked) {
+      alert("You must agree to the terms and conditions before submitting.");
+      return;
+    }
+
+    // Disable button & show submitting text
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+
+    fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+      .then(response => {
+        successMsg.textContent = "✅ Thank you! Your information was submitted.";
+        form.reset();
+        setLang('en'); // Reset to English
+      })
+      .catch(error => {
+        successMsg.textContent = "❌ There was an error submitting the form.";
+        console.error('Error!', error.message);
+      })
+      .finally(() => {
+        // Re-enable button and restore text
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
+      });
+  });
 </script>
-
 </body>
 </html>
