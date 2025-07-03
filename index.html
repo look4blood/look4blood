@@ -14,6 +14,7 @@
       min-height: 100vh;
       padding: 20px;
     }
+
     form {
       background: white;
       padding: 30px;
@@ -22,16 +23,19 @@
       max-width: 500px;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
+
     h2 {
       color: #c62828;
       margin-bottom: 20px;
       text-align: center;
     }
+
     label {
       display: block;
       margin: 10px 0 5px;
       font-weight: bold;
     }
+
     input, select {
       width: 100%;
       padding: 10px;
@@ -39,6 +43,7 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
+
     button {
       background: #c62828;
       color: white;
@@ -49,68 +54,94 @@
       font-size: 16px;
       cursor: pointer;
     }
+
     button:hover {
       background: #b71c1c;
     }
+
     .success {
       text-align: center;
       margin-top: 10px;
       color: green;
     }
+
     .checkbox-group {
       margin-top: 15px;
     }
+
     .checkbox-group input[type="checkbox"] {
       margin-right: 8px;
     }
+
     .checkbox-group label {
       display: inline;
       font-weight: normal;
+    }
+
+    .lang-toggle {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .lang-toggle button {
+      background: #e0e0e0;
+      color: #333;
+      border: none;
+      padding: 8px 12px;
+      margin: 0 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .lang-toggle button.active {
+      background: #c62828;
+      color: white;
     }
   </style>
 </head>
 <body>
 
 <form id="donor-form" name="donor-form">
-  <h2>Donor Registration</h2>
+  <div class="lang-toggle">
+    <button type="button" class="active" onclick="setLang('en')">English</button>
+    <button type="button" onclick="setLang('bn')">বাংলা</button>
+  </div>
 
-  <label>Full Name</label>
+  <h2 data-en="Donor Registration" data-bn="রক্তদাতার নিবন্ধন">Donor Registration</h2>
+
+  <label data-en="Full Name" data-bn="পূর্ণ নাম">Full Name</label>
   <input type="text" name="name" required>
 
-  <label>Age</label>
+  <label data-en="Age" data-bn="বয়স">Age</label>
   <input type="number" name="age" required>
 
-  <label>Gender</label>
+  <label data-en="Gender" data-bn="লিঙ্গ">Gender</label>
   <select name="gender" required>
     <option value="">Select</option>
-    <option>Male</option>
-    <option>Female</option>
-    <option>Other</option>
+    <option data-en="Male" data-bn="পুরুষ">Male</option>
+    <option data-en="Female" data-bn="মহিলা">Female</option>
+    <option data-en="Other" data-bn="অন্যান্য">Other</option>
   </select>
 
-  <label>Blood Group</label>
+  <label data-en="Blood Group" data-bn="রক্তের গ্রুপ">Blood Group</label>
   <select name="bloodGroup" required>
     <option value="">Select</option>
-    <option>A+</option>
-    <option>A-</option>
-    <option>B+</option>
-    <option>B-</option>
-    <option>AB+</option>
-    <option>AB-</option>
-    <option>O+</option>
-    <option>O-</option>
+    <option>A+</option><option>A-</option>
+    <option>B+</option><option>B-</option>
+    <option>AB+</option><option>AB-</option>
+    <option>O+</option><option>O-</option>
   </select>
 
-  <label>Phone Number</label>
+  <label data-en="Phone Number" data-bn="ফোন নম্বর">Phone Number</label>
   <input type="tel" name="phone" required>
 
-  <label>Email</label>
+  <label data-en="Email" data-bn="ইমেইল">Email</label>
   <input type="email" name="email">
 
-  <label>State</label>
+  <label data-en="State" data-bn="রাজ্য">State</label>
   <input type="text" name="state" value="Chottogram" readonly>
 
-  <label>City</label>
+  <label data-en="City" data-bn="শহর">City</label>
   <select name="city" required>
     <option value="">Select</option>
     <option>Agrabad</option>
@@ -129,35 +160,49 @@
     <option>Raozan</option>
   </select>
 
-  <label>ZIP Code</label>
+  <label data-en="ZIP Code" data-bn="জিপ কোড">ZIP Code</label>
   <input type="text" name="zip">
 
-  <label>Last Donation Date</label>
+  <label data-en="Last Donation Date" data-bn="শেষ রক্তদান তারিখ">Last Donation Date</label>
   <input type="date" name="lastDonation">
 
-  <label>How many times donated before?</label>
+  <label data-en="How many times donated before?" data-bn="পূর্বে কতবার রক্তদান করেছেন?">How many times donated before?</label>
   <input type="number" name="donationCount" min="0">
 
-  <label>Willing to Donate Now?</label>
+  <label data-en="Willing to Donate Now?" data-bn="এখন রক্ত দিতে ইচ্ছুক?">Willing to Donate Now?</label>
   <select name="available" required>
     <option value="">Select</option>
-    <option>Yes</option>
-    <option>No</option>
+    <option data-en="Yes" data-bn="হ্যাঁ">Yes</option>
+    <option data-en="No" data-bn="না">No</option>
   </select>
 
   <div class="checkbox-group">
     <input type="checkbox" id="terms" name="terms" required>
-    <label for="terms">I agree to the <strong>Terms and Conditions</strong>: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible.</label>
+    <label for="terms" data-en="I agree to the Terms and Conditions: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible." data-bn="আমি শর্তাবলীতে সম্মত: অনুগ্রহ করে ভুল তথ্য প্রদান করবেন না। এটি একটি জীবন রক্ষার বিষয়। দয়া করে সৎ এবং দায়িত্বশীল হোন।">
+      I agree to the Terms and Conditions: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible.
+    </label>
   </div>
 
-  <p style="margin-top:10px; font-style:italic; color:#444;">Your blood can be someone’s second chance at life. Be the reason someone smiles today.</p>
+  <p style="margin-top:10px; font-style:italic; color:#444;" data-en="Your blood can be someone’s second chance at life. Be the reason someone smiles today." data-bn="আপনার রক্ত কারো জীবনের দ্বিতীয় সুযোগ হতে পারে। কারো মুখে হাসি ফোটাতে সাহায্য করুন।">
+    Your blood can be someone’s second chance at life. Be the reason someone smiles today.
+  </p>
 
-  <button type="submit">Submit</button>
+  <button type="submit" data-en="Submit" data-bn="জমা দিন">Submit</button>
   <div class="success" id="success-msg"></div>
 </form>
 
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbyhfC69mV-dzgFXkjljRRzTu2cebmpv8Aoga5ygiUnP3VobFK90_AfTzQ3T_mghxR_4/exec';
+  // Translation Logic
+  function setLang(lang) {
+    document.querySelectorAll('[data-en]').forEach(el => {
+      el.textContent = el.getAttribute(`data-${lang}`);
+    });
+    document.querySelectorAll('.lang-toggle button').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
+  }
+
+  // Form Submission
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbyqsYyWZ2llBZL0ajTIXNviH3Ur4NZ1GExMcQI_s1V1E5Tb8VxpqvsaIzFg6B8tOBR4/exec';
   const form = document.forms['donor-form'];
   const successMsg = document.getElementById('success-msg');
 
@@ -167,12 +212,16 @@
       alert("You must agree to the terms and conditions before submitting.");
       return;
     }
-    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+    fetch(scriptURL, { method: 'POST', body: new FormData(form) })
       .then(response => {
-        successMsg.innerHTML = "Thank you! Your information was submitted.";
+        successMsg.textContent = "Thank you! Your information was submitted.";
         form.reset();
+        setLang('en'); // Reset to English
       })
-      .catch(error => console.error('Error!', error.message));
+      .catch(error => {
+        successMsg.textContent = "There was an error submitting the form.";
+        console.error('Error!', error.message);
+      });
   });
 </script>
 
