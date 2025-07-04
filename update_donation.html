@@ -83,6 +83,8 @@
     <label>Times Donated</label>
     <input type="text" id="timesDonated" readonly />
 
+    <input type="hidden" id="lastDonation" />
+
     <label>New Donation Date</label>
     <input type="date" id="donationDate" required />
 
@@ -125,6 +127,7 @@
           const groupIndex = headers.findIndex(h => h.toLowerCase().includes("blood"));
           const userIdIndex = headers.findIndex(h => h.toLowerCase().includes("user id"));
           const timesIndex = headers.findIndex(h => h.toLowerCase().includes("times"));
+          const dateIndex = headers.findIndex(h => h.toLowerCase().includes("last donation"));
 
           const match = rows.find((row, i) => {
             if (i === 0) return false;
@@ -137,6 +140,7 @@
             document.getElementById('name').value = match[nameIndex] || "";
             document.getElementById('bloodGroup').value = match[groupIndex] || "";
             document.getElementById('timesDonated').value = match[timesIndex] || "";
+            document.getElementById('lastDonation').value = match[dateIndex] || "";
             statusMsg.textContent = "✅ Donor info loaded.";
             statusMsg.className = "loading";
           } else {
@@ -155,6 +159,7 @@
       const userId = document.getElementById('userId').value.trim();
       const date = document.getElementById('donationDate').value;
       const place = document.getElementById('donationPlace').value;
+      const lastDonation = document.getElementById('lastDonation').value;
       const submitMsg = document.getElementById('submitMsg');
 
       if (!userId || !date || !place) {
@@ -163,10 +168,20 @@
         return;
       }
 
+      if (lastDonation) {
+        const last = new Date(lastDonation);
+        const next = new Date(date);
+        const daysBetween = (next - last) / (1000 * 60 * 60 * 24);
+        if (daysBetween < 90) {
+          submitMsg.textContent = "❌ At least 90 days must pass between donations.";
+          submitMsg.className = "error";
+          return;
+        }
+      }
+
       submitMsg.textContent = "⏳ Submitting update...";
       submitMsg.className = "loading";
 
-      // Replace below URL with your actual Google Apps Script Web App URL
       const scriptURL = "https://script.google.com/macros/s/AKfycbwgKdkTu5z5LPlbIp0YKwqYedFz9oBqJ55kP_HbaglxIybqPqZBQJEZxAeCc1BoFNQ/exec";
 
       const formData = new FormData();
@@ -177,7 +192,9 @@
       fetch(scriptURL, { method: 'POST', body: formData })
         .then(res => res.text())
         .then(response => {
-          submitMsg.textContent = "✅ Donation updated successfully.";
+          submitMsg.textContent = response.includes("✅")
+            ? "✅ Donation updated successfully."
+            : "❌ Error: " + response;
           submitMsg.className = "loading";
         })
         .catch(error => {
@@ -188,8 +205,7 @@
     }
 
     function startQRScan() {
-      alert("🔧 QR Code scan feature is under development.");
-      // You can later integrate a library like html5-qrcode here
+      alert("📷 QR Code scanner integration coming soon.");
     }
   </script>
 </body>
