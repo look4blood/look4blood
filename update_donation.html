@@ -7,254 +7,142 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f8f9fa;
-      margin: 0;
-      padding: 0;
+      background: #f7f7f7;
+      padding: 30px;
+      display: flex;
+      justify-content: center;
     }
     .container {
-      max-width: 500px;
-      margin: 60px auto;
-      background: #fff;
+      background: white;
       padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     h2 {
       text-align: center;
       color: #c62828;
     }
     label {
-      font-weight: bold;
-      margin-top: 15px;
       display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
     }
-    input, button {
+    input {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
+      border: 1px solid #ddd;
       border-radius: 6px;
-      box-sizing: border-box;
     }
     button {
-      background-color: #c62828;
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: #c62828;
       color: white;
+      border-radius: 6px;
       font-size: 16px;
       cursor: pointer;
     }
     button:hover {
-      background-color: #b71c1c;
+      background: #a91e1e;
     }
-    #success-msg {
-      text-align: center;
-      color: green;
-      margin-top: 15px;
-    }
-    #error-msg {
-      text-align: center;
+    .error {
       color: red;
-      margin-top: 10px;
-    }
-    #loading-msg {
       text-align: center;
-      color: #555;
-      font-style: italic;
-    }
-    #scanner-container {
-      display: none;
-      justify-content: center;
       margin-top: 10px;
     }
-    #reader {
-      width: 100%;
+    .loading {
+      color: #555;
+      text-align: center;
+      margin-top: 10px;
     }
   </style>
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body>
+  <div class="container">
+    <h2>Update Donation</h2>
 
-<div class="container">
-  <h2>Update Donation</h2>
+    <label><input type="checkbox" id="useNumber" checked> Enter Mobile Number</label>
+    <input type="text" id="mobileInput" placeholder="01XXXXXXXXX" />
 
-  <label for="phone">📱 Enter Mobile Number</label>
-  <input type="tel" id="phone" placeholder="Enter Mobile Number">
-  <button type="button" onclick="searchByPhone()">🔍 Auto-Fill by Number</button>
-  <div id="loading-msg"></div>
+    <button onclick="searchByPhone()">🔍 Auto-Fill by Number</button>
+    <div id="statusMsg" class="loading"></div>
 
-  <button onclick="startScan()">📷 Scan ID QR Code</button>
-  <div id="scanner-container">
-    <div id="reader"></div>
-    <button onclick="stopScan()">❌ Cancel Scan</button>
-  </div>
+    <hr>
 
-  <form id="update-form">
     <label>User ID</label>
-    <input type="text" id="userId" readonly required>
+    <input type="text" id="userId" readonly />
 
     <label>Name</label>
-    <input type="text" id="name" readonly>
+    <input type="text" id="name" readonly />
 
     <label>Blood Group</label>
-    <input type="text" id="bloodGroup" readonly>
+    <input type="text" id="bloodGroup" readonly />
 
     <label>Times Donated</label>
-    <input type="text" id="donationCount" readonly>
+    <input type="text" id="timesDonated" readonly />
+  </div>
 
-    <label>Last Donation Date</label>
-    <input type="text" id="lastDonation" readonly>
+  <script>
+    const sheetURL = "https://api.allorigins.win/raw?url=" +
+      encodeURIComponent("https://docs.google.com/spreadsheets/d/e/2PACX-1vS0F5WzWm4luslj5EW-B2fI6Mq_UrOt53608tTjbteMLb470U0FnBNWZ25b-m5iocNlel_YvVw-fdKL/pub?gid=0&single=true&output=tsv");
 
-    <label>New Donation Date</label>
-    <input type="date" id="donationDate" required>
-
-    <label>Donation Place</label>
-    <input type="text" id="donationPlace" required>
-
-    <div id="error-msg"></div>
-    <button type="submit" id="submitBtn">Update Donation</button>
-    <div id="success-msg"></div>
-  </form>
-</div>
-
-<script>
-const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0F5WzWm4luslj5EW-B2fI6Mq_UrOt53608tTjbteMLb470U0FnBNWZ25b-m5iocNlel_YvVw-fdKL/pub?gid=0&single=true&output=tsv';
-const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec';
-
-const form = document.getElementById('update-form');
-const successMsg = document.getElementById('success-msg');
-const errorMsg = document.getElementById('error-msg');
-const loadingMsg = document.getElementById('loading-msg');
-const submitBtn = document.getElementById('submitBtn');
-let html5QrCode;
-let currentDonationCount = 0;
-let lastDonationDate = null;
-
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  const newDate = new Date(document.getElementById('donationDate').value);
-  const lastDate = new Date(lastDonationDate);
-  const diff = Math.floor((newDate - lastDate) / (1000 * 60 * 60 * 24));
-  if (diff < 90) {
-    errorMsg.textContent = "❌ You can only update donation after 90 days from the last donation.";
-    return;
-  }
-  const userId = document.getElementById('userId').value;
-  const updatedCount = currentDonationCount + 1;
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Submitting...";
-  fetch(scriptURL, {
-    method: "POST",
-    body: new URLSearchParams({
-      userId: userId,
-      donationDate: newDate.toISOString().split('T')[0],
-      donationCount: updatedCount,
-      donationPlace: document.getElementById('donationPlace').value
-    })
-  }).then(res => res.text())
-    .then(txt => {
-      successMsg.textContent = "✅ Donation successfully updated.";
-      errorMsg.textContent = "";
-      form.reset();
-    })
-    .catch(err => {
-      console.error(err);
-      errorMsg.textContent = "❌ Failed to update donation.";
-    }).finally(() => {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Update Donation";
-    });
-});
-
-function normalizePhone(phone) {
-  return phone.replace(/[^0-9]/g, '').replace(/^880/, '0');
-}
-
-function searchByPhone() {
-  const phoneInput = document.getElementById("phone").value.trim();
-  const phone = normalizePhone(phoneInput);
-  if (!phone) return alert("Please enter a valid phone number.");
-  loadingMsg.textContent = "🔄 Searching donor info...";
-
-  fetch(sheetURL)
-    .then(res => res.text())
-    .then(text => {
-      const rows = text.trim().split("\\n").map(r => r.split("\\t"));
-      const headers = rows[0];
-      const phoneIndex = headers.findIndex(h => h.toLowerCase().includes("phone"));
-      const userIdIndex = headers.findIndex(h => h.toLowerCase().includes("user id"));
-      const nameIndex = headers.findIndex(h => h.toLowerCase().includes("name"));
-      const bgIndex = headers.findIndex(h => h.toLowerCase().includes("blood"));
-      const tdIndex = headers.findIndex(h => h.toLowerCase().includes("times donated"));
-      const ldIndex = headers.findIndex(h => h.toLowerCase().includes("last donation"));
-
-      let found = false;
-      for (let i = 1; i < rows.length; i++) {
-        const rowPhone = normalizePhone(rows[i][phoneIndex] || "");
-        console.log("Comparing:", rowPhone, "==", phone);
-        if (rowPhone === phone) {
-          document.getElementById("userId").value = rows[i][userIdIndex];
-          document.getElementById("name").value = rows[i][nameIndex];
-          document.getElementById("bloodGroup").value = rows[i][bgIndex];
-          document.getElementById("donationCount").value = rows[i][tdIndex];
-          document.getElementById("lastDonation").value = rows[i][ldIndex];
-          currentDonationCount = parseInt(rows[i][tdIndex]) || 0;
-          lastDonationDate = rows[i][ldIndex];
-          found = true;
-          break;
-        }
-      }
-      loadingMsg.textContent = found ? "" : "❌ No donor found with that number.";
-    })
-    .catch(() => {
-      loadingMsg.textContent = "❌ Failed to fetch Google Sheet data.";
-    });
-}
-
-function startScan() {
-  document.getElementById("scanner-container").style.display = "flex";
-  html5QrCode = new Html5Qrcode("reader");
-  Html5Qrcode.getCameras().then(devices => {
-    if (devices && devices.length) {
-      html5QrCode.start(
-        devices[0].id,
-        { fps: 10, qrbox: 250 },
-        qrCodeMessage => {
-          loadUser(qrCodeMessage.trim());
-          stopScan();
-        }
-      );
+    function normalizeNumber(num) {
+      return num.replace(/\D/g, '').slice(-10);
     }
-  });
-}
 
-function stopScan() {
-  document.getElementById("scanner-container").style.display = "none";
-  if (html5QrCode) {
-    html5QrCode.stop().then(() => html5QrCode.clear());
-  }
-}
+    function searchByPhone() {
+      const mobileInput = document.getElementById('mobileInput').value.trim();
+      const mobile = normalizeNumber(mobileInput);
+      const statusMsg = document.getElementById('statusMsg');
 
-function loadUser(userId) {
-  fetch(sheetURL)
-    .then(res => res.text())
-    .then(text => {
-      const rows = text.trim().split("\\n").map(r => r.split("\\t"));
-      const headers = rows[0];
-      for (let i = 1; i < rows.length; i++) {
-        if (rows[i][headers.indexOf("User ID")] === userId) {
-          document.getElementById("userId").value = rows[i][headers.indexOf("User ID")];
-          document.getElementById("name").value = rows[i][headers.indexOf("Name")];
-          document.getElementById("bloodGroup").value = rows[i][headers.indexOf("Blood Group")];
-          document.getElementById("donationCount").value = rows[i][headers.indexOf("Times Donated")];
-          document.getElementById("lastDonation").value = rows[i][headers.indexOf("Last Donation Date")];
-          currentDonationCount = parseInt(rows[i][headers.indexOf("Times Donated")]) || 0;
-          lastDonationDate = rows[i][headers.indexOf("Last Donation Date")];
-          break;
-        }
+      if (!mobile) {
+        statusMsg.textContent = "❌ Please enter a valid mobile number.";
+        statusMsg.className = "error";
+        return;
       }
-    });
-}
-</script>
 
+      statusMsg.textContent = "⏳ Searching donor info...";
+      statusMsg.className = "loading";
+
+      fetch(sheetURL)
+        .then(res => res.text())
+        .then(text => {
+          const rows = text.trim().split("\n").map(r => r.split("\t"));
+          const headers = rows[0];
+          const phoneIndex = headers.findIndex(h => h.toLowerCase().includes("phone"));
+          const nameIndex = headers.findIndex(h => h.toLowerCase().includes("name"));
+          const groupIndex = headers.findIndex(h => h.toLowerCase().includes("blood"));
+          const userIdIndex = headers.findIndex(h => h.toLowerCase().includes("user id"));
+          const timesIndex = headers.findIndex(h => h.toLowerCase().includes("times"));
+
+          const match = rows.find((row, i) => {
+            if (i === 0) return false;
+            const num = normalizeNumber(row[phoneIndex] || "");
+            return num === mobile;
+          });
+
+          if (match) {
+            document.getElementById('userId').value = match[userIdIndex] || "";
+            document.getElementById('name').value = match[nameIndex] || "";
+            document.getElementById('bloodGroup').value = match[groupIndex] || "";
+            document.getElementById('timesDonated').value = match[timesIndex] || "";
+            statusMsg.textContent = "✅ Donor info loaded.";
+            statusMsg.className = "loading";
+          } else {
+            statusMsg.textContent = "❌ No donor found with that number.";
+            statusMsg.className = "error";
+          }
+        })
+        .catch(err => {
+          console.error("❌ Fetch error:", err);
+          statusMsg.textContent = "❌ Failed to load donor data.";
+          statusMsg.className = "error";
+        });
+    }
+  </script>
 </body>
 </html>
