@@ -126,28 +126,22 @@ const errorMsg = document.getElementById('error-msg');
 const loadingMsg = document.getElementById('loading-msg');
 const submitBtn = document.getElementById('submitBtn');
 let html5QrCode;
-
 let currentDonationCount = 0;
 let lastDonationDate = null;
 
 form.addEventListener('submit', e => {
   e.preventDefault();
-
   const newDate = new Date(document.getElementById('donationDate').value);
   const lastDate = new Date(lastDonationDate);
   const diff = Math.floor((newDate - lastDate) / (1000 * 60 * 60 * 24));
-
   if (diff < 90) {
     errorMsg.textContent = "❌ You can only update donation after 90 days from the last donation.";
     return;
   }
-
   const userId = document.getElementById('userId').value;
   const updatedCount = currentDonationCount + 1;
-
   submitBtn.disabled = true;
   submitBtn.textContent = "Submitting...";
-
   fetch(scriptURL, {
     method: "POST",
     body: new URLSearchParams({
@@ -171,8 +165,13 @@ form.addEventListener('submit', e => {
     });
 });
 
+function normalizePhone(phone) {
+  return phone.replace(/[^0-9]/g, '').replace(/^880/, '0');
+}
+
 function searchByPhone() {
-  const phone = document.getElementById("phone").value.trim().replace(/[^0-9]/g, "");
+  const phoneInput = document.getElementById("phone").value.trim();
+  const phone = normalizePhone(phoneInput);
   if (!phone) return alert("Please enter a valid phone number.");
   loadingMsg.textContent = "🔄 Searching donor info...";
 
@@ -181,7 +180,6 @@ function searchByPhone() {
     .then(text => {
       const rows = text.trim().split("\\n").map(r => r.split("\\t"));
       const headers = rows[0];
-
       const phoneIndex = headers.findIndex(h => h.toLowerCase().includes("phone"));
       const userIdIndex = headers.findIndex(h => h.toLowerCase().includes("user id"));
       const nameIndex = headers.findIndex(h => h.toLowerCase().includes("name"));
@@ -191,7 +189,8 @@ function searchByPhone() {
 
       let found = false;
       for (let i = 1; i < rows.length; i++) {
-        const rowPhone = (rows[i][phoneIndex] || "").replace(/[^0-9]/g, "");
+        const rowPhone = normalizePhone(rows[i][phoneIndex] || "");
+        console.log("Comparing:", rowPhone, "==", phone);
         if (rowPhone === phone) {
           document.getElementById("userId").value = rows[i][userIdIndex];
           document.getElementById("name").value = rows[i][nameIndex];
@@ -204,7 +203,6 @@ function searchByPhone() {
           break;
         }
       }
-
       loadingMsg.textContent = found ? "" : "❌ No donor found with that number.";
     })
     .catch(() => {
