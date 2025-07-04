@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Update Donation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 60px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #c62828;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 15px;
+      display: block;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #c62828;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #b71c1c;
+    }
+
+    #success-msg {
+      text-align: center;
+      color: green;
+      margin-top: 15px;
+    }
+
+    #error-msg {
+      text-align: center;
+      color: red;
+      margin-top: 10px;
+    }
+
+    #scanner-container {
+      display: none;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    #reader {
+      width: 100%;
+    }
+  </style>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Update Donation</h2>
+
+  <label for="phone">📱 Enter Mobile Number</label>
+  <input type="tel" id="phone" placeholder="Enter Mobile Number">
+  <button type="button" onclick="searchByPhone()">🔍 Auto-Fill by Number</button>
+
+  <button onclick="startScan()">📷 Scan ID QR Code</button>
+  <div id="scanner-container">
+    <div id="reader"></div>
+    <button onclick="stopScan()">❌ Cancel Scan</button>
+  </div>
+
+  <form id="update-form">
+    <label>User ID</label>
+    <input type="text" id="userId" readonly required>
+
+    <label>Name</label>
+    <input type="text" id="name" readonly>
+
+    <label>Blood Group</label>
+    <input type="text" id="bloodGroup" readonly>
+
+    <label>Times Donated</label>
+    <input type="text" id="donationCount" readonly>
+
+    <label>Last Donation Date</label>
+    <input type="text" id="lastDonation" readonly>
+
+    <label>New Donation Date</label>
+    <input type="date" id="donationDate" required>
+
+    <label>Donation Place</label>
+    <input type="text" id="donationPlace" required>
+
+    <div id="error-msg"></div>
+    <button type="submit" id="submitBtn">Update Donation</button>
+    <div id="success-msg"></div>
+  </form>
+</div>
+
+<script>
+const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0F5WzWm4luslj5EW-B2fI6Mq_UrOt53608tTjbteMLb470U0FnBNWZ25b-m5iocNlel_YvVw-fdKL/pub?gid=0&single=true&output=tsv';
+const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec';
+
+const form = document.getElementById('update-form');
+const successMsg = document.getElementById('success-msg');
+const errorMsg = document.getElementById('error-msg');
+const submitBtn = document.getElementById('submitBtn');
+let html5QrCode;
+
+let currentDonationCount = 0;
+let lastDonationDate = null;
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const newDate = new Date(document.getElementById('donationDate').value);
+  const lastDate = new Date(lastDonationDate);
+  const diff = Math.floor((newDate - lastDate) / (1000 * 60 * 60 * 24));
+
+  if (diff < 90) {
+    errorMsg.textContent = "❌ You can only update donation after 90 days from the last donation.";
+    return;
+  }
+
+  const userId = document.getElementById('userId').value;
+  const updatedCount = currentDonationCount + 1;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Submitting...";
+
+  fetch(scriptURL, {
+    method: "POST",
+    body: new URLSearchParams({
+      userId: userId,
+      donationDate: newDate.toISOString().split('T')[0],
+      donationCount: updatedCount
+    })
+  }).then(res => res.text())
+    .then(txt => {
+      successMsg.textContent = "✅ Donation successfully updated.";
+      errorMsg.textContent = "";
+      form.reset();
+    })
+    .catch(err => {
+      console.error(err);
+      errorMsg.textContent = "❌ Failed to update donation.";
+    }).finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Update Donation";
+    });
+});
+
+function startScan() {
+  document.getElementById("scanner-container").style.display = "flex";
+  html5QrCode = new Html5Qrcode("reader");
+  Html5Qrcode.getCameras().then(devices => {
+    if (devices && devices.length) {
+      html5QrCode.start(
+        devices[0].id,
+        { fps: 10, qrbox: 250 },
+        qrCodeMessage => {
+          loadUser(qrCodeMessage.trim());
+          stopScan();
+        }
+      );
+    }
+  });
+}
+
+function stopScan() {
+  document.getElementById("scanner-container").style.display = "none";
+  if (html5QrCode) {
+    html5QrCode.stop().then(() => html5QrCode.clear());
+  }
+}
+
+function searchByPhone() {
+  const phone = document.getElementById("phone").value.trim();
+  if (!phone) return alert("Please enter a phone number.");
+  fetchUserData((row, headers) => {
+    const idx = headers.findIndex(h => h.toLowerCase().includes("phone"));
+    return row[idx] === phone;
+  });
+}
+
+function loadUser(userId) {
+  fetchUserData((row, headers) => {
+    const idx = headers.findIndex(h => h.toLowerCase().includes("user id"));
+    return row[idx] === userId;
+  });
+}
+
+function fetchUserData(matchFn) {
+  fetch(sheetURL)
+    .then(res => res.text())
+    .then(text => {
+      const rows = text.trim().split("\n").map(r => r.split("\t"));
+      const headers = rows[0];
+      for (let i = 1; i < rows.length; i++) {
+        if (matchFn(rows[i], headers)) {
+          const data = rows[i];
+          document.getElementById('userId').value = data[headers.indexOf("User ID")];
+          document.getElementById('name').value = data[headers.indexOf("Name")];
+          document.getElementById('bloodGroup').value = data[headers.indexOf("Blood Group")];
+          document.getElementById('donationCount').value = data[headers.indexOf("Times Donated")];
+          document.getElementById('lastDonation').value = data[headers.indexOf("Last Donation Date")];
+          currentDonationCount = parseInt(data[headers.indexOf("Times Donated")]) || 0;
+          lastDonationDate = data[headers.indexOf("Last Donation Date")];
+          break;
+        }
+      }
+    });
+}
+</script>
+
+</body>
+</html>
