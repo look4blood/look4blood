@@ -172,9 +172,8 @@ form.addEventListener('submit', e => {
 });
 
 function searchByPhone() {
-  const phone = document.getElementById("phone").value.trim();
-  if (!phone) return alert("Please enter a phone number.");
-
+  const phone = document.getElementById("phone").value.trim().replace(/[^0-9]/g, "");
+  if (!phone) return alert("Please enter a valid phone number.");
   loadingMsg.textContent = "🔄 Searching donor info...";
 
   fetch(sheetURL)
@@ -182,6 +181,7 @@ function searchByPhone() {
     .then(text => {
       const rows = text.trim().split("\\n").map(r => r.split("\\t"));
       const headers = rows[0];
+
       const phoneIndex = headers.findIndex(h => h.toLowerCase().includes("phone"));
       const userIdIndex = headers.findIndex(h => h.toLowerCase().includes("user id"));
       const nameIndex = headers.findIndex(h => h.toLowerCase().includes("name"));
@@ -191,19 +191,20 @@ function searchByPhone() {
 
       let found = false;
       for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        if (row[phoneIndex] === phone) {
-          document.getElementById("userId").value = row[userIdIndex];
-          document.getElementById("name").value = row[nameIndex];
-          document.getElementById("bloodGroup").value = row[bgIndex];
-          document.getElementById("donationCount").value = row[tdIndex];
-          document.getElementById("lastDonation").value = row[ldIndex];
-          currentDonationCount = parseInt(row[tdIndex]) || 0;
-          lastDonationDate = row[ldIndex];
+        const rowPhone = (rows[i][phoneIndex] || "").replace(/[^0-9]/g, "");
+        if (rowPhone === phone) {
+          document.getElementById("userId").value = rows[i][userIdIndex];
+          document.getElementById("name").value = rows[i][nameIndex];
+          document.getElementById("bloodGroup").value = rows[i][bgIndex];
+          document.getElementById("donationCount").value = rows[i][tdIndex];
+          document.getElementById("lastDonation").value = rows[i][ldIndex];
+          currentDonationCount = parseInt(rows[i][tdIndex]) || 0;
+          lastDonationDate = rows[i][ldIndex];
           found = true;
           break;
         }
       }
+
       loadingMsg.textContent = found ? "" : "❌ No donor found with that number.";
     })
     .catch(() => {
@@ -242,15 +243,14 @@ function loadUser(userId) {
       const rows = text.trim().split("\\n").map(r => r.split("\\t"));
       const headers = rows[0];
       for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        if (row[headers.indexOf("User ID")] === userId) {
-          document.getElementById("userId").value = row[headers.indexOf("User ID")];
-          document.getElementById("name").value = row[headers.indexOf("Name")];
-          document.getElementById("bloodGroup").value = row[headers.indexOf("Blood Group")];
-          document.getElementById("donationCount").value = row[headers.indexOf("Times Donated")];
-          document.getElementById("lastDonation").value = row[headers.indexOf("Last Donation Date")];
-          currentDonationCount = parseInt(row[headers.indexOf("Times Donated")]) || 0;
-          lastDonationDate = row[headers.indexOf("Last Donation Date")];
+        if (rows[i][headers.indexOf("User ID")] === userId) {
+          document.getElementById("userId").value = rows[i][headers.indexOf("User ID")];
+          document.getElementById("name").value = rows[i][headers.indexOf("Name")];
+          document.getElementById("bloodGroup").value = rows[i][headers.indexOf("Blood Group")];
+          document.getElementById("donationCount").value = rows[i][headers.indexOf("Times Donated")];
+          document.getElementById("lastDonation").value = rows[i][headers.indexOf("Last Donation Date")];
+          currentDonationCount = parseInt(rows[i][headers.indexOf("Times Donated")]) || 0;
+          lastDonationDate = rows[i][headers.indexOf("Last Donation Date")];
           break;
         }
       }
