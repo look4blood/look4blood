@@ -67,11 +67,9 @@
 
     <label><input type="checkbox" id="useNumber" checked> Enter Mobile Number</label>
     <input type="text" id="mobileInput" placeholder="01XXXXXXXXX" />
-
     <button onclick="searchByPhone()">🔍 Auto-Fill by Number</button>
+    <button onclick="startQRScan()">📷 Scan ID QR Code</button>
     <div id="statusMsg" class="loading"></div>
-
-    <hr>
 
     <label>User ID</label>
     <input type="text" id="userId" readonly />
@@ -84,6 +82,15 @@
 
     <label>Times Donated</label>
     <input type="text" id="timesDonated" readonly />
+
+    <label>New Donation Date</label>
+    <input type="date" id="donationDate" required />
+
+    <label>Donation Place</label>
+    <input type="text" id="donationPlace" placeholder="Hospital / Location" required />
+
+    <button onclick="submitUpdate()">✅ Submit Donation Update</button>
+    <div id="submitMsg" class="loading"></div>
   </div>
 
   <script>
@@ -142,6 +149,47 @@
           statusMsg.textContent = "❌ Failed to load donor data.";
           statusMsg.className = "error";
         });
+    }
+
+    function submitUpdate() {
+      const userId = document.getElementById('userId').value.trim();
+      const date = document.getElementById('donationDate').value;
+      const place = document.getElementById('donationPlace').value;
+      const submitMsg = document.getElementById('submitMsg');
+
+      if (!userId || !date || !place) {
+        submitMsg.textContent = "❌ Fill all fields before submitting.";
+        submitMsg.className = "error";
+        return;
+      }
+
+      submitMsg.textContent = "⏳ Submitting update...";
+      submitMsg.className = "loading";
+
+      // Replace below URL with your actual Google Apps Script Web App URL
+      const scriptURL = "https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec";
+
+      const formData = new FormData();
+      formData.append("userId", userId);
+      formData.append("newDate", date);
+      formData.append("place", place);
+
+      fetch(scriptURL, { method: 'POST', body: formData })
+        .then(res => res.text())
+        .then(response => {
+          submitMsg.textContent = "✅ Donation updated successfully.";
+          submitMsg.className = "loading";
+        })
+        .catch(error => {
+          console.error(error);
+          submitMsg.textContent = "❌ Error updating donation.";
+          submitMsg.className = "error";
+        });
+    }
+
+    function startQRScan() {
+      alert("🔧 QR Code scan feature is under development.");
+      // You can later integrate a library like html5-qrcode here
     }
   </script>
 </body>
