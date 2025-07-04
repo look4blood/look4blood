@@ -56,6 +56,11 @@
       color: red;
       margin-top: 10px;
     }
+    #loading-msg {
+      text-align: center;
+      color: #555;
+      font-style: italic;
+    }
     #scanner-container {
       display: none;
       justify-content: center;
@@ -75,6 +80,7 @@
   <label for="phone">📱 Enter Mobile Number</label>
   <input type="tel" id="phone" placeholder="Enter Mobile Number">
   <button type="button" onclick="searchByPhone()">🔍 Auto-Fill by Number</button>
+  <div id="loading-msg"></div>
 
   <button onclick="startScan()">📷 Scan ID QR Code</button>
   <div id="scanner-container">
@@ -117,6 +123,7 @@ const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2
 const form = document.getElementById('update-form');
 const successMsg = document.getElementById('success-msg');
 const errorMsg = document.getElementById('error-msg');
+const loadingMsg = document.getElementById('loading-msg');
 const submitBtn = document.getElementById('submitBtn');
 let html5QrCode;
 
@@ -164,6 +171,46 @@ form.addEventListener('submit', e => {
     });
 });
 
+function searchByPhone() {
+  const phone = document.getElementById("phone").value.trim();
+  if (!phone) return alert("Please enter a phone number.");
+
+  loadingMsg.textContent = "🔄 Searching donor info...";
+
+  fetch(sheetURL)
+    .then(res => res.text())
+    .then(text => {
+      const rows = text.trim().split("\\n").map(r => r.split("\\t"));
+      const headers = rows[0];
+      const phoneIndex = headers.findIndex(h => h.toLowerCase().includes("phone"));
+      const userIdIndex = headers.findIndex(h => h.toLowerCase().includes("user id"));
+      const nameIndex = headers.findIndex(h => h.toLowerCase().includes("name"));
+      const bgIndex = headers.findIndex(h => h.toLowerCase().includes("blood"));
+      const tdIndex = headers.findIndex(h => h.toLowerCase().includes("times donated"));
+      const ldIndex = headers.findIndex(h => h.toLowerCase().includes("last donation"));
+
+      let found = false;
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (row[phoneIndex] === phone) {
+          document.getElementById("userId").value = row[userIdIndex];
+          document.getElementById("name").value = row[nameIndex];
+          document.getElementById("bloodGroup").value = row[bgIndex];
+          document.getElementById("donationCount").value = row[tdIndex];
+          document.getElementById("lastDonation").value = row[ldIndex];
+          currentDonationCount = parseInt(row[tdIndex]) || 0;
+          lastDonationDate = row[ldIndex];
+          found = true;
+          break;
+        }
+      }
+      loadingMsg.textContent = found ? "" : "❌ No donor found with that number.";
+    })
+    .catch(() => {
+      loadingMsg.textContent = "❌ Failed to fetch Google Sheet data.";
+    });
+}
+
 function startScan() {
   document.getElementById("scanner-container").style.display = "flex";
   html5QrCode = new Html5Qrcode("reader");
@@ -188,38 +235,22 @@ function stopScan() {
   }
 }
 
-function searchByPhone() {
-  const phone = document.getElementById("phone").value.trim();
-  if (!phone) return alert("Please enter a phone number.");
-  fetchUserData((row, headers) => {
-    const idx = headers.findIndex(h => h.toLowerCase().includes("phone"));
-    return row[idx] === phone;
-  });
-}
-
 function loadUser(userId) {
-  fetchUserData((row, headers) => {
-    const idx = headers.findIndex(h => h.toLowerCase().includes("user id"));
-    return row[idx] === userId;
-  });
-}
-
-function fetchUserData(matchFn) {
   fetch(sheetURL)
     .then(res => res.text())
     .then(text => {
       const rows = text.trim().split("\\n").map(r => r.split("\\t"));
       const headers = rows[0];
       for (let i = 1; i < rows.length; i++) {
-        if (matchFn(rows[i], headers)) {
-          const data = rows[i];
-          document.getElementById('userId').value = data[headers.indexOf("User ID")];
-          document.getElementById('name').value = data[headers.indexOf("Name")];
-          document.getElementById('bloodGroup').value = data[headers.indexOf("Blood Group")];
-          document.getElementById('donationCount').value = data[headers.indexOf("Times Donated")];
-          document.getElementById('lastDonation').value = data[headers.indexOf("Last Donation Date")];
-          currentDonationCount = parseInt(data[headers.indexOf("Times Donated")]) || 0;
-          lastDonationDate = data[headers.indexOf("Last Donation Date")];
+        const row = rows[i];
+        if (row[headers.indexOf("User ID")] === userId) {
+          document.getElementById("userId").value = row[headers.indexOf("User ID")];
+          document.getElementById("name").value = row[headers.indexOf("Name")];
+          document.getElementById("bloodGroup").value = row[headers.indexOf("Blood Group")];
+          document.getElementById("donationCount").value = row[headers.indexOf("Times Donated")];
+          document.getElementById("lastDonation").value = row[headers.indexOf("Last Donation Date")];
+          currentDonationCount = parseInt(row[headers.indexOf("Times Donated")]) || 0;
+          lastDonationDate = row[headers.indexOf("Last Donation Date")];
           break;
         }
       }
