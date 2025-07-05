@@ -199,8 +199,8 @@
           
           const name = document.getElementById('name').value || "Donor";
 const times = parseInt(document.getElementById('timesDonated').value || "0") + 1;
+showThankYouModal(name, times);
 
-alert(`🎉 Thank you, ${name}!\nYou have now donated blood ${times} times.\n\n❤️ "Your blood can save a life – be proud!"`);
 
         })
         .catch(error => {
@@ -212,6 +212,49 @@ alert(`🎉 Thank you, ${name}!\nYou have now donated blood ${times} times.\n\n�
 
     function startQRScan() {
       alert("📷 QR Code scanner integration coming soon.");
+      
+      function showThankYouModal(name, times) {
+  const msg = `Thank you, ${name || 'Donor'}!<br>You have now donated blood <strong>${times}</strong> times.<br><br>❤️ Your blood can save a life – be proud!`;
+  document.getElementById('thankYouMsg').innerHTML = msg;
+  document.getElementById('thankYouModal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('thankYouModal').style.display = 'none';
+}
+      <!-- Thank You Modal -->
+<div id="thankYouModal" style="
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+">
+  <div style="
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  ">
+    <h3 style="color: #c62828;">🎉 Thank You!</h3>
+    <p id="thankYouMsg" style="margin: 10px 0 20px;"></p>
+    <button onclick="closeModal()" style="
+      padding: 10px 20px;
+      background: #c62828;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    ">Close</button>
+  </div>
+</div>
+
     }
   </script>
 </body>
