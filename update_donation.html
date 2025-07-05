@@ -73,29 +73,23 @@
 
     <label>User ID</label>
     <input type="text" id="userId" readonly />
-
     <label>Name</label>
     <input type="text" id="name" readonly />
-
     <label>Blood Group</label>
     <input type="text" id="bloodGroup" readonly />
-
     <label>Times Donated</label>
     <input type="text" id="timesDonated" readonly />
-
     <input type="hidden" id="lastDonation" />
 
     <label>New Donation Date</label>
     <input type="date" id="donationDate" required />
-
     <label>Donation Place</label>
     <input type="text" id="donationPlace" placeholder="Hospital / Location" required />
-
     <button onclick="submitUpdate()">✅ Submit Donation Update</button>
     <div id="submitMsg" class="loading"></div>
   </div>
 
-  <!-- Thank You Modal -->
+  <!-- Modal -->
   <div id="thankYouModal" style="
     display: none;
     position: fixed;
@@ -137,8 +131,10 @@
     }
 
     function searchByPhone() {
-      const mobile = normalizeNumber(document.getElementById('mobileInput').value.trim());
+      const mobileInput = document.getElementById('mobileInput').value.trim();
+      const mobile = normalizeNumber(mobileInput);
       const statusMsg = document.getElementById('statusMsg');
+
       if (!mobile) {
         statusMsg.textContent = "❌ Please enter a valid mobile number.";
         statusMsg.className = "error";
@@ -153,14 +149,18 @@
         .then(text => {
           const rows = text.trim().split("\n").map(r => r.split("\t"));
           const headers = rows[0];
-          const phoneIndex = headers.indexOf("Phone");
-          const nameIndex = headers.indexOf("Name");
-          const groupIndex = headers.indexOf("Blood Group");
-          const userIdIndex = headers.indexOf("User ID");
-          const timesIndex = headers.indexOf("Times Donated");
-          const dateIndex = headers.indexOf("last Donation");
+          const phoneIndex = headers.findIndex(h => h.toLowerCase().includes("phone"));
+          const nameIndex = headers.findIndex(h => h.toLowerCase().includes("name"));
+          const groupIndex = headers.findIndex(h => h.toLowerCase().includes("blood"));
+          const userIdIndex = headers.findIndex(h => h.toLowerCase().includes("user id"));
+          const timesIndex = headers.findIndex(h => h.toLowerCase().includes("times"));
+          const dateIndex = headers.findIndex(h => h.toLowerCase().includes("last donation"));
 
-          const match = rows.find((row, i) => i > 0 && normalizeNumber(row[phoneIndex] || "") === mobile);
+          const match = rows.find((row, i) => {
+            if (i === 0) return false;
+            const num = normalizeNumber(row[phoneIndex] || "");
+            return num === mobile;
+          });
 
           if (match) {
             document.getElementById('userId').value = match[userIdIndex] || "";
@@ -184,11 +184,9 @@
 
     function submitUpdate() {
       const userId = document.getElementById('userId').value.trim();
-      const name = document.getElementById('name').value;
       const date = document.getElementById('donationDate').value;
       const place = document.getElementById('donationPlace').value;
       const lastDonation = document.getElementById('lastDonation').value;
-      const times = parseInt(document.getElementById('timesDonated').value || "0") + 1;
       const submitMsg = document.getElementById('submitMsg');
 
       if (!userId || !date || !place) {
@@ -198,25 +196,26 @@
       }
 
       if (lastDonation) {
-  try {
-    const [year, month, day] = lastDonation.split("-").map(Number);
-    const last = new Date(year, month - 1, day); // yyyy-mm-dd format
-    const next = new Date(date);
-    const daysBetween = Math.floor((next - last) / (1000 * 60 * 60 * 24));
-    if (daysBetween < 90) {
-      submitMsg.textContent = "❌ You must wait at least 90 days between donations.";
-      submitMsg.className = "error";
-      return;
-    }
-  } catch (e) {
-    console.warn("⚠️ Could not validate last donation date.");
-  }
-}
+        try {
+          const [year, month, day] = lastDonation.split("-").map(Number);
+          const last = new Date(year, month - 1, day);
+          const next = new Date(date);
+          const daysBetween = Math.floor((next - last) / (1000 * 60 * 60 * 24));
+          if (daysBetween < 90) {
+            submitMsg.textContent = "❌ You must wait at least 90 days between donations.";
+            submitMsg.className = "error";
+            return;
+          }
+        } catch (e) {
+          console.warn("⚠️ Could not validate date format.");
+        }
+      }
 
       submitMsg.textContent = "⏳ Submitting update...";
       submitMsg.className = "loading";
 
       const scriptURL = "https://script.google.com/macros/s/AKfycbwgKdkTu5z5LPlbIp0YKwqYedFz9oBqJ55kP_HbaglxIybqPqZBQJEZxAeCc1BoFNQ/exec";
+
       const formData = new FormData();
       formData.append("userId", userId);
       formData.append("newDate", date);
@@ -230,7 +229,8 @@
             : "❌ Error: " + response;
           submitMsg.className = "loading";
 
-          // 🎉 Show Thank You Popup
+          const name = document.getElementById('name').value || "Donor";
+          const times = parseInt(document.getElementById('timesDonated').value || "0") + 1;
           showThankYouModal(name, times);
         })
         .catch(error => {
@@ -238,10 +238,6 @@
           submitMsg.textContent = "❌ Error updating donation.";
           submitMsg.className = "error";
         });
-    }
-
-    function startQRScan() {
-      alert("📷 QR Code scanner integration coming soon.");
     }
 
     function showThankYouModal(name, times) {
@@ -252,6 +248,10 @@
 
     function closeModal() {
       document.getElementById('thankYouModal').style.display = 'none';
+    }
+
+    function startQRScan() {
+      alert("📷 QR Code scanner integration coming soon.");
     }
   </script>
 </body>
