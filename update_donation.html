@@ -95,6 +95,39 @@
     <div id="submitMsg" class="loading"></div>
   </div>
 
+  <!-- Thank You Modal -->
+  <div id="thankYouModal" style="
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+  ">
+    <div style="
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    ">
+      <h3 style="color: #c62828;">🎉 Thank You!</h3>
+      <p id="thankYouMsg" style="margin: 10px 0 20px;"></p>
+      <button onclick="closeModal()" style="
+        padding: 10px 20px;
+        background: #c62828;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      ">Close</button>
+    </div>
+  </div>
+
   <script>
     const sheetURL = "https://api.allorigins.win/raw?url=" +
       encodeURIComponent("https://docs.google.com/spreadsheets/d/e/2PACX-1vS0F5WzWm4luslj5EW-B2fI6Mq_UrOt53608tTjbteMLb470U0FnBNWZ25b-m5iocNlel_YvVw-fdKL/pub?gid=0&single=true&output=tsv");
@@ -104,10 +137,8 @@
     }
 
     function searchByPhone() {
-      const mobileInput = document.getElementById('mobileInput').value.trim();
-      const mobile = normalizeNumber(mobileInput);
+      const mobile = normalizeNumber(document.getElementById('mobileInput').value.trim());
       const statusMsg = document.getElementById('statusMsg');
-
       if (!mobile) {
         statusMsg.textContent = "❌ Please enter a valid mobile number.";
         statusMsg.className = "error";
@@ -122,18 +153,14 @@
         .then(text => {
           const rows = text.trim().split("\n").map(r => r.split("\t"));
           const headers = rows[0];
-          const phoneIndex = headers.findIndex(h => h.toLowerCase().includes("phone"));
-          const nameIndex = headers.findIndex(h => h.toLowerCase().includes("name"));
-          const groupIndex = headers.findIndex(h => h.toLowerCase().includes("blood"));
-          const userIdIndex = headers.findIndex(h => h.toLowerCase().includes("user id"));
-          const timesIndex = headers.findIndex(h => h.toLowerCase().includes("times"));
-          const dateIndex = headers.findIndex(h => h.toLowerCase().includes("last donation"));
+          const phoneIndex = headers.indexOf("Phone");
+          const nameIndex = headers.indexOf("Name");
+          const groupIndex = headers.indexOf("Blood Group");
+          const userIdIndex = headers.indexOf("User ID");
+          const timesIndex = headers.indexOf("Times Donated");
+          const dateIndex = headers.indexOf("last Donation");
 
-          const match = rows.find((row, i) => {
-            if (i === 0) return false;
-            const num = normalizeNumber(row[phoneIndex] || "");
-            return num === mobile;
-          });
+          const match = rows.find((row, i) => i > 0 && normalizeNumber(row[phoneIndex] || "") === mobile);
 
           if (match) {
             document.getElementById('userId').value = match[userIdIndex] || "";
@@ -157,9 +184,11 @@
 
     function submitUpdate() {
       const userId = document.getElementById('userId').value.trim();
+      const name = document.getElementById('name').value;
       const date = document.getElementById('donationDate').value;
       const place = document.getElementById('donationPlace').value;
       const lastDonation = document.getElementById('lastDonation').value;
+      const times = parseInt(document.getElementById('timesDonated').value || "0") + 1;
       const submitMsg = document.getElementById('submitMsg');
 
       if (!userId || !date || !place) {
@@ -183,7 +212,6 @@
       submitMsg.className = "loading";
 
       const scriptURL = "https://script.google.com/macros/s/AKfycbwgKdkTu5z5LPlbIp0YKwqYedFz9oBqJ55kP_HbaglxIybqPqZBQJEZxAeCc1BoFNQ/exec";
-
       const formData = new FormData();
       formData.append("userId", userId);
       formData.append("newDate", date);
@@ -196,12 +224,9 @@
             ? "✅ Donation updated successfully."
             : "❌ Error: " + response;
           submitMsg.className = "loading";
-          
-          const name = document.getElementById('name').value || "Donor";
-const times = parseInt(document.getElementById('timesDonated').value || "0") + 1;
-showThankYouModal(name, times);
 
-
+          // 🎉 Show Thank You Popup
+          showThankYouModal(name, times);
         })
         .catch(error => {
           console.error(error);
@@ -212,49 +237,16 @@ showThankYouModal(name, times);
 
     function startQRScan() {
       alert("📷 QR Code scanner integration coming soon.");
-      
-      function showThankYouModal(name, times) {
-  const msg = `Thank you, ${name || 'Donor'}!<br>You have now donated blood <strong>${times}</strong> times.<br><br>❤️ Your blood can save a life – be proud!`;
-  document.getElementById('thankYouMsg').innerHTML = msg;
-  document.getElementById('thankYouModal').style.display = 'flex';
-}
+    }
 
-function closeModal() {
-  document.getElementById('thankYouModal').style.display = 'none';
-}
-      <!-- Thank You Modal -->
-<div id="thankYouModal" style="
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-">
-  <div style="
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  ">
-    <h3 style="color: #c62828;">🎉 Thank You!</h3>
-    <p id="thankYouMsg" style="margin: 10px 0 20px;"></p>
-    <button onclick="closeModal()" style="
-      padding: 10px 20px;
-      background: #c62828;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    ">Close</button>
-  </div>
-</div>
+    function showThankYouModal(name, times) {
+      const msg = `Thank you, ${name || 'Donor'}!<br>You have now donated blood <strong>${times}</strong> times.<br><br>❤️ Your blood can save a life – be proud!`;
+      document.getElementById('thankYouMsg').innerHTML = msg;
+      document.getElementById('thankYouModal').style.display = 'flex';
+    }
 
+    function closeModal() {
+      document.getElementById('thankYouModal').style.display = 'none';
     }
   </script>
 </body>
