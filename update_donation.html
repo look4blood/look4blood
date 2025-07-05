@@ -198,15 +198,20 @@
       }
 
       if (lastDonation) {
-        const last = new Date(lastDonation);
-        const next = new Date(date);
-        const daysBetween = (next - last) / (1000 * 60 * 60 * 24);
-        if (daysBetween < 90) {
-          submitMsg.textContent = "❌ At least 90 days must pass between donations.";
-          submitMsg.className = "error";
-          return;
-        }
-      }
+  try {
+    const [year, month, day] = lastDonation.split("-").map(Number);
+    const last = new Date(year, month - 1, day); // yyyy-mm-dd format
+    const next = new Date(date);
+    const daysBetween = Math.floor((next - last) / (1000 * 60 * 60 * 24));
+    if (daysBetween < 90) {
+      submitMsg.textContent = "❌ You must wait at least 90 days between donations.";
+      submitMsg.className = "error";
+      return;
+    }
+  } catch (e) {
+    console.warn("⚠️ Could not validate last donation date.");
+  }
+}
 
       submitMsg.textContent = "⏳ Submitting update...";
       submitMsg.className = "loading";
