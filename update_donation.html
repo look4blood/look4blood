@@ -196,6 +196,12 @@
             ? "✅ Donation updated successfully."
             : "❌ Error: " + response;
           submitMsg.className = "loading";
+          
+          const name = document.getElementById('name').value || "Donor";
+const times = parseInt(document.getElementById('timesDonated').value || "0") + 1;
+
+alert(`🎉 Thank you, ${name}!\nYou have now donated blood ${times} times.\n\n❤️ "Your blood can save a life – be proud!"`);
+
         })
         .catch(error => {
           console.error(error);
