@@ -165,20 +165,13 @@
   <label data-en="City" data-bn="শহর">City</label>
   <select name="city" required>
     <option value="">Select</option>
-    <option>Agrabad</option>
-    <option>Boalkhali</option>
-    <option>Bakalia</option>
-    <option>Bayazid</option>
-    <option>Chandgaon</option>
-    <option>Chawkbazar</option>
-    <option>Halishahar</option>
-    <option>Khulshi</option>
-    <option>Kotwali</option>
-    <option>Patiya</option>
-    <option>Panchlaish</option>
-    <option>Patenga</option>
-    <option>Rangunia</option>
-    <option>Raozan</option>
+    <option>Agrabad</option><option>Boalkhali</option>
+    <option>Bakalia</option><option>Bayazid</option>
+    <option>Chandgaon</option><option>Chawkbazar</option>
+    <option>Halishahar</option><option>Khulshi</option>
+    <option>Kotwali</option><option>Patiya</option>
+    <option>Panchlaish</option><option>Patenga</option>
+    <option>Rangunia</option><option>Raozan</option>
   </select>
 
   <label data-en="ZIP Code" data-bn="জিপ কোড">ZIP Code</label>
@@ -221,10 +214,18 @@
     width: 50px;
     height: 50px;
     animation: spin 1s linear infinite;"></div>
-  <div style="margin-top: 10px;">Loading</div>
+  <div style="margin-top: 10px;">Loading...</div>
 </div>
 
-<script>
+<script type="module">
+  // === CONFIG ===
+  const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqsYyWZ2llBZL0ajTIXNviH3Ur4NZ1GExMcQI_s1V1E5Tb8VxpqvsaIzFg6B8tOBR4/exec";
+
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
   function setLang(lang) {
     document.querySelectorAll('[data-en]').forEach(el => {
       el.textContent = el.getAttribute(`data-${lang}`);
@@ -233,13 +234,12 @@
     document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
   }
 
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec'; // <-- Replace with your actual Google Script URL
   const form = document.forms['donor-form'];
   const successMsg = document.getElementById('success-msg');
   const submitBtn = form.querySelector('button[type="submit"]');
   const loadingOverlay = document.getElementById('loading-overlay');
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
 
     if (!form.terms.checked) {
@@ -247,25 +247,32 @@
       return;
     }
 
+    const formData = new FormData(form);
+    const donor = Object.fromEntries(formData.entries());
+    donor.userId = "ID-" + Date.now();
+
     submitBtn.disabled = true;
     submitBtn.textContent = "Submitting...";
     loadingOverlay.style.display = "flex";
 
-    fetch(scriptURL, { method: 'POST', body: new FormData(form) })
-      .then(response => {
-        successMsg.textContent = "✅ Thank you! Your information was submitted.";
-        form.reset();
-        setLang('en');
-      })
-      .catch(error => {
-        successMsg.textContent = "❌ There was an error submitting the form.";
-        console.error('Error!', error.message);
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit";
-        loadingOverlay.style.display = "none";
-      });
+    try {
+      // Store in Supabase
+      await supabase.from("donors").insert([donor]);
+
+      // Also store in Google Sheets
+      await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: formData });
+
+      successMsg.textContent = "✅ Thank you! Your information was submitted.";
+      form.reset();
+      setLang('en');
+    } catch (err) {
+      console.error(err);
+      successMsg.textContent = "❌ Error submitting form.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit";
+      loadingOverlay.style.display = "none";
+    }
   });
 </script>
 
