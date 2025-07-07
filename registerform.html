@@ -224,6 +224,7 @@
   <div style="margin-top: 10px;">Loading</div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
   function setLang(lang) {
     document.querySelectorAll('[data-en]').forEach(el => {
@@ -233,13 +234,17 @@
     document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
   }
 
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec'; // <-- Replace with your actual Google Script URL
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec';
   const form = document.forms['donor-form'];
   const successMsg = document.getElementById('success-msg');
   const submitBtn = form.querySelector('button[type="submit"]');
   const loadingOverlay = document.getElementById('loading-overlay');
 
-  form.addEventListener('submit', e => {
+  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  form.addEventListener('submit', async e => {
     e.preventDefault();
 
     if (!form.terms.checked) {
@@ -251,21 +256,44 @@
     submitBtn.textContent = "Submitting...";
     loadingOverlay.style.display = "flex";
 
-    fetch(scriptURL, { method: 'POST', body: new FormData(form) })
-      .then(response => {
-        successMsg.textContent = "✅ Thank you! Your information was submitted.";
-        form.reset();
-        setLang('en');
-      })
-      .catch(error => {
-        successMsg.textContent = "❌ There was an error submitting the form.";
-        console.error('Error!', error.message);
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit";
-        loadingOverlay.style.display = "none";
-      });
+    const formData = new FormData(form);
+
+    try {
+      // Submit to Google Sheets
+      await fetch(scriptURL, { method: 'POST', body: formData });
+
+      // Submit to Supabase
+      const { data, error } = await supabase.from('donors').insert([
+        {
+          name: formData.get("name"),
+          age: formData.get("age"),
+          gender: formData.get("gender"),
+          bloodGroup: formData.get("bloodGroup"),
+          phone: formData.get("phone"),
+          email: formData.get("email"),
+          state: formData.get("state"),
+          city: formData.get("city"),
+          zip: formData.get("zip"),
+          lastDonation: formData.get("lastDonation"),
+          donationCount: parseInt(formData.get("donationCount") || 0),
+          available: formData.get("available"),
+          terms: formData.get("terms") === "on"
+        }
+      ]);
+
+      if (error) console.error('❌ Supabase error:', error);
+
+      successMsg.textContent = "✅ Thank you! Your information was submitted.";
+      form.reset();
+      setLang('en');
+    } catch (err) {
+      console.error('❌ Submission failed:', err);
+      successMsg.textContent = "❌ There was an error submitting the form.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit";
+      loadingOverlay.style.display = "none";
+    }
   });
 </script>
 
