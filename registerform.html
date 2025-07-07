@@ -255,28 +255,24 @@
     const values = Object.fromEntries(formData.entries());
 
     // ✅ Supabase insert
-    try {
-      await supabase.from('donors').insert([
-        {
-          user_id: 'ID-' + Date.now(),
-          name: values.name,
-          age: parseInt(values.age),
-          gender: values.gender,
-          blood_group: values.bloodGroup,
-          phone: values.phone,
-          email: values.email,
-          state: values.state,
-          city: values.city,
-          zip: values.zip,
-          last_donation: values.lastDonation || null,
-          times_donated: parseInt(values.donationCount) || 0,
-          available: values.available === "Yes",
-          terms: values.terms === "on"
-        }
-      ]);
-    } catch (error) {
-      console.error("Supabase insert error:", error);
-    }
+    await supabase.from('donors').insert([
+  {
+    user_id: 'ID-' + Date.now(),
+    name: values.name,
+    age: parseInt(values.age),
+    gender: values.gender,
+    blood_group: values.bloodGroup,
+    phone: values.phone,
+    email: values.email,
+    state: values.state,
+    city: values.city,
+    zip: values.zip,
+    last_donation: values.lastDonation || null,
+    times_donated: parseInt(values.donationCount) || 0,
+    available: values.available === "Yes",
+    terms: values.terms === "on"
+  }
+]);
 
     // ✅ Google Sheet append
     fetch(scriptURL, { method: 'POST', body: formData })
