@@ -21,7 +21,7 @@
       border-radius: 10px;
       width: 100%;
       max-width: 500px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
 
     h2 {
@@ -65,19 +65,6 @@
       color: green;
     }
 
-    .checkbox-group {
-      margin-top: 15px;
-    }
-
-    .checkbox-group input[type="checkbox"] {
-      margin-right: 8px;
-    }
-
-    .checkbox-group label {
-      display: inline;
-      font-weight: normal;
-    }
-
     .lang-toggle {
       margin-bottom: 20px;
       text-align: center;
@@ -104,7 +91,7 @@
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0,0,0,0.6);
       z-index: 9999;
       justify-content: center;
       align-items: center;
@@ -119,6 +106,8 @@
       100% { transform: rotate(360deg); }
     }
   </style>
+  <!-- Supabase library FIRST -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
 
@@ -199,103 +188,104 @@
 
   <div class="checkbox-group">
     <input type="checkbox" id="terms" name="terms" required>
-    <label for="terms" data-en="I agree to the Terms and Conditions: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible." data-bn="আমি শর্তাবলীতে সম্মত: অনুগ্রহ করে ভুল তথ্য প্রদান করবেন না। এটি একটি জীবন রক্ষার বিষয়। দয়া করে সৎ এবং দায়িত্বশীল হোন।">
-      I agree to the Terms and Conditions: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible.
+    <label for="terms" data-en="I agree to the Terms and Conditions..." data-bn="আমি শর্তাবলীতে সম্মত...">
+      I agree to the Terms and Conditions...
     </label>
   </div>
-
-  <p style="margin-top:10px; font-style:italic; color:#444;" data-en="Your blood can be someone’s second chance at life. Be the reason someone smiles today." data-bn="আপনার রক্ত কারো জীবনের দ্বিতীয় সুযোগ হতে পারে। কারো মুখে হাসি ফোটাতে সাহায্য করুন।">
-    Your blood can be someone’s second chance at life. Be the reason someone smiles today.
-  </p>
 
   <button type="submit" data-en="Submit" data-bn="জমা দিন">Submit</button>
   <div class="success" id="success-msg"></div>
 </form>
 
-<!-- Loading Overlay -->
 <div id="loading-overlay">
   <div class="spinner" style="
-    border: 6px solid #f3f3f3;
-    border-top: 6px solid #fff;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;"></div>
-  <div style="margin-top: 10px;">Loading</div>
+    border:6px solid #f3f3f3;
+    border-top:6px solid #fff;
+    border-radius:50%;
+    width:50px;
+    height:50px;
+    animation:spin 1s linear infinite;">
+  </div>
+  <div style="margin-top:10px;">Loading</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
-  function setLang(lang) {
-    document.querySelectorAll('[data-en]').forEach(el => {
-      el.textContent = el.getAttribute(`data-${lang}`);
-    });
-    document.querySelectorAll('.lang-toggle button').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
+function setLang(lang) {
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = el.getAttribute(`data-${lang}`);
+  });
+  document.querySelectorAll('.lang-toggle button').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
+}
+
+const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // replace with your anon key
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+const scriptURL = 'https://script.google.com/macros/s/AKfycbyqsYyWZ2llBZL0ajTIXNviH3Ur4NZ1GExMcQI_s1V1E5Tb8VxpqvsaIzFg6B8tOBR4/exec'; // replace with your script
+const form = document.forms['donor-form'];
+const successMsg = document.getElementById('success-msg');
+const submitBtn = form.querySelector('button[type="submit"]');
+const loadingOverlay = document.getElementById('loading-overlay');
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+
+  if (!form.terms.checked) {
+    alert("You must agree to the terms and conditions before submitting.");
+    return;
   }
 
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec';
-  const form = document.forms['donor-form'];
-  const successMsg = document.getElementById('success-msg');
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const loadingOverlay = document.getElementById('loading-overlay');
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Submitting...";
+  loadingOverlay.style.display = "flex";
 
-  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
 
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
+  // Supabase
+  const { error } = await supabase.from('donors').insert([{
+    user_id: 'ID-' + Date.now(),
+    name: data.name,
+    age: parseInt(data.age),
+    gender: data.gender,
+    blood_group: data.bloodGroup,
+    phone: data.phone,
+    email: data.email,
+    state: data.state,
+    city: data.city,
+    zip: data.zip,
+    last_donation: data.lastDonation || null,
+    times_donated: data.donationCount ? parseInt(data.donationCount) : 0,
+    available: data.available === 'Yes'
+  }]);
 
-    if (!form.terms.checked) {
-      alert("You must agree to the terms and conditions before submitting.");
-      return;
-    }
+  if (error) {
+    console.error('Supabase error:', error);
+    successMsg.textContent = "❌ Supabase error: " + error.message;
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit";
+    loadingOverlay.style.display = "none";
+    return;
+  }
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Submitting...";
-    loadingOverlay.style.display = "flex";
-
-    const formData = new FormData(form);
-
-    try {
-      // Submit to Google Sheets
-      await fetch(scriptURL, { method: 'POST', body: formData });
-
-      // Submit to Supabase
-      const { data, error } = await supabase.from('donors').insert([
-        {
-          name: formData.get("name"),
-          age: formData.get("age"),
-          gender: formData.get("gender"),
-          bloodGroup: formData.get("bloodGroup"),
-          phone: formData.get("phone"),
-          email: formData.get("email"),
-          state: formData.get("state"),
-          city: formData.get("city"),
-          zip: formData.get("zip"),
-          lastDonation: formData.get("lastDonation"),
-          donationCount: parseInt(formData.get("donationCount") || 0),
-          available: formData.get("available"),
-          terms: formData.get("terms") === "on"
-        }
-      ]);
-
-      if (error) console.error('❌ Supabase error:', error);
-
+  // Google Sheets
+  fetch(scriptURL, { method: 'POST', body: formData })
+    .then(response => {
       successMsg.textContent = "✅ Thank you! Your information was submitted.";
       form.reset();
       setLang('en');
-    } catch (err) {
-      console.error('❌ Submission failed:', err);
-      successMsg.textContent = "❌ There was an error submitting the form.";
-    } finally {
+    })
+    .catch(err => {
+      successMsg.textContent = "❌ Error submitting to Google Sheets.";
+      console.error(err);
+    })
+    .finally(() => {
       submitBtn.disabled = false;
       submitBtn.textContent = "Submit";
       loadingOverlay.style.display = "none";
-    }
-  });
+    });
+});
 </script>
-
 </body>
 </html>
