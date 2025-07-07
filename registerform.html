@@ -65,45 +65,17 @@
       color: green;
     }
 
-    .checkbox-group {
-      margin-top: 15px;
-    }
-
-    .checkbox-group input[type="checkbox"] {
-      margin-right: 8px;
-    }
-
-    .checkbox-group label {
-      display: inline;
-      font-weight: normal;
-    }
-
-    .lang-toggle {
-      margin-bottom: 20px;
+    .error {
       text-align: center;
-    }
-
-    .lang-toggle button {
-      background: #e0e0e0;
-      color: #333;
-      border: none;
-      padding: 8px 12px;
-      margin: 0 5px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .lang-toggle button.active {
-      background: #c62828;
-      color: white;
+      margin-top: 10px;
+      color: red;
     }
 
     #loading-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.6);
       z-index: 9999;
       justify-content: center;
@@ -120,31 +92,25 @@
   </style>
 </head>
 <body>
+<form id="donor-form">
+  <h2>Donor Registration</h2>
 
-<form id="donor-form" name="donor-form">
-  <div class="lang-toggle">
-    <button type="button" class="active" onclick="setLang('en')">English</button>
-    <button type="button" onclick="setLang('bn')">বাংলা</button>
-  </div>
-
-  <h2 data-en="Donor Registration" data-bn="রক্তদাতার নিবন্ধন">Donor Registration</h2>
-
-  <label data-en="Full Name" data-bn="পূর্ণ নাম">Full Name</label>
+  <label>Full Name</label>
   <input type="text" name="name" required>
 
-  <label data-en="Age" data-bn="বয়স">Age</label>
+  <label>Age</label>
   <input type="number" name="age" required>
 
-  <label data-en="Gender" data-bn="লিঙ্গ">Gender</label>
+  <label>Gender</label>
   <select name="gender" required>
     <option value="">Select</option>
-    <option data-en="Male" data-bn="পুরুষ">Male</option>
-    <option data-en="Female" data-bn="মহিলা">Female</option>
-    <option data-en="Other" data-bn="অন্যান্য">Other</option>
+    <option>Male</option>
+    <option>Female</option>
+    <option>Other</option>
   </select>
 
-  <label data-en="Blood Group" data-bn="রক্তের গ্রুপ">Blood Group</label>
-  <select name="bloodGroup" required>
+  <label>Blood Group</label>
+  <select name="blood_group" required>
     <option value="">Select</option>
     <option>A+</option><option>A-</option>
     <option>B+</option><option>B-</option>
@@ -152,129 +118,136 @@
     <option>O+</option><option>O-</option>
   </select>
 
-  <label data-en="Phone Number" data-bn="ফোন নম্বর">Phone Number</label>
+  <label>Phone Number</label>
   <input type="tel" name="phone" required>
 
-  <label data-en="Email" data-bn="ইমেইল">Email</label>
+  <label>Email</label>
   <input type="email" name="email">
 
-  <label data-en="State" data-bn="রাজ্য">State</label>
+  <label>State</label>
   <input type="text" name="state" value="Chottogram" readonly>
 
-  <label data-en="City" data-bn="শহর">City</label>
+  <label>City</label>
   <select name="city" required>
     <option value="">Select</option>
-    <option>Agrabad</option><option>Boalkhali</option><option>Bakalia</option>
-    <option>Bayazid</option><option>Chandgaon</option><option>Chawkbazar</option>
-    <option>Halishahar</option><option>Khulshi</option><option>Kotwali</option>
-    <option>Patiya</option><option>Panchlaish</option><option>Patenga</option>
-    <option>Rangunia</option><option>Raozan</option>
+    <option>Agrabad</option>
+    <option>Boalkhali</option>
+    <option>Bakalia</option>
+    <option>Bayazid</option>
+    <option>Chandgaon</option>
+    <option>Chawkbazar</option>
+    <option>Halishahar</option>
+    <option>Khulshi</option>
+    <option>Kotwali</option>
+    <option>Patiya</option>
+    <option>Panchlaish</option>
+    <option>Patenga</option>
+    <option>Rangunia</option>
+    <option>Raozan</option>
   </select>
 
-  <label data-en="ZIP Code" data-bn="জিপ কোড">ZIP Code</label>
+  <label>ZIP Code</label>
   <input type="text" name="zip">
 
-  <label data-en="Last Donation Date" data-bn="শেষ রক্তদান তারিখ">Last Donation Date</label>
-  <input type="date" name="lastDonation">
+  <label>Last Donation Date</label>
+  <input type="date" name="last_donation">
 
-  <label data-en="How many times donated before?" data-bn="পূর্বে কতবার রক্তদান করেছেন?">How many times donated before?</label>
-  <input type="number" name="donationCount" min="0">
+  <label>Times Donated Before</label>
+  <input type="number" name="times_donated" min="0" value="0">
 
-  <label data-en="Willing to Donate Now?" data-bn="এখন রক্ত দিতে ইচ্ছুক?">Willing to Donate Now?</label>
+  <label>Willing to Donate Now?</label>
   <select name="available" required>
     <option value="">Select</option>
-    <option data-en="Yes" data-bn="হ্যাঁ">Yes</option>
-    <option data-en="No" data-bn="না">No</option>
+    <option value="true">Yes</option>
+    <option value="false">No</option>
   </select>
 
-  <div class="checkbox-group">
-    <input type="checkbox" id="terms" name="terms" required>
-    <label for="terms" data-en="I agree to the Terms and Conditions." data-bn="আমি শর্তাবলীতে সম্মত।">
-      I agree to the Terms and Conditions.
-    </label>
-  </div>
+  <input type="checkbox" name="terms" id="terms" required>
+  <label for="terms">I agree to the terms and conditions</label>
 
-  <p style="margin-top:10px; font-style:italic; color:#444;" data-en="Your blood can be someone’s second chance at life." data-bn="আপনার রক্ত কারো জীবনের দ্বিতীয় সুযোগ হতে পারে।">
-    Your blood can be someone’s second chance at life.
-  </p>
-
-  <button type="submit" data-en="Submit" data-bn="জমা দিন">Submit</button>
+  <button type="submit">Submit</button>
   <div class="success" id="success-msg"></div>
+  <div class="error" id="error-msg"></div>
 </form>
 
-<!-- Loading Overlay -->
 <div id="loading-overlay">
-  <div class="spinner" style="border: 6px solid #f3f3f3; border-top: 6px solid #fff; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;"></div>
-  <div style="margin-top: 10px;">Loading</div>
+  <div class="spinner" style="
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #fff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;"></div>
+  <div style="margin-top: 10px;">Loading...</div>
 </div>
 
 <script>
-  function setLang(lang) {
-    document.querySelectorAll('[data-en]').forEach(el => {
-      el.textContent = el.getAttribute(`data-${lang}`);
-    });
-    document.querySelectorAll('.lang-toggle button').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
-  }
+  const supabaseUrl = "https://bbvyjeljeyofswuijlyg.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbyqsYyWZ2llBZL0ajTIXNviH3Ur4NZ1GExMcQI_s1V1E5Tb8VxpqvsaIzFg6B8tOBR4/exec";
 
-  const supabaseURL = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
-  const googleScriptURL = 'https://script.google.com/macros/s/AKfycbyqsYyWZ2llBZL0ajTIXNviH3Ur4NZ1GExMcQI_s1V1E5Tb8VxpqvsaIzFg6B8tOBR4/exec';
+  const form = document.getElementById("donor-form");
+  const loadingOverlay = document.getElementById("loading-overlay");
+  const successMsg = document.getElementById("success-msg");
+  const errorMsg = document.getElementById("error-msg");
 
-  const form = document.forms['donor-form'];
-  const successMsg = document.getElementById('success-msg');
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const loadingOverlay = document.getElementById('loading-overlay');
-
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    successMsg.textContent = "";
+    errorMsg.textContent = "";
+
     if (!form.terms.checked) {
-      alert("✅ You must agree to the terms before submitting.");
+      alert("✅ Please agree to the terms before submitting.");
       return;
     }
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Submitting...";
+    const formData = new FormData(form);
+    const donor = {
+      name: formData.get("name"),
+      age: Number(formData.get("age")),
+      gender: formData.get("gender"),
+      blood_group: formData.get("blood_group"),
+      phone: formData.get("phone"),
+      email: formData.get("email"),
+      state: formData.get("state"),
+      city: formData.get("city"),
+      zip: formData.get("zip"),
+      last_donation: formData.get("last_donation") || null,
+      times_donated: Number(formData.get("times_donated") || 0),
+      available: formData.get("available") === "true",
+      terms: true,
+      user_id: "ID-" + Date.now()
+    };
+
     loadingOverlay.style.display = "flex";
 
-    const formData = new FormData(form);
-    const body = Object.fromEntries(formData.entries());
-    body.available = body.available === 'Yes';
-    body.userId = 'ID-' + Date.now();
-
     try {
-      // Send to Supabase
-      await fetch(`${supabaseURL}/rest/v1/donors`, {
-        method: 'POST',
+      // ✅ Submit to Supabase
+      const supabaseRes = await fetch(`${supabaseUrl}/rest/v1/donors`, {
+        method: "POST",
         headers: {
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
+          "Content-Type": "application/json",
+          "apikey": supabaseKey,
+          "Authorization": `Bearer ${supabaseKey}`,
+          "Prefer": "return=minimal"
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(donor)
       });
 
-      // Send to Google Sheet
-      await fetch(googleScriptURL, {
-        method: 'POST',
-        body: new FormData(form)
-      });
+      if (!supabaseRes.ok) throw new Error("❌ Supabase Error");
 
-      successMsg.textContent = "✅ Thank you! Your information was submitted.";
+      // ✅ Submit to Google Sheets
+      await fetch(scriptURL, { method: "POST", body: formData });
+
+      successMsg.textContent = "✅ Registration successful!";
       form.reset();
-      setLang('en');
-
-    } catch (error) {
-      console.error(error);
-      successMsg.textContent = "❌ There was an error submitting the form.";
+    } catch (err) {
+      console.error("Error:", err);
+      errorMsg.textContent = "❌ Submission failed. Try again.";
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Submit";
       loadingOverlay.style.display = "none";
     }
   });
 </script>
-
 </body>
 </html>
