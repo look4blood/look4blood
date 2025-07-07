@@ -14,6 +14,7 @@
       min-height: 100vh;
       padding: 20px;
     }
+
     form {
       background: white;
       padding: 30px;
@@ -22,15 +23,19 @@
       max-width: 500px;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
+
     h2 {
       color: #c62828;
+      margin-bottom: 20px;
       text-align: center;
     }
+
     label {
       display: block;
       margin: 10px 0 5px;
       font-weight: bold;
     }
+
     input, select {
       width: 100%;
       padding: 10px;
@@ -38,6 +43,7 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
+
     button {
       background: #c62828;
       color: white;
@@ -48,47 +54,75 @@
       font-size: 16px;
       cursor: pointer;
     }
+
     button:hover {
       background: #b71c1c;
     }
+
     .success {
       text-align: center;
       margin-top: 10px;
       color: green;
     }
+
+    .checkbox-group {
+      margin-top: 15px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    .checkbox-group label {
+      display: inline;
+      font-weight: normal;
+    }
+
     .lang-toggle {
+      margin-bottom: 20px;
       text-align: center;
-      margin-bottom: 15px;
     }
+
     .lang-toggle button {
-      padding: 6px 12px;
-      margin: 0 5px;
+      background: #e0e0e0;
+      color: #333;
       border: none;
-      background: #eee;
+      padding: 8px 12px;
+      margin: 0 5px;
+      border-radius: 5px;
       cursor: pointer;
-      border-radius: 4px;
     }
+
     .lang-toggle button.active {
       background: #c62828;
       color: white;
     }
+
     #loading-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      color: white;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
       z-index: 9999;
       justify-content: center;
       align-items: center;
+      color: white;
       font-size: 20px;
+      flex-direction: column;
+      font-family: sans-serif;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
 
-<form id="donor-form">
+<form id="donor-form" name="donor-form">
   <div class="lang-toggle">
     <button type="button" class="active" onclick="setLang('en')">English</button>
     <button type="button" onclick="setLang('bn')">বাংলা</button>
@@ -153,7 +187,7 @@
   <label data-en="Last Donation Date" data-bn="শেষ রক্তদান তারিখ">Last Donation Date</label>
   <input type="date" name="lastDonation">
 
-  <label data-en="Times Donated Before" data-bn="পূর্বে কতবার রক্তদান করেছেন">Times Donated Before</label>
+  <label data-en="How many times donated before?" data-bn="পূর্বে কতবার রক্তদান করেছেন?">How many times donated before?</label>
   <input type="number" name="donationCount" min="0">
 
   <label data-en="Willing to Donate Now?" data-bn="এখন রক্ত দিতে ইচ্ছুক?">Willing to Donate Now?</label>
@@ -163,21 +197,34 @@
     <option data-en="No" data-bn="না">No</option>
   </select>
 
-  <div>
+  <div class="checkbox-group">
     <input type="checkbox" id="terms" name="terms" required>
-    <label for="terms" data-en="I agree to not fill false information. Be responsible, save lives." data-bn="আমি মিথ্যা তথ্য দেব না। দায়িত্বশীল হোন, জীবন বাঁচান।">
-      I agree to not fill false information. Be responsible, save lives.
+    <label for="terms" data-en="I agree to the Terms and Conditions: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible." data-bn="আমি শর্তাবলীতে সম্মত: অনুগ্রহ করে ভুল তথ্য প্রদান করবেন না। এটি একটি জীবন রক্ষার বিষয়। দয়া করে সৎ এবং দায়িত্বশীল হোন।">
+      I agree to the Terms and Conditions: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible.
     </label>
   </div>
 
-  <button type="submit">Submit</button>
+  <p style="margin-top:10px; font-style:italic; color:#444;" data-en="Your blood can be someone’s second chance at life. Be the reason someone smiles today." data-bn="আপনার রক্ত কারো জীবনের দ্বিতীয় সুযোগ হতে পারে। কারো মুখে হাসি ফোটাতে সাহায্য করুন।">
+    Your blood can be someone’s second chance at life. Be the reason someone smiles today.
+  </p>
+
+  <button type="submit" data-en="Submit" data-bn="জমা দিন">Submit</button>
   <div class="success" id="success-msg"></div>
 </form>
 
-<div id="loading-overlay">Submitting...</div>
+<!-- Loading Overlay -->
+<div id="loading-overlay">
+  <div class="spinner" style="
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #fff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;"></div>
+  <div style="margin-top: 10px;">Loading</div>
+</div>
 
 <script>
-  // Language Switch
   function setLang(lang) {
     document.querySelectorAll('[data-en]').forEach(el => {
       el.textContent = el.getAttribute(`data-${lang}`);
@@ -186,51 +233,39 @@
     document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
   }
 
-  const form = document.getElementById('donor-form');
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec'; // <-- Replace with your actual Google Script URL
+  const form = document.forms['donor-form'];
   const successMsg = document.getElementById('success-msg');
-  const overlay = document.getElementById('loading-overlay');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const loadingOverlay = document.getElementById('loading-overlay');
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', e => {
     e.preventDefault();
-    if (!form.terms.checked) return alert("You must agree to the terms!");
 
-    overlay.style.display = "flex";
-
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    data.userId = "ID-" + Date.now();
-
-    // Supabase Integration
-    const supabaseUrl = "https://bbvyjeljeyofswuijlyg.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
-    const supabaseTable = "donors";
-
-    try {
-      const supabaseRes = await fetch(`${supabaseUrl}/rest/v1/${supabaseTable}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (!supabaseRes.ok) throw new Error("Supabase Error");
-
-      // Google Sheet Integration
-      const googleScriptURL = 'https://script.google.com/macros/s/AKfycbyqsYyWZ2llBZL0ajTIXNviH3Ur4NZ1GExMcQI_s1V1E5Tb8VxpqvsaIzFg6B8tOBR4/exec';
-      await fetch(googleScriptURL, { method: 'POST', body: new FormData(form) });
-
-      successMsg.innerText = "✅ Thank you! Your info was submitted.";
-      form.reset();
-      setLang('en');
-    } catch (err) {
-      console.error(err);
-      successMsg.innerText = "❌ Error submitting form.";
-    } finally {
-      overlay.style.display = "none";
+    if (!form.terms.checked) {
+      alert("You must agree to the terms and conditions before submitting.");
+      return;
     }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+    loadingOverlay.style.display = "flex";
+
+    fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+      .then(response => {
+        successMsg.textContent = "✅ Thank you! Your information was submitted.";
+        form.reset();
+        setLang('en');
+      })
+      .catch(error => {
+        successMsg.textContent = "❌ There was an error submitting the form.";
+        console.error('Error!', error.message);
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
+        loadingOverlay.style.display = "none";
+      });
   });
 </script>
 
