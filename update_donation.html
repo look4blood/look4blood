@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Update Donation</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -65,129 +66,77 @@
   <div class="container">
     <h2>Update Donation</h2>
 
-    <label><input type="checkbox" id="useNumber" checked> Enter Mobile Number</label>
+    <label>Enter Mobile Number</label>
     <input type="text" id="mobileInput" placeholder="01XXXXXXXXX" />
     <button onclick="searchByPhone()">🔍 Auto-Fill by Number</button>
-    <button onclick="startQRScan()">📷 Scan ID QR Code</button>
     <div id="statusMsg" class="loading"></div>
 
     <label>User ID</label>
     <input type="text" id="userId" readonly />
+
     <label>Name</label>
     <input type="text" id="name" readonly />
+
     <label>Blood Group</label>
     <input type="text" id="bloodGroup" readonly />
+
     <label>Times Donated</label>
     <input type="text" id="timesDonated" readonly />
+
     <input type="hidden" id="lastDonation" />
 
     <label>New Donation Date</label>
     <input type="date" id="donationDate" required />
+
     <label>Donation Place</label>
     <input type="text" id="donationPlace" placeholder="Hospital / Location" required />
+
     <button onclick="submitUpdate()">✅ Submit Donation Update</button>
     <div id="submitMsg" class="loading"></div>
   </div>
 
-  <!-- Modal -->
-  <div id="thankYouModal" style="
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-  ">
-    <div style="
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    ">
-      <h3 style="color: #c62828;">🎉 Thank You!</h3>
-      <p id="thankYouMsg" style="margin: 10px 0 20px;"></p>
-      <button onclick="closeModal()" style="
-        padding: 10px 20px;
-        background: #c62828;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      ">Close</button>
-    </div>
-  </div>
-
   <script>
-    const sheetURL = "https://api.allorigins.win/raw?url=" +
-      encodeURIComponent("https://docs.google.com/spreadsheets/d/e/2PACX-1vS0F5WzWm4luslj5EW-B2fI6Mq_UrOt53608tTjbteMLb470U0FnBNWZ25b-m5iocNlel_YvVw-fdKL/pub?gid=0&single=true&output=tsv");
+    // Supabase Credentials
+    const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
+    const SUPABASE_KEY = "YOUR_SUPABASE_KEY_HERE"; // <-- Replace with full anon key
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    function normalizeNumber(num) {
-      return num.replace(/\D/g, '').slice(-10);
-    }
+    async function searchByPhone() {
+      const phone = document.getElementById("mobileInput").value.trim();
+      const statusMsg = document.getElementById("statusMsg");
+      statusMsg.textContent = "⏳ Searching donor info...";
+      statusMsg.className = "loading";
 
-    function searchByPhone() {
-      const mobileInput = document.getElementById('mobileInput').value.trim();
-      const mobile = normalizeNumber(mobileInput);
-      const statusMsg = document.getElementById('statusMsg');
+      const { data, error } = await supabase
+        .from("donors")
+        .select("*")
+        .eq("phone", phone)
+        .single();
 
-      if (!mobile) {
-        statusMsg.textContent = "❌ Please enter a valid mobile number.";
+      if (error || !data) {
+        statusMsg.textContent = "❌ No donor found with that number.";
         statusMsg.className = "error";
         return;
       }
 
-      statusMsg.textContent = "⏳ Searching donor info...";
+      document.getElementById("userId").value = data.user_id || "";
+      document.getElementById("name").value = data.name || "";
+      document.getElementById("bloodGroup").value = data.blood_group || "";
+      document.getElementById("timesDonated").value = data.times_donated || "0";
+      document.getElementById("lastDonation").value = data.last_donation || "";
+
+      statusMsg.textContent = "✅ Donor info loaded.";
       statusMsg.className = "loading";
-
-      fetch(sheetURL)
-        .then(res => res.text())
-        .then(text => {
-          const rows = text.trim().split("\n").map(r => r.split("\t"));
-          const headers = rows[0];
-          const phoneIndex = headers.findIndex(h => h.toLowerCase().includes("phone"));
-          const nameIndex = headers.findIndex(h => h.toLowerCase().includes("name"));
-          const groupIndex = headers.findIndex(h => h.toLowerCase().includes("blood"));
-          const userIdIndex = headers.findIndex(h => h.toLowerCase().includes("user id"));
-          const timesIndex = headers.findIndex(h => h.toLowerCase().includes("times"));
-          const dateIndex = headers.findIndex(h => h.toLowerCase().includes("last donation"));
-
-          const match = rows.find((row, i) => {
-            if (i === 0) return false;
-            const num = normalizeNumber(row[phoneIndex] || "");
-            return num === mobile;
-          });
-
-          if (match) {
-            document.getElementById('userId').value = match[userIdIndex] || "";
-            document.getElementById('name').value = match[nameIndex] || "";
-            document.getElementById('bloodGroup').value = match[groupIndex] || "";
-            document.getElementById('timesDonated').value = match[timesIndex] || "";
-            document.getElementById('lastDonation').value = match[dateIndex] || "";
-            statusMsg.textContent = "✅ Donor info loaded.";
-            statusMsg.className = "loading";
-          } else {
-            statusMsg.textContent = "❌ No donor found with that number.";
-            statusMsg.className = "error";
-          }
-        })
-        .catch(err => {
-          console.error("❌ Fetch error:", err);
-          statusMsg.textContent = "❌ Failed to load donor data.";
-          statusMsg.className = "error";
-        });
     }
 
-    function submitUpdate() {
-      const userId = document.getElementById('userId').value.trim();
-      const date = document.getElementById('donationDate').value;
-      const place = document.getElementById('donationPlace').value;
-      const lastDonation = document.getElementById('lastDonation').value;
-      const submitMsg = document.getElementById('submitMsg');
+    async function submitUpdate() {
+      const userId = document.getElementById("userId").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const date = document.getElementById("donationDate").value;
+      const place = document.getElementById("donationPlace").value;
+      const lastDonation = document.getElementById("lastDonation").value;
+      const times = parseInt(document.getElementById("timesDonated").value || "0");
+      const submitMsg = document.getElementById("submitMsg");
 
       if (!userId || !date || !place) {
         submitMsg.textContent = "❌ Fill all fields before submitting.";
@@ -195,63 +144,57 @@
         return;
       }
 
+      // Check 90-day rule
       if (lastDonation) {
-        try {
-          const [year, month, day] = lastDonation.split("-").map(Number);
-          const last = new Date(year, month - 1, day);
-          const next = new Date(date);
-          const daysBetween = Math.floor((next - last) / (1000 * 60 * 60 * 24));
-          if (daysBetween < 90) {
-            submitMsg.textContent = "❌ You must wait at least 90 days between donations.";
-            submitMsg.className = "error";
-            return;
-          }
-        } catch (e) {
-          console.warn("⚠️ Could not validate date format.");
+        const last = new Date(lastDonation);
+        const next = new Date(date);
+        const daysBetween = (next - last) / (1000 * 60 * 60 * 24);
+        if (daysBetween < 90) {
+          submitMsg.textContent = "❌ Must wait 90+ days between donations.";
+          submitMsg.className = "error";
+          return;
         }
       }
 
-      submitMsg.textContent = "⏳ Submitting update...";
+      submitMsg.textContent = "⏳ Updating...";
       submitMsg.className = "loading";
 
+      // 1️⃣ Update Google Sheet (existing)
       const scriptURL = "https://script.google.com/macros/s/AKfycbwgKdkTu5z5LPlbIp0YKwqYedFz9oBqJ55kP_HbaglxIybqPqZBQJEZxAeCc1BoFNQ/exec";
-
       const formData = new FormData();
       formData.append("userId", userId);
       formData.append("newDate", date);
       formData.append("place", place);
 
-      fetch(scriptURL, { method: 'POST', body: formData })
-        .then(res => res.text())
-        .then(response => {
-          submitMsg.textContent = response.includes("✅")
-            ? "✅ Donation updated successfully."
-            : "❌ Error: " + response;
-          submitMsg.className = "loading";
-
-          const name = document.getElementById('name').value || "Donor";
-          const times = parseInt(document.getElementById('timesDonated').value || "0") + 1;
-          showThankYouModal(name, times);
-        })
-        .catch(error => {
-          console.error(error);
-          submitMsg.textContent = "❌ Error updating donation.";
-          submitMsg.className = "error";
+      try {
+        await fetch(scriptURL, {
+          method: "POST",
+          body: formData
         });
-    }
 
-    function showThankYouModal(name, times) {
-      const msg = `Thank you, ${name || 'Donor'}!<br>You have now donated blood <strong>${times}</strong> times.<br><br>❤️ Your blood can save a life – be proud!`;
-      document.getElementById('thankYouMsg').innerHTML = msg;
-      document.getElementById('thankYouModal').style.display = 'flex';
-    }
+        // 2️⃣ Also update Supabase
+        const { error: updateError } = await supabase
+          .from("donors")
+          .update({
+            last_donation: date,
+            times_donated: times + 1
+          })
+          .eq("user_id", userId);
 
-    function closeModal() {
-      document.getElementById('thankYouModal').style.display = 'none';
-    }
+        if (updateError) {
+          console.error("Supabase error:", updateError);
+          submitMsg.textContent = "⚠️ Updated in Sheet but failed to update Supabase.";
+          submitMsg.className = "error";
+        } else {
+          submitMsg.textContent = `✅ Donation updated in both systems.`;
+          submitMsg.className = "loading";
+        }
 
-    function startQRScan() {
-      alert("📷 QR Code scanner integration coming soon.");
+      } catch (err) {
+        console.error(err);
+        submitMsg.textContent = "❌ Failed to submit update.";
+        submitMsg.className = "error";
+      }
     }
   </script>
 </body>
