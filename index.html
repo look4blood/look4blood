@@ -3,256 +3,181 @@
 <head>
   <meta charset="UTF-8" />
   <title>Find a Blood Donor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #fff4f4;
-      padding: 20px;
-      margin: 0;
+      padding: 30px;
     }
-    h1 {
-      text-align: center;
-      color: #c62828;
-    }
-    form {
+    .container {
+      max-width: 700px;
+      margin: auto;
       background: white;
-      max-width: 600px;
-      margin: 0 auto 30px;
-      padding: 20px;
+      padding: 25px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #c62828;
+      text-align: center;
+      margin-bottom: 20px;
     }
     label {
       font-weight: bold;
-      display: block;
-      margin-top: 10px;
     }
-    select {
+    select, button {
       width: 100%;
       padding: 10px;
-      border-radius: 6px;
+      margin-top: 8px;
+      margin-bottom: 15px;
+      border-radius: 5px;
       border: 1px solid #ccc;
-      margin-bottom: 10px;
     }
     button {
       background: #c62828;
       color: white;
-      padding: 12px;
-      border: none;
-      width: 100%;
-      border-radius: 6px;
-      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
-      margin-top: 10px;
     }
     button:hover {
-      background: #b71c1c;
-    }
-    .result-summary {
-      margin: 20px auto 10px;
-      max-width: 900px;
-      font-weight: bold;
+      background: #a91d1d;
     }
     table {
-      border-collapse: collapse;
       width: 100%;
-      max-width: 900px;
-      margin: 10px auto;
-      background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-collapse: collapse;
+      margin-top: 20px;
     }
     th, td {
-      padding: 10px;
       border: 1px solid #ddd;
+      padding: 10px;
       text-align: left;
     }
     th {
       background: #c62828;
       color: white;
     }
-    .no-results {
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+    .info-text {
       text-align: center;
-      color: red;
-      margin-top: 20px;
-    }
-    .register-btn {
-      display: block;
-      text-align: center;
-      margin-top: 20px;
-    }
-    .register-btn a {
-      background: #388e3c;
-      color: white;
-      padding: 12px 24px;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-    .register-btn a:hover {
-      background: #2e7d32;
+      color: #444;
+      font-style: italic;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h2>🔍 Find a Blood Donor</h2>
 
-<h1>Find a Blood Donor</h1>
+    <label for="bloodGroup">Blood Group</label>
+    <select id="bloodGroup">
+      <option value="">All</option>
+      <option>A+</option><option>A-</option>
+      <option>B+</option><option>B-</option>
+      <option>AB+</option><option>AB-</option>
+      <option>O+</option><option>O-</option>
+    </select>
 
-<form id="searchForm">
-  <label>Blood Group</label>
-  <select id="bloodGroup">
-    <option value="All">All</option>
-    <option>A+</option><option>A-</option>
-    <option>B+</option><option>B-</option>
-    <option>AB+</option><option>AB-</option>
-    <option>O+</option><option>O-</option>
-  </select>
+    <label for="city">City</label>
+    <select id="city">
+      <option value="All">All</option>
+      <option>Agrabad</option><option>Boalkhali</option><option>Bakalia</option>
+      <option>Bayazid</option><option>Chandgaon</option><option>Chawkbazar</option>
+      <option>Halishahar</option><option>Khulshi</option><option>Kotwali</option>
+      <option>Patiya</option><option>Panchlaish</option><option>Patenga</option>
+      <option>Rangunia</option><option>Raozan</option>
+    </select>
 
-  <label>District</label>
-  <select id="district">
-    <option value="Chottogram">Chottogram</option>
-  </select>
+    <label for="donorType">Donor Type</label>
+    <select id="donorType">
+      <option value="all">All</option>
+      <option value="eligible">Eligible (90+ days)</option>
+    </select>
 
-  <label>City</label>
-  <select id="city">
-    <option value="All">All</option>
-    <option>Agrabad</option>
-    <option>Boalkhali</option>
-    <option>Bakalia</option>
-    <option>Bayazid</option>
-    <option>Chandgaon</option>
-    <option>Chawkbazar</option>
-    <option>Halishahar</option>
-    <option>Khulshi</option>
-    <option>Kotwali</option>
-    <option>Patiya</option>
-    <option>Panchlaish</option>
-    <option>Patenga</option>
-    <option>Rangunia</option>
-    <option>Raozan</option>
-  </select>
+    <button onclick="searchDonors()">🔍 Search</button>
 
-  <label>Donor Type</label>
-  <select id="donorType">
-    <option value="All">All</option>
-    <option value="Eligible">Eligible</option>
-  </select>
+    <p class="info-text">Your blood can save a life – search & connect.</p>
 
-  <button type="submit">Search</button>
-</form>
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Blood Group</th>
+          <th>City</th>
+          <th>Phone</th>
+          <th>Last Donation</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td colspan="5" style="text-align:center;">Please search to see donors.</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-<div class="result-summary" id="resultCount"></div>
-<div id="results"></div>
+  <script>
+    const SUPABASE_URL = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-<div style="margin-top: 30px; text-align: center;">
-  <a href="registerform.html" style="
-    display: inline-block;
-    padding: 12px 20px;
-    background-color: #c62828;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 16px;
-    margin-right: 10px;
-  ">➕ Register as a Donor</a>
+    async function searchDonors() {
+      const bloodGroup = document.getElementById("bloodGroup").value;
+      const city = document.getElementById("city").value;
+      const donorType = document.getElementById("donorType").value;
+      const tableBody = document.getElementById("tableBody");
 
-  <a href="dashboard.html" style="
-    display: inline-block;
-    padding: 12px 20px;
-    background-color: #2e7d32;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 16px;
-  ">📊 Go to Dashboard</a>
-</div>
+      tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">⏳ Searching...</td></tr>`;
 
-  
+      let { data, error } = await supabase
+        .from('donors')
+        .select('*');
 
-<script>
-  const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0F5WzWm4luslj5EW-B2fI6Mq_UrOt53608tTjbteMLb470U0FnBNWZ25b-m5iocNlel_YvVw-fdKL/pub?gid=0&single=true&output=tsv";
+      if (error) {
+        console.error(error);
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">❌ Failed to fetch data.</td></tr>`;
+        return;
+      }
 
-  function daysSince(dateStr) {
-    const date = new Date(dateStr);
-    if (isNaN(date)) return Infinity;
-    const today = new Date();
-    const diffTime = today - date;
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  }
+      // Filter by city & blood group
+      if (bloodGroup) {
+        data = data.filter(d => d.bloodGroup === bloodGroup);
+      }
+      if (city && city !== "All") {
+        data = data.filter(d => d.city === city);
+      }
 
-  document.getElementById("searchForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const bloodGroup = document.getElementById("bloodGroup").value;
-    const district = document.getElementById("district").value;
-    const city = document.getElementById("city").value;
-    const donorType = document.getElementById("donorType").value;
-
-    fetch(SHEET_URL)
-      .then(res => res.text())
-      .then(data => {
-        const rows = data.trim().split("\n").map(row => row.split("\t"));
-        const headers = rows[0];
-        const donors = rows.slice(1);
-        const filtered = donors.filter(d => {
-          const donorBlood = d[3];
-          const donorDistrict = d[6];
-          const donorCity = d[7];
-          const lastDonation = d[9]; // column J
-          const days = daysSince(lastDonation);
-
-          const matchesBlood = bloodGroup === "All" || donorBlood === bloodGroup;
-          const matchesDistrict = donorDistrict === district;
-          const matchesCity = city === "All" || donorCity === city;
-          const isEligible = donorType === "All" || (donorType === "Eligible" && days >= 90);
-
-          return matchesBlood && matchesDistrict && matchesCity && isEligible;
+      // Filter by eligibility
+      if (donorType === "eligible") {
+        const today = new Date();
+        data = data.filter(d => {
+          if (!d.lastDonation) return false;
+          const last = new Date(d.lastDonation);
+          const diffDays = (today - last) / (1000 * 60 * 60 * 24);
+          return diffDays >= 90;
         });
+      }
 
-        const resultsDiv = document.getElementById("results");
-        const resultCount = document.getElementById("resultCount");
+      if (data.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">❌ No donors found.</td></tr>`;
+        return;
+      }
 
-        if (filtered.length === 0) {
-          resultCount.textContent = "";
-          resultsDiv.innerHTML = "<div class='no-results'>❌ No matching donors found.</div>";
-          return;
-        }
-
-        resultCount.textContent = `✅ ${filtered.length} matching donor(s) found:`;
-
-        let table = "<table><tr>";
-        const headersToShow = ["Name", "Age", "Gender", "Blood Group", "Phone", "City", "Last Donation", "Times Donated"];
-        const headerIndexes = {
-          "Name": 0,
-          "Age": 1,
-          "Gender": 2,
-          "Blood Group": 3,
-          "Phone": 4,
-          "City": 7,
-          "Last Donation": 9,
-          "Times Donated": 10
-        };
-
-        headersToShow.forEach(h => table += `<th>${h}</th>`);
-        table += "</tr>";
-
-        filtered.forEach(d => {
-          table += "<tr>";
-          headersToShow.forEach(h => {
-            const val = d[headerIndexes[h]] || "-";
-            table += `<td>${val}</td>`;
-          });
-          table += "</tr>";
-        });
-
-        table += "</table>";
-        resultsDiv.innerHTML = table;
-      })
-      .catch(err => {
-        document.getElementById("results").innerHTML = "<div class='no-results'>❌ Error fetching data.</div>";
-        console.error(err);
+      // Show results
+      tableBody.innerHTML = "";
+      data.forEach(donor => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${donor.name}</td>
+          <td>${donor.bloodGroup}</td>
+          <td>${donor.city}</td>
+          <td>${donor.phone}</td>
+          <td>${donor.lastDonation || "N/A"}</td>
+        `;
+        tableBody.appendChild(row);
       });
-  });
-</script>
-
+    }
+  </script>
 </body>
 </html>
-
