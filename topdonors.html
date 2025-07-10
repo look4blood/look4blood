@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Top Donors</title>
+  <title>Donor Rankings & Filters</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
@@ -26,18 +26,8 @@
       border-radius: 10px;
       margin-bottom: 20px;
     }
-    #total-donors {
-      position: absolute;
-      top: 20px;
-      left: 30px;
-      background: rgba(211, 47, 47, 0.8);
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 1.2em;
-    }
     h1 { margin: 0; font-size: 2.5em; letter-spacing: 2px; }
+
     #filters {
       display: flex;
       flex-wrap: wrap;
@@ -82,8 +72,14 @@
       text-align: center;
       font-size: 2em;
       color: #d32f2f;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
       font-weight: 700;
+    }
+    #total-donors {
+      text-align: right;
+      font-weight: bold;
+      color: #d32f2f;
+      margin-bottom: 10px;
     }
     #donors-container {
       display: grid;
@@ -163,10 +159,10 @@
 <body>
 
 <header>
-  <h1>Heros Of Humanity</h1>
-  <div id="total-donors">Total Donors: 0</div>
+  <h1>Donor Rankings & Filters</h1>
 </header>
 
+<!-- Filters -->
 <div id="filters">
   <button data-filter="all" class="active">All</button>
   <button data-filter="top3">Top 3</button>
@@ -187,11 +183,14 @@
   </select>
 </div>
 
+<!-- Donors list -->
 <div id="donors-section">
   <div id="donors-header">Donor List</div>
+  <div id="total-donors">Total Donors: 0</div>
   <div id="donors-container"></div>
 </div>
 
+<!-- Badge Ranks -->
 <h3 style="text-align:center; margin-top:40px; color:#d32f2f;">Badge Ranks & Symbols</h3>
 <div id="rank-badges">
   <div class="rank-badge"><div class="rank-icon">🥉</div><div>Bronze (1–3)</div></div>
@@ -201,11 +200,11 @@
   <div class="rank-badge"><div class="rank-icon">💎</div><div>Diamond (31+)</div></div>
 </div>
 
-<!-- Supabase SDK -->
+<!-- Supabase integration -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
   const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // your real key
   const { createClient } = supabase;
   const supabaseClient = createClient(supabaseUrl, supabaseKey);
   const tableName = 'donors';
@@ -226,11 +225,11 @@
     renderDonors(donors);
   }
 
-  function getBadge(donations = 0) {
-    if (donations <= 3) return { label: 'Bronze', class: 'badge-bronze', symbol: '🥉' };
-    if (donations <= 15) return { label: 'Silver', class: 'badge-silver', symbol: '🥈' };
-    if (donations <= 20) return { label: 'Gold', class: 'badge-golden', symbol: '🥇' };
-    if (donations <= 30) return { label: 'Platinum', class: 'badge-platinum', symbol: '💠' };
+  function getBadge(d = 0) {
+    if (d <= 3) return { label: 'Bronze', class: 'badge-bronze', symbol: '🥉' };
+    if (d <= 15) return { label: 'Silver', class: 'badge-silver', symbol: '🥈' };
+    if (d <= 20) return { label: 'Gold', class: 'badge-golden', symbol: '🥇' };
+    if (d <= 30) return { label: 'Platinum', class: 'badge-platinum', symbol: '💠' };
     return { label: 'Diamond', class: 'badge-diamond', symbol: '💎' };
   }
 
@@ -266,10 +265,8 @@
       if (d.blood_group) bloodSet.add(d.blood_group);
       if (d.city) citySet.add(d.city);
     });
-    const bloodGroupFilter = document.getElementById('bloodGroupFilter');
-    const cityFilter = document.getElementById('cityFilter');
-    bloodGroupFilter.innerHTML = '<option value="all">All Blood Groups</option>';
-    cityFilter.innerHTML = '<option value="all">All Cities</option>';
+    document.getElementById('bloodGroupFilter').innerHTML = '<option value="all">All Blood Groups</option>';
+    document.getElementById('cityFilter').innerHTML = '<option value="all">All Cities</option>';
     [...bloodSet].sort().forEach(bg => bloodGroupFilter.innerHTML += `<option value="${bg}">${bg}</option>`);
     [...citySet].sort().forEach(c => cityFilter.innerHTML += `<option value="${c}">${c}</option>`);
   }
