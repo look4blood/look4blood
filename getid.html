@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blood Donor ID Card Generator</title>
+
+<!-- External Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.2.4.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f2f2f2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 2em;
+    color: #C62828;
+  }
+  .form-container {
+    width: 100%;
+    max-width: 600px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+  }
+  input[type="text"], input[type="tel"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus {
+    border-color: #C62828;
+  }
+  button {
+    padding: 14px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    background-color: #C62828;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  button:hover {
+    background-color: #8B0000;
+    transform: translateY(-1px);
+  }
+
+  /* Photo upload & preview */
+  .photo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #photoPreviewContainer {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid #C62828;
+    background: #fff;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  #photoPreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Generate button */
+  .generate-btn {
+    margin-top: 20px;
+  }
+
+  /* ID Card styles */
+#idCardContainer {
+  display: none;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+  overflow: auto;
+}
+#idCard {
+  width: 350px;
+  aspect-ratio: 3.375 / 2.125;
+  border: 4px solid #C62828;
+  border-radius: 12px;
+  background-color: #FFCDD2;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  font-family: 'Arial', sans-serif;
+  position: relative;
+  color: #333;
+}
+#idCard h2 {
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: 1.4em;
+  color: #C62828;
+  font-weight: 700;
+}
+.info-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.info-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.info-label {
+  font-weight: 600;
+  font-size: 0.95em;
+  color: #C62828;
+}
+.info-value {
+  font-size: 1em;
+  color: #333;
+}
+.photo-container {
+  flex: 0 0 100px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.photo-frame {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #C62828;
+  background: #fff;
+}
+#profilePhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius:50%;
+}
+.blood-badge {
+  background: #C62828;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9em;
+  align-self: flex-start;
+  margin-top: 8px;
+}
+#qrCode {
+  width: 80px;
+  height: 80px;
+  margin-top: 10px;
+}
+.bottom-info {
+  margin-top: auto;
+  font-size: 0.9em;
+  color: #C62828;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+}
+#downloadImage, #downloadPDF {
+  margin-top: 15px;
+  padding: 12px 20px;
+}
+#downloadImage:hover, #downloadPDF:hover {
+  background-color: #8B0000;
+}
+#cropperModal {
+  display: none;
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding:20px;
+}
+#cropperContent {
+  background:#fff; padding:20px; border-radius:8px; max-width:90%; max-height:90%; display:flex; flex-direction:column; align-items:center;
+}
+#cropperImage {
+  max-width:100%; max-height:70vh;
+}
+#loadingOverlay {
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9998;
+  display: none;
+  flex-direction: column;
+  color: #fff;
+  font-size: 1.2em;
+}
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #C62828;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+</head>
+<body>
+
+<h1>🎯 Blood Donor ID Card Generator</h1>
+
+<!-- Fetch Info -->
+<div class="form-container">
+  <div class="input-group">
+    <label for="phoneInput">Mobile Number</label>
+    <input type="tel" id="phoneInput" placeholder="Enter your registered mobile" />
+  </div>
+  <button onclick="fetchData()">Fetch Info</button>
+</div>
+
+<!-- Photo Upload -->
+<div class="form-container">
+  <div class="photo-section">
+    <label for="photoUpload">Upload Your Photo</label>
+    <input type="file" accept="image/*" id="photoUpload" onchange="prepareCrop()" />
+    <div id="photoPreviewContainer">
+      <img id="photoPreview" src="" alt="Photo Preview" />
+    </div>
+  </div>
+</div>
+
+<!-- Generate ID Button -->
+<div class="form-container">
+  <button class="generate-btn" onclick="generateID()">Generate ID Card</button>
+</div>
+
+<!-- ID Card Display -->
+<div id="idCardContainer">
+  <div id="idCard">
+    <h2>Blood Donor</h2>
+    <div class="info-section">
+      <div class="info-left">
+        <div><span class="info-label">Name:</span> <span class="info-value" id="nameDisplay"></span></div>
+        <div><span class="info-label">Phone:</span> <span class="info-value" id="phoneDisplay"></span></div>
+        <div><span class="info-label">Blood Group:</span> <span class="blood-badge" id="bloodGroupDisplay"></span></div>
+        <div><span class="info-label">City:</span> <span class="info-value" id="cityDisplay"></span></div>
+        <div><span class="info-label">User ID:</span> <span class="info-value" id="userIDDisplay"></span></div>
+      </div>
+      <div class="photo-container">
+        <div class="photo-frame" id="photoFrame">
+          <img src="" id="profilePhoto" />
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+      <canvas id="qrCode" style="width:80px; height:80px;"></canvas>
+      <div class="bottom-info">
+        <div>Member of Blood Donor Network</div>
+        <div id="bottomUserID"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Download Buttons -->
+<div style="margin-top:15px;">
+  <button id="downloadImage" onclick="downloadIDImage()">Download Image</button>
+  <button id="downloadPDF" onclick="downloadIDPDF()">Download PDF</button>
+</div>
+
+<!-- Cropper Modal -->
+<div id="cropperModal">
+  <div id="cropperContent">
+    <img id="cropperImage" src="" />
+    <div style="margin-top:10px; display:flex; gap:10px;">
+      <button onclick="cropPhoto()">Crop & Save</button>
+      <button onclick="closeCropper()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div>Loading...</div>
+</div>
+
+<script>
+  // Initialize Supabase (replace with your actual project details)
+  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co'; // <-- your project URL
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // <-- your public anon key
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  let currentUser = null;
+  let uploadedPhotoDataUrl = '';
+
+  // Show/hide loading overlay
+  function showLoading(show) {
+    document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+  }
+
+  // Fetch data from Supabase
+  async function fetchData() {
+    const phone = document.getElementById('phoneInput').value.trim();
+    if (!phone) {
+      alert("Please enter your mobile number");
+      return;
+    }
+
+    showLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('donors') // your table
+        .select('*')
+        .eq('phone', phone)
+        .single();
+
+      if (error) {
+        console.error(error);
+        alert("Error fetching data");
+        currentUser = null;
+        clearDisplay();
+      } else if (data) {
+        currentUser = data;
+        fillInfo();
+      } else {
+        alert("Donor not found");
+        currentUser = null;
+        clearDisplay();
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error fetching data");
+    }
+    showLoading(false);
+  }
+
+  function clearDisplay() {
+    document.getElementById('nameDisplay').innerText = '';
+    document.getElementById('phoneDisplay').innerText = '';
+    document.getElementById('bloodGroupDisplay').innerText = '';
+    document.getElementById('cityDisplay').innerText = '';
+    document.getElementById('userIDDisplay').innerText = '';
+    document.getElementById('bottomUserID').innerText = '';
+  }
+
+  function fillInfo() {
+    document.getElementById('nameDisplay').innerText = currentUser.name || '';
+    document.getElementById('phoneDisplay').innerText = currentUser.phone || '';
+    document.getElementById('bloodGroupDisplay').innerText = currentUser.blood_group || '';
+    document.getElementById('cityDisplay').innerText = currentUser.city || '';
+    document.getElementById('userIDDisplay').innerText = currentUser.id || '';
+    document.getElementById('bottomUserID').innerText = "#" + (currentUser.id || '');
+  }
+
+  // Prepare image crop
+  let cropperInstance = null;
+  let uploadedImageBlobUrl = '';
+
+  function prepareCrop() {
+    const file = document.getElementById('photoUpload').files[0];
+    if (file) {
+      uploadedImageBlobUrl = URL.createObjectURL(file);
+      document.getElementById('cropperImage').src = uploadedImageBlobUrl;
+      document.getElementById('cropperModal').style.display = 'flex';
+
+      if (cropperInstance) cropperInstance.destroy();
+      cropperInstance = new Cropper(document.getElementById('cropperImage'), {
+        aspectRatio: 1,
+        viewMode: 1
+      });
+    }
+  }
+
+  function cropPhoto() {
+    if (cropperInstance) {
+      const canvas = cropperInstance.getCroppedCanvas({ width: 200, height: 200 });
+      uploadedPhotoDataUrl = canvas.toDataURL('image/png');
+      document.getElementById('profilePhoto').src = uploadedPhotoDataUrl;
+      closeCropper();
+    }
+  }
+
+  function closeCropper() {
+    if (cropperInstance) cropperInstance.destroy();
+    cropperInstance = null;
+    document.getElementById('cropperModal').style.display = 'none';
+    URL.revokeObjectURL(uploadedImageBlobUrl);
+  }
+
+  // Generate ID
+  async function generateID() {
+    if (!currentUser) {
+      alert("Please fetch your info first");
+      return;
+    }
+    fillInfo();
+
+    // Show ID card
+    document.getElementById('idCardContainer').style.display = 'flex';
+
+    // Set profile photo
+    const photoSrc = uploadedPhotoDataUrl || 'https://via.placeholder.com/100?text=Photo';
+    document.getElementById('profilePhoto').src = photoSrc;
+
+    showLoading(true);
+    // Generate QR code
+    const qrCanvas = document.getElementById('qrCode');
+    await QRCode.toCanvas(qrCanvas, currentUser.id, { width: 80, margin: 1 });
+    showLoading(false);
+  }
+
+  // Download as PNG
+  async function downloadIDImage() {
+    showLoading(true);
+    const node = document.getElementById('idCard');
+    const canvas = await html2canvas(node);
+    const dataUrl = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'BloodDonor_ID.png';
+    a.click();
+    showLoading(false);
+  }
+
+  // Download as PDF
+  async function downloadIDPDF() {
+    showLoading(true);
+    const node = document.getElementById('idCard');
+    const canvas = await html2canvas(node);
+    const dataUrl = canvas.toDataURL('image/png');
+    const pdf = new jspdf.jsPDF({
+      unit: 'pt',
+      format: [canvas.width, canvas.height]
+    });
+    pdf.addImage(dataUrl, 'PNG', 0, 0, canvas.width, canvas.height);
+    pdf.save('BloodDonor_ID.pdf');
+    showLoading(false);
+  }
+</script>
+
+</body>
+</html>
