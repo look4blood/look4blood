@@ -301,29 +301,48 @@
 <!-- Include Supabase JS library -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
 <script>
-  // Initialize Supabase (Replace with your own URL and Key)
-  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co'; // <-- Replace
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // <-- Replace
+  // Initialize Supabase
+  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co'; // <-- Replace with your actual URL
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // <-- Replace with your actual anonymous key
   const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  // Replace with your actual table name
+  const tableName = 'donors'; // <-- Replace with your table name
 
   let donors = [];
 
   // Fetch donors from Supabase
 async function fetchDonors() {
-  const { data, error } = await supabase
-    .from('donors')
-    .select('*');
-  if (error) {
-    console.error('Error fetching donors:', error);
-    return;
+  try {
+    const { data, error } = await supabase
+      .from(tableName)
+      .select('*');
+
+    if (error) {
+      console.error('Error fetching donors:', error);
+      alert('Error fetching donors: ' + error.message);
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      console.log('No data found.');
+    } else {
+      console.log('Fetched data:', data);
+    }
+
+    donors = data;
+    processDonors();
+
+  } catch (err) {
+    console.error('Error fetching data:', err);
   }
-  donors = data;
-  processDonors();
 }
 
 // Process and display donors
 function processDonors() {
-  donors.sort((a, b) => b.donations - a.donations);
+  // Sort donors by donations descending
+  donors.sort((a, b) => (b.donations || 0) - (a.donations || 0));
+  // Assign ranks
   donors.forEach((d, i) => d.rank = i + 1);
   populateFilters();
   renderDonors(donors);
@@ -358,7 +377,7 @@ function populateFilters() {
   });
 }
 
-// Create donor card HTML
+// Create HTML for each donor
 function createDonorHTML(d, index) {
   const badge = getBadge(d.donations);
   const highlight = index < 3 ? 'style="background:#ffe5b4;"' : '';
@@ -384,6 +403,7 @@ function createDonorHTML(d, index) {
 
 // Determine badge based on donations
 function getBadge(donations) {
+  donations = donations || 0;
   if (donations <= 3) {
     return { label: "Bronze", class: "badge-bronze", img: "https://img.icons8.com/ios-filled/50/8b4513/bronze-medal.png" };
   } else if (donations >= 4 && donations <= 15) {
@@ -397,7 +417,7 @@ function getBadge(donations) {
   }
 }
 
-// Render donors
+// Render donors list
 function renderDonors(data) {
   const container = document.getElementById('donors-container');
   const totalCountEl = document.getElementById('total-donors');
@@ -415,11 +435,11 @@ function updateTotalDonors() {
   document.getElementById('total-donors').textContent = `Total Donors: ${donors.length}`;
 }
 
-// Apply filters
+// Filter function
 function applyFilters() {
   let filtered = [...donors];
-  const button = document.querySelector('#filters button.active') || null;
-  const filterType = button ? button.dataset.filter : '';
+  const activeButton = document.querySelector('#filters button.active') || null;
+  const filterType = activeButton ? activeButton.dataset.filter : '';
 
   if (filterType === 'all' || !filterType) {
     filtered = [...donors];
@@ -432,7 +452,7 @@ function applyFilters() {
     });
   }
 
-  // Dropdown filters
+  // Apply dropdown filters
   const bloodVal = document.getElementById('bloodGroupFilter').value;
   const cityVal = document.getElementById('cityFilter').value;
   const badgeVal = document.getElementById('badgeFilter').value;
@@ -450,13 +470,13 @@ function applyFilters() {
     });
   }
 
-  // sort again
-  filtered.sort((a, b) => b.donations - a.donations);
+  // Sort again
+  filtered.sort((a, b) => (b.donations || 0) - (a.donations || 0));
   filtered.forEach((d, i) => d.rank = i + 1);
   renderDonors(filtered);
 }
 
-// Event listeners
+// Event listeners for filter buttons and dropdowns
 document.querySelectorAll('#filters button').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('#filters button').forEach(b => b.classList.remove('active'));
@@ -468,7 +488,7 @@ document.getElementById('bloodGroupFilter').addEventListener('change', applyFilt
 document.getElementById('cityFilter').addEventListener('change', applyFilters);
 document.getElementById('badgeFilter').addEventListener('change', applyFilters);
 
-// Initialize
+// Fetch donors on page load
 fetchDonors();
 
 </script>
