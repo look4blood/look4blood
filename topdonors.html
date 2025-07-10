@@ -6,11 +6,10 @@
 <title>Donor Rankings & Filters with Supabase</title>
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-<!-- Font Awesome -->
+<!-- Font Awesome (optional for icons) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
 <style>
-  /* Basic Styling */
   * {
     box-sizing: border-box;
   }
@@ -21,28 +20,19 @@
     margin: 0;
     padding: 20px;
     color: #333;
-    position: relative;
   }
 
-  /* Header */
   header {
     background-color: #d32f2f;
     color: #fff;
     padding: 20px;
     text-align: center;
+    position: relative;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     border-radius: 10px;
     margin-bottom: 20px;
-    position: relative;
   }
 
-  header h1 {
-    margin: 0;
-    font-size: 2.5em;
-    letter-spacing: 2px;
-  }
-
-  /* Donors Count - Top Left */
   #total-donors {
     position: absolute;
     top: 20px;
@@ -53,17 +43,20 @@
     border-radius: 8px;
     font-weight: 600;
     font-size: 1.2em;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   }
 
-  /* Filters styling */
+  h1 {
+    margin: 0;
+    font-size: 2.5em;
+    letter-spacing: 2px;
+  }
+
   #filters {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
     margin-bottom: 30px;
-    flex-wrap: wrap;
   }
 
   button {
@@ -76,6 +69,7 @@
     font-weight: 600;
     transition: all 0.3s ease;
   }
+
   button:hover {
     background-color: #b71c1c;
     transform: translateY(-2px);
@@ -88,157 +82,159 @@
     font-weight: 600;
     cursor: pointer;
     background-color: #fff;
-    transition: all 0.3s ease;
-  }
-  select:hover {
-    background-color: #f0f0f0;
   }
 
-  /* Donors section styling */
-#donors-section {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  position: relative;
-}
+  #donors-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-#donors-header {
-  text-align: center;
-  font-size: 2em;
-  color: #d32f2f;
-  margin-bottom: 10px;
-  font-weight: 700;
-}
+  #donors-header {
+    text-align: center;
+    font-size: 2em;
+    color: #d32f2f;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
 
-/* Donors Container */
-#donors-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.donor-card {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border-radius: 15px;
-  padding: 15px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-.donor-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.2);
-}
-
-.rank {
-  font-size: 1.8em;
-  font-weight: bold;
-  width: 50px;
-  text-align: center;
-  margin-right: 15px;
-}
-.rank-top {
-  color: #d32f2f;
-  text-shadow: 1px 1px 2px #000;
-}
-
-.info {
-  flex: 1;
-}
-.name {
-  font-size: 1.4em;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-.details {
-  margin-top: 8px;
-}
-.detail {
-  margin: 4px 0;
-  font-size: 0.95em;
-}
-
-/* Badge styles */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 20px;
-  font-size: 1.1em;
-  font-weight: 600;
-  margin-top: 10px;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-.badge img {
-  width: 50px;
-  height: 50px;
-  margin-right: 10px;
-  transition: transform 0.3s;
-}
-.badge:hover img {
-  transform: scale(1.2);
-}
-.badge-silver { background-color: #C0C0C0; }
-.badge-golden { background-color: #FFD700; color: #000; }
-.badge-diamond { background-color: #800080; color: #fff; }
-.badge-bronze { background-color: #cd7f32; color: #fff; }
-.badge-platinum { background-color: #e5e4e2; color: #000; }
-
-.badge:hover {
-  transform: scale(1.05) rotate(2deg);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-}
-
-/* Rank visuals styling */
-#rank-badges {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
-}
-.rank-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  border-radius: 15px;
-  background: #fff;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-.rank-badge:hover {
-  transform: scale(1.1);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.2);
-}
-.rank-badge img {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 8px;
-}
-
-/* Responsive */
-@media(max-width: 768px){
   #donors-container {
-    grid-template-columns: 1fr;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
   }
-}
+
+  .donor-card {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .donor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+  }
+
+  .rank {
+    font-size: 1.8em;
+    font-weight: bold;
+    width: 50px;
+    text-align: center;
+    margin-right: 15px;
+  }
+
+  .rank-top {
+    color: #d32f2f;
+    text-shadow: 1px 1px 2px #000;
+  }
+
+  .info {
+    flex: 1;
+  }
+
+  .name {
+    font-size: 1.4em;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .details {
+    margin-top: 8px;
+  }
+
+  .detail {
+    margin: 4px 0;
+    font-size: 0.95em;
+  }
+
+  /* Badge styles with symbols instead of images */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-top: 10px;
+    cursor: default;
+    transition: all 0.4s ease;
+  }
+
+  /* Badge labels with symbols */
+  .badge-bronze { background-color: #cd7f32; color: #fff; }
+  .badge-silver { background-color: #C0C0C0; color: #000; }
+  .badge-golden { background-color: #ffd700; color: #000; }
+  .badge-platinum { background-color: #e5e4e2; color: #000; }
+  .badge-diamond { background-color: #800080; color: #fff; }
+
+  /* Symbols for badges */
+  .badge-symbol {
+    font-size: 1.2em;
+    margin-right: 8px;
+  }
+
+  /* Badge text */
+  .badge-label {
+    font-weight: 700;
+  }
+
+  /* Badge hover effect (optional) */
+  .badge:hover {
+    transform: scale(1.05);
+  }
+
+  /* Rank symbols */
+  #rank-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .rank-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .rank-badge:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+  }
+
+  .rank-icon {
+    font-size: 2em;
+    margin-bottom: 8px;
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 768px){
+    #donors-container {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 </head>
 <body>
 
 <header>
   <h1>Donor Rankings & Filters</h1>
-  <!-- Total donors count on top left -->
   <div id="total-donors">Total Donors: 0</div>
 </header>
 
@@ -273,41 +269,40 @@
   <div id="donors-container"></div>
 </div>
 
-<!-- Badge Rank visuals -->
-<h3 style="text-align:center; margin-top:40px; color:#d32f2f;">Badge Ranks & Images</h3>
+<!-- Badge Ranks & Symbols -->
+<h3 style="text-align:center; margin-top:40px; color:#d32f2f;">Badge Ranks & Symbols</h3>
 <div id="rank-badges">
   <div class="rank-badge" data-rank="bronze">
-    <img src="https://img.icons8.com/ios-filled/60/8b4513/bronze-medal.png" alt="Bronze Badge" />
+    <div class="rank-icon">🥉</div>
     <div>Bronze (1-3)</div>
   </div>
   <div class="rank-badge" data-rank="silver">
-    <img src="https://img.icons8.com/ios-filled/60/999999/silver-medal.png" alt="Silver Badge" />
+    <div class="rank-icon">🥈</div>
     <div>Silver (4-15)</div>
   </div>
   <div class="rank-badge" data-rank="gold">
-    <img src="https://img.icons8.com/ios-filled/60/ffd700/gold-medal.png" alt="Gold Badge" />
+    <div class="rank-icon">🥇</div>
     <div>Gold (16-20)</div>
   </div>
   <div class="rank-badge" data-rank="platinum">
-    <img src="https://img.icons8.com/ios-filled/60/e5e4e2/platinum-medal.png" alt="Platinum Badge" />
+    <div class="rank-icon">💠</div>
     <div>Platinum (21-30)</div>
   </div>
   <div class="rank-badge" data-rank="diamond">
-    <img src="https://img.icons8.com/ios-filled/60/800080/diamond.png" alt="Diamond Badge" />
+    <div class="rank-icon">💎</div>
     <div>Diamond (31+)</div>
   </div>
 </div>
 
-<!-- Include Supabase JS library -->
+<!-- Include Supabase JS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
 <script>
   // Initialize Supabase
-  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co'; // <-- Replace with your actual URL
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // <-- Replace with your actual anonymous key
+  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // <-- Replace with your actual anon key
   const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-  // Replace with your actual table name
-  const tableName = 'donors'; // <-- Replace with your table name
+  const tableName = 'donors';
 
   let donors = [];
 
@@ -324,25 +319,17 @@ async function fetchDonors() {
       return;
     }
 
-    if (!data || data.length === 0) {
-      console.log('No data found.');
-    } else {
-      console.log('Fetched data:', data);
-    }
-
-    donors = data;
+    donors = data || [];
     processDonors();
 
   } catch (err) {
-    console.error('Error fetching data:', err);
+    console.error('Error:', err);
   }
 }
 
 // Process and display donors
 function processDonors() {
-  // Sort donors by donations descending
-  donors.sort((a, b) => (b.donations || 0) - (a.donations || 0));
-  // Assign ranks
+  donors.sort((a, b) => (b.times_donated || 0) - (a.times_donated || 0));
   donors.forEach((d, i) => d.rank = i + 1);
   populateFilters();
   renderDonors(donors);
@@ -354,7 +341,7 @@ function populateFilters() {
   const bloodSet = new Set();
   const citySet = new Set();
   donors.forEach(d => {
-    if (d.bloodGroup) bloodSet.add(d.bloodGroup);
+    if (d.blood_group) bloodSet.add(d.blood_group);
     if (d.city) citySet.add(d.city);
   });
   const bloodSelect = document.getElementById('bloodGroupFilter');
@@ -379,10 +366,10 @@ function populateFilters() {
 
 // Create HTML for each donor
 function createDonorHTML(d, index) {
-  const badge = getBadge(d.donations);
+  const badge = getBadge(d.times_donated);
   const highlight = index < 3 ? 'style="background:#ffe5b4;"' : '';
   return `
-    <div class="donor-card" ${highlight} data-rank="${d.rank}" data-badge="${badge.label.toLowerCase()}" data-blood="${d.bloodGroup}" data-city="${d.city}">
+    <div class="donor-card" ${highlight} data-rank="${d.rank}" data-badge="${badge.label.toLowerCase()}" data-blood="${d.blood_group}" data-city="${d.city}">
       <div class="rank">${d.rank}</div>
       <div class="info">
         <div class="name">${d.name}</div>
@@ -393,27 +380,27 @@ function createDonorHTML(d, index) {
           <div class="detail"><strong>Phone:</strong> ${d.phone}</div>
         </div>
         <div class="badge ${badge.class}">
-          <img src="${badge.img}" alt="${badge.label} Badge" />
-          ${badge.label}
+          <span class="badge-symbol">${badge.symbol}</span>
+          <span class="badge-label">${badge.label}</span>
         </div>
       </div>
     </div>
   `;
 }
 
-// Determine badge based on donations
+// Determine badge based on number of donations
 function getBadge(donations) {
   donations = donations || 0;
   if (donations <= 3) {
-    return { label: "Bronze", class: "badge-bronze", img: "https://img.icons8.com/ios-filled/50/8b4513/bronze-medal.png" };
+    return { label: "Bronze", class: "badge-bronze", symbol: "🥉" };
   } else if (donations >= 4 && donations <= 15) {
-    return { label: "Silver", class: "badge-silver", img: "https://img.icons8.com/ios-filled/50/999999/silver-medal.png" };
+    return { label: "Silver", class: "badge-silver", symbol: "🥈" };
   } else if (donations >= 16 && donations <= 20) {
-    return { label: "Gold", class: "badge-golden", img: "https://img.icons8.com/ios-filled/50/ffd700/gold-medal.png" };
+    return { label: "Gold", class: "badge-golden", symbol: "🥇" };
   } else if (donations >= 21 && donations <= 30) {
-    return { label: "Platinum", class: "badge-platinum", img: "https://img.icons8.com/ios-filled/50/e5e4e2/platinum-medal.png" };
+    return { label: "Platinum", class: "badge-platinum", symbol: "💠" };
   } else {
-    return { label: "Diamond", class: "badge-diamond", img: "https://img.icons8.com/ios-filled/50/800080/diamond.png" };
+    return { label: "Diamond", class: "badge-diamond", symbol: "💎" };
   }
 }
 
@@ -435,9 +422,11 @@ function updateTotalDonors() {
   document.getElementById('total-donors').textContent = `Total Donors: ${donors.length}`;
 }
 
-// Filter function
+// Apply filters based on button and dropdown selections
 function applyFilters() {
   let filtered = [...donors];
+
+  // Filter by button
   const activeButton = document.querySelector('#filters button.active') || null;
   const filterType = activeButton ? activeButton.dataset.filter : '';
 
@@ -447,36 +436,36 @@ function applyFilters() {
     filtered = donors.slice(0, 3);
   } else if (["bronze","silver","gold","platinum","diamond"].includes(filterType)) {
     filtered = donors.filter(d => {
-      const badge = getBadge(d.donations);
+      const badge = getBadge(d.times_donated);
       return badge.label.toLowerCase() === filterType;
     });
   }
 
-  // Apply dropdown filters
+  // Filter by dropdowns
   const bloodVal = document.getElementById('bloodGroupFilter').value;
   const cityVal = document.getElementById('cityFilter').value;
   const badgeVal = document.getElementById('badgeFilter').value;
 
   if (bloodVal !== 'all') {
-    filtered = filtered.filter(d => d.bloodGroup === bloodVal);
+    filtered = filtered.filter(d => d.blood_group === bloodVal);
   }
   if (cityVal !== 'all') {
     filtered = filtered.filter(d => d.city === cityVal);
   }
   if (badgeVal !== 'all') {
     filtered = filtered.filter(d => {
-      const badge = getBadge(d.donations);
+      const badge = getBadge(d.times_donated);
       return badge.label.toLowerCase() === badgeVal;
     });
   }
 
-  // Sort again
-  filtered.sort((a, b) => (b.donations || 0) - (a.donations || 0));
+  // Re-sort
+  filtered.sort((a, b) => (b.times_donated || 0) - (a.times_donated || 0));
   filtered.forEach((d, i) => d.rank = i + 1);
   renderDonors(filtered);
 }
 
-// Event listeners for filter buttons and dropdowns
+// Event listeners for filter buttons
 document.querySelectorAll('#filters button').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('#filters button').forEach(b => b.classList.remove('active'));
@@ -484,13 +473,14 @@ document.querySelectorAll('#filters button').forEach(btn => {
     applyFilters();
   });
 });
+
+// Event listeners for dropdowns
 document.getElementById('bloodGroupFilter').addEventListener('change', applyFilters);
 document.getElementById('cityFilter').addEventListener('change', applyFilters);
 document.getElementById('badgeFilter').addEventListener('change', applyFilters);
 
-// Fetch donors on page load
+// Fetch data on page load
 fetchDonors();
-
 </script>
 </body>
 </html>
