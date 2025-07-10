@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>About Look4Blood</title>
+<!-- Google Fonts for a professional look -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<style>
+  /* Reset and base styles */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f8f8;
+    color: #333;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  header {
+    background-color: #d32f2f;
+    color: #fff;
+    padding: 30px 20px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+  }
+
+  /* Container styles */
+  .container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  h2 {
+    color: #d32f2f;
+    margin-bottom: 15px;
+    position: relative;
+  }
+
+  section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    opacity: 0; /* For fade-in animation */
+    transform: translateY(20px);
+    transition: all 0.8s ease-out;
+  }
+
+  /* Animate fade-in when section is in view */
+  .show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  p {
+    margin-bottom: 15px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    background-color: #d32f2f;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 10px;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  .btn:hover {
+    background-color: #b71c1c;
+    transform: scale(1.05);
+  }
+
+  /* Specific styles for social icons/buttons */
+  .social-icons a {
+    color: #555;
+    margin: 0 10px;
+    font-size: 1.5em;
+    transition: color 0.3s, transform 0.2s;
+  }
+
+  .social-icons a:hover {
+    color: #d32f2f;
+    transform: scale(1.2);
+  }
+
+  /* Hidden details for founders */
+  #founders-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, padding 0.3s;
+    margin-top: 15px;
+    padding: 0 10px;
+  }
+
+  #founders-details.show {
+    max-height: 500px; /* enough to show content */
+    padding: 10px;
+  }
+
+  /* Emergency hotline box */
+  #hotline {
+    background-color: #fff3f3;
+    border-left: 5px solid #d32f2f;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    font-size: 1.2em;
+    animation: pulse 2s infinite;
+  }
+
+  #hotline i {
+    margin-right: 15px;
+    font-size: 2em;
+    color: #d32f2f;
+  }
+
+  /* Keyframe animation for hotline pulse effect */
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+  }
+
+  /* Testimonials section */
+  #testimonials {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+  }
+
+  .testimonial {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-left: 4px solid #d32f2f;
+    background-color: #fefefe;
+    border-radius: 4px;
+    transition: all 0.3s;
+  }
+
+  .testimonial:hover {
+    background-color: #f0f0f0;
+  }
+
+  /* Feedback Form */
+  #feedback-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  #feedback-form input, #feedback-form textarea {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1em;
+  }
+
+  #feedback-form input:focus, #feedback-form textarea:focus {
+    outline: none;
+    border-color: #d32f2f;
+    box-shadow: 0 0 8px rgba(211, 47, 47, 0.2);
+  }
+
+  /* Submit button styling */
+  #feedback-submit {
+    background-color: #d32f2f;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  #feedback-submit:hover {
+    background-color: #b71c1c;
+  }
+
+  /* Footer styles for social media and language button */
+  footer {
+    background-color: #d32f2f;
+    padding: 20px 10px;
+    text-align: center;
+    color: #fff;
+  }
+
+  footer p {
+    margin-bottom: 10px;
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 600px){
+    header h1 {
+      font-size: 2em;
+    }
+    #hotline {
+      flex-direction: column;
+      text-align: center;
+    }
+    #hotline i {
+      margin-bottom: 10px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>About Look4Blood</h1>
+</header>
+
+<div class="container">
+
+  <!-- Founders Section -->
+  <section id="founders">
+    <h2>Our Founders</h2>
+    <p>Look4Blood was founded by a dedicated team of medical professionals, programmers, and volunteers passionate about saving lives. Our team is committed to connecting blood donors with those in need efficiently and reliably.</p>
+    <!-- Button to see detailed founders info -->
+    <button class="btn" id="seeFoundersBtn">See Founders in Details</button>
+    <!-- Hidden detailed info -->
+    <div id="founders-details">
+      <h3>Meet Our Founders</h3>
+      <ul>
+        <li><strong>Dr. Jane Doe</strong> - Medical expert with 20 years of experience in hematology.</li>
+        <li><strong>John Smith</strong> - Software engineer passionate about health tech.</li>
+        <li><strong>Lisa Chen</strong> - Volunteer coordinator and community advocate.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Mission Section -->
+  <section id="mission">
+    <h2>Our Mission</h2>
+    <p>Our mission is to facilitate quick and easy access to blood donors and blood banks, ensuring that every patient in need receives the blood they require promptly. We strive to create a user-friendly platform that saves lives through technology and community effort.</p>
+  </section>
+
+  <!-- Vision Section -->
+  <section id="vision">
+    <h2>Our Vision</h2>
+    <p>We envision a world where blood donation is seamless, accessible, and encouraged. Our goal is to become the leading platform in connecting donors with hospitals globally, fostering a culture of donation and saving countless lives every year.</p>
+  </section>
+
+  <!-- Emergency Hotline -->
+  <section id="hotline">
+    <i class="fas fa-phone-alt"></i>
+    <div>
+      <strong>Emergency Hotline:</strong> <a href="tel:1234567890" style="color:#d32f2f; text-decoration:none;">1-234-567-890</a>
+    </div>
+  </section>
+
+  <!-- Suggested Functions: Donate Blood, Testimonials -->
+  <section id="actions" style="margin-top:40px;">
+    <h2>Take Action</h2>
+    <div style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">
+      <button class="btn" style="background:#388E3C;" onclick="alert('Thank you for choosing to donate!')"><i class="fas fa-tint"></i> Donate Blood</button>
+      <button class="btn" style="background:#1976D2;" onclick="alert('Share your story!')"><i class="fas fa-comments"></i> Share Testimonial</button>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section id="testimonials">
+    <h2>What People Say</h2>
+    <div class="testimonial">
+      <p>"Thanks to Look4Blood, I found a donor for my sister in time. Truly life-saving!" - Emily R.</p>
+    </div>
+    <div class="testimonial">
+      <p>"Easy to use and very reliable platform. Highly recommended." - Mark T.</p>
+    </div>
+  </section>
+
+  <!-- User Feedback Form -->
+  <section id="feedback">
+    <h2>Share Your Feedback</h2>
+    <p>We value your input! Please share your thoughts or suggestions below:</p>
+    <form id="feedback-form">
+      <input type="text" id="name" placeholder="Your Name" required />
+      <input type="email" id="email" placeholder="Your Email" required />
+      <textarea id="message" rows="4" placeholder="Your Message" required></textarea>
+      <button type="submit" id="feedback-submit">Submit Feedback</button>
+    </form>
+  </section>
+
+</div>
+
+<!-- Footer with social media links and language toggle -->
+<footer>
+  <p>Connect with us:</p>
+  <div class="social-icons">
+    <a href="#" aria-label="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+    <a href="#" aria-label="Twitter" target="_blank"><i class="fab fa-twitter"></i></a>
+    <a href="#" aria-label="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+    <a href="#" aria-label="LinkedIn" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+  <!-- Language selection button -->
+  <button id="languageBtn" class="btn" style="margin-top:10px;">Bangla / English</button>
+  <p>&copy; 2024 Look4Blood. All rights reserved.</p>
+</footer>
+
+<!-- Scripts for animations, interactions, and language toggle -->
+<script>
+  // Intersection Observer for fade-in sections
+  const sections = document.querySelectorAll('section');
+
+  const observerOptions = { threshold: 0.2 };
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('show');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach(section => observer.observe(section));
+
+  // Toggle founders details
+  const btn = document.getElementById('seeFoundersBtn');
+  const details = document.getElementById('founders-details');
+
+  btn.addEventListener('click', () => {
+    details.classList.toggle('show');
+    if(details.classList.contains('show')){
+      btn.textContent = 'Hide Details';
+    } else {
+      btn.textContent = 'See Founders in Details';
+    }
+  });
+
+  // Feedback form submission
+  document.getElementById('feedback-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
+
+    if(name && email && message){
+      alert(`Thank you, ${name}! Your feedback has been received.`);
+      // Reset form
+      document.getElementById('feedback-form').reset();
+    } else {
+      alert('Please fill out all fields.');
+    }
+  });
+
+  // Language toggle logic
+  const languageBtn = document.getElementById('languageBtn');
+
+  const contentTexts = {
+    en: {
+      aboutTitle: 'About Look4Blood',
+      foundersTitle: 'Our Founders',
+      foundersPara: 'Look4Blood was founded by a dedicated team of medical professionals, programmers, and volunteers passionate about saving lives. Our team is committed to connecting blood donors with those in need efficiently and reliably.',
+      seeFoundersBtn: 'See Founders in Details',
+      foundersDetailsTitle: 'Meet Our Founders',
+      foundersList: [
+        'Dr. Jane Doe - Medical expert with 20 years of experience in hematology.',
+        'John Smith - Software engineer passionate about health tech.',
+        'Lisa Chen - Volunteer coordinator and community advocate.'
+      ],
+      missionTitle: 'Our Mission',
+      missionPara: 'Our mission is to facilitate quick and easy access to blood donors and blood banks, ensuring that every patient in need receives the blood they require promptly. We strive to create a user-friendly platform that saves lives through technology and community effort.',
+      visionTitle: 'Our Vision',
+      visionPara: 'We envision a world where blood donation is seamless, accessible, and encouraged. Our goal is to become the leading platform in connecting donors with hospitals globally, fostering a culture of donation and saving countless lives every year.',
+      hotlineText: 'Emergency Hotline:',
+      hotlineNumber: '1-234-567-890',
+      takeActionTitle: 'Take Action',
+      donateBtn: 'Donate Blood',
+      shareBtn: 'Share Testimonial',
+      testimonialsTitle: 'What People Say',
+      feedbackTitle: 'Share Your Feedback',
+      feedbackMsg: 'We value your input! Please share your thoughts or suggestions below:',
+      submitBtn: 'Submit Feedback',
+      shareStory: 'Share your story!'
+    },
+    bn: {
+      aboutTitle: 'লুক4 ব্লাড সম্পর্কে',
+      foundersTitle: 'আমাদের প্রতিষ্ঠাতা',
+      foundersPara: 'লুক4 ব্লাড প্রতিষ্ঠা করেছে এক নিবেদিত দল, যারা জীবন রক্ষায় নিবেদিত মেডিকেল পেশাজীবী, প্রোগ্রামার এবং স্বেচ্ছাসেবক। আমাদের দল কমিউনিটি ও প্রযুক্তির মাধ্যমে রক্তদাতাদের সাথে রোগীদের সংযোগ স্থাপন করে।',
+      seeFoundersBtn: 'প্রদর্শন করুন',
+      foundersDetailsTitle: 'আমাদের প্রতিষ্ঠাতাদের সাথে পরিচিত হন',
+      foundersList: [
+        'ডা. জেন ডো - হেমাটোলজিতে ২০ বছরের অভিজ্ঞতা সহ মেডিকেল বিশেষজ্ঞ।',
+        'জন স্মিথ - স্বাস্থ্য প্রযুক্তির জন্য উৎসাহী সফটওয়্যার ইঞ্জিনিয়ার।',
+        'লিসা চেন - স্বেচ্ছাসেবক সমন্বয়কারী ও কমিউনিটি অ্যাক্টিভিস্ট।'
+      ],
+      missionTitle: 'আমাদের লক্ষ্য',
+      missionPara: 'আমাদের লক্ষ্য হলো দ্রুত ও সহজে রক্তদাতা ও রক্ত ব্যাংকের সাথে সংযোগ স্থাপন করা, যাতে প্রত্যেক রোগীর সময়মতো রক্ত পেতে পারে। প্রযুক্তি ও কমিউনিটির মাধ্যমে জীবন রক্ষা করতে আমরা একসঙ্গে কাজ করে যাচ্ছি।',
+      visionTitle: 'আমাদের স্বপ্ন',
+      visionPara: 'আমরা একটি বিশ্ব কল্পনা করি যেখানে রক্তদান সহজ, প্রবেশযোগ্য এবং উৎসাহিত। আমাদের লক্ষ্য হলো বিশ্বব্যাপী রক্তদাতাদের সাথে হাসপাতালগুলোর সংযোগ স্থাপন করে জীবন রক্ষা করা।',
+      hotlineText: 'অবিলম্বে কল করুন:',
+      hotlineNumber: '১২৩-৪৫৬৭৮৯০',
+      takeActionTitle: 'কর্ম গ্রহণ করুন',
+      donateBtn: 'রক্ত দান করুন',
+      shareBtn: 'আপনার গল্প বলুন',
+      testimonialsTitle: 'লোকেরা যা বলে',
+      feedbackTitle: 'আপনার মতামত দিন',
+      feedbackMsg: 'আমরা আপনার মতামত মূল্যবান! নিচে আপনার চিন্তা বা পরামর্শ শেয়ার করুন:',
+      submitBtn: 'প্রেরণ করুন',
+      shareStory: 'আপনার গল্প শেয়ার করুন'
+    }
+  };
+
+  let currentLang = 'en'; // default language
+
+  function updateContent(lang) {
+    document.querySelector('header h1').textContent = contentTexts[lang].aboutTitle;
+    document.querySelectorAll('#founders h2')[0].textContent = contentTexts[lang].foundersTitle;
+    document.querySelector('#founders p').textContent = contentTexts[lang].foundersPara;
+    document.getElementById('seeFoundersBtn').textContent = contentTexts[lang].seeFoundersBtn;
+    document.querySelector('#founders-details h3').textContent = contentTexts[lang].foundersDetailsTitle;
+    const foundersListItems = document.querySelectorAll('#founders-details ul li');
+    foundersListItems.forEach((li, index) => {
+      li.textContent = contentTexts[lang].foundersList[index];
+    });
+    document.querySelectorAll('#mission h2')[0].textContent = contentTexts[lang].missionTitle;
+    document.querySelector('#mission p').textContent = contentTexts[lang].missionPara;
+    document.querySelectorAll('#vision h2')[0].textContent = contentTexts[lang].visionTitle;
+    document.querySelector('#vision p').textContent = contentTexts[lang].visionPara;
+    document.querySelector('#hotline strong').textContent = contentTexts[lang].hotlineText;
+    document.querySelector('#hotline a').textContent = contentTexts[lang].hotlineNumber;
+    document.querySelector('#actions h2').textContent = contentTexts[lang].takeActionTitle;
+    document.querySelectorAll('#actions .btn')[0].textContent = contentTexts[lang].donateBtn;
+    document.querySelectorAll('#actions .btn')[1].textContent = contentTexts[lang].shareBtn;
+    document.querySelector('#testimonials h2').textContent = contentTexts[lang].testimonialsTitle;
+    document.querySelector('#feedback h2').textContent = contentTexts[lang].feedbackTitle;
+    document.querySelector('#feedback p').textContent = contentTexts[lang].feedbackMsg;
+    document.getElementById('feedback-submit').textContent = contentTexts[lang].submitBtn;
+  }
+
+  // Initialize with default language
+  updateContent(currentLang);
+
+  // Handle language button click
+  document.getElementById('languageBtn').addEventListener('click', () => {
+    if(currentLang === 'en'){
+      currentLang = 'bn';
+    } else {
+      currentLang = 'en';
+    }
+    updateContent(currentLang);
+  });
+</script>
+</body>
+</html>
