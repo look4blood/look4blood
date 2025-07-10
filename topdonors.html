@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Donor Rankings & Filters with Supabase</title>
+<title>Donor Rankings & Filters</title>
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-<!-- Font Awesome (optional for icons) -->
+<!-- Font Awesome for icons (optional) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
 <style>
@@ -133,9 +133,9 @@
     margin-right: 15px;
   }
 
-  .rank-top {
-    color: #d32f2f;
-    text-shadow: 1px 1px 2px #000;
+  /* Top 3 highlight background */
+  .donor-card:nth-child(-n+3) {
+    background: #ffe5b4;
   }
 
   .info {
@@ -170,7 +170,7 @@
     transition: all 0.4s ease;
   }
 
-  /* Badge labels with symbols */
+  /* Badge colors */
   .badge-bronze { background-color: #cd7f32; color: #fff; }
   .badge-silver { background-color: #C0C0C0; color: #000; }
   .badge-golden { background-color: #ffd700; color: #000; }
@@ -183,17 +183,12 @@
     margin-right: 8px;
   }
 
-  /* Badge text */
-  .badge-label {
-    font-weight: 700;
-  }
-
   /* Badge hover effect (optional) */
   .badge:hover {
     transform: scale(1.05);
   }
 
-  /* Rank symbols */
+  /* Rank symbols container */
   #rank-badges {
     display: flex;
     flex-wrap: wrap;
@@ -297,9 +292,9 @@
 <!-- Include Supabase JS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
 <script>
-  // Initialize Supabase
+  // Replace with your actual Supabase anon key
   const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // <-- Replace with your actual anon key
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // <-- Replace this
   const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
   const tableName = 'donors';
@@ -367,9 +362,8 @@ function populateFilters() {
 // Create HTML for each donor
 function createDonorHTML(d, index) {
   const badge = getBadge(d.times_donated);
-  const highlight = index < 3 ? 'style="background:#ffe5b4;"' : '';
   return `
-    <div class="donor-card" ${highlight} data-rank="${d.rank}" data-badge="${badge.label.toLowerCase()}" data-blood="${d.blood_group}" data-city="${d.city}">
+    <div class="donor-card" data-rank="${d.rank}" data-badge="${badge.label.toLowerCase()}" data-blood="${d.blood_group}" data-city="${d.city}">
       <div class="rank">${d.rank}</div>
       <div class="info">
         <div class="name">${d.name}</div>
@@ -388,7 +382,7 @@ function createDonorHTML(d, index) {
   `;
 }
 
-// Determine badge based on number of donations
+// Determine badge based on donations
 function getBadge(donations) {
   donations = donations || 0;
   if (donations <= 3) {
