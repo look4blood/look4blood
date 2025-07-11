@@ -99,7 +99,7 @@
 
 <form id="searchForm">
   <label>Blood Group</label>
-  <select id="bloodgroup">
+  <select id="bloodGroup">
     <option value="All">All</option>
     <option>A+</option><option>A-</option>
     <option>B+</option><option>B-</option>
@@ -166,8 +166,6 @@
   ">📊 Go to Dashboard</a>
 </div>
 
-  
-
 <script type="module">
   import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
@@ -186,7 +184,7 @@
   document.getElementById("searchForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const bloodGroup = document.getElementById("blood_group").value;
+    const bloodGroup = document.getElementById("bloodGroup").value;
     const district = document.getElementById("district").value;
     const city = document.getElementById("city").value;
     const donorType = document.getElementById("donorType").value;
@@ -207,8 +205,7 @@
       const matchesBlood = bloodGroup === "All" || d.blood_group === bloodGroup;
       const matchesDistrict = d.state === district;
       const matchesCity = city === "All" || d.city === city;
-      const lastDonation = d.lastDonation;
-      const days = daysSince(lastDonation);
+      const days = daysSince(d.last_donation);
       const isEligible = donorType === "All" || (donorType === "Eligible" && days >= 90);
 
       return matchesBlood && matchesDistrict && matchesCity && isEligible;
