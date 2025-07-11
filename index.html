@@ -204,7 +204,7 @@
     }
 
     const filtered = donors.filter(d => {
-      const matchesBlood = bloodGroup === "All" || d.bloodGroup === bloodGroup;
+      const matchesBlood = bloodGroup === "All" || d.blood_group === bloodGroup;
       const matchesDistrict = d.state === district;
       const matchesCity = city === "All" || d.city === city;
       const lastDonation = d.lastDonation;
