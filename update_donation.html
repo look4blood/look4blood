@@ -105,8 +105,8 @@
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     function normalizeNumber(num) {
-      return num.replace(/\D/g, '').slice(-10);
-    }
+  return num.replace(/\D/g, '').replace(/^(\+88)/, '');
+}
 
     window.searchByPhone = async function () {
       const mobileInput = document.getElementById('mobileInput').value.trim();
