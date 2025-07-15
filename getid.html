@@ -5,181 +5,222 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Look4Blood – Donor ID Card</title>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- CropperJS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
-  <!-- QRCode -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- SignaturePad -->
-  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
-  <!-- html2pdf -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
+  <!-- Styles -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" rel="stylesheet" />
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
       background: #f4f4f4;
       padding: 20px;
+      color: #222;
     }
-    .card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      max-width: 400px;
-      margin: auto;
+    h2 { margin-bottom: 8px; }
+    .section { margin-bottom: 2rem; }
+    label { font-weight: bold; display: block; margin-bottom: 0.5rem; }
+    input[type="file"], input[type="text"], button {
+      padding: 0.5rem;
+      width: 100%;
+      margin-bottom: 1rem;
     }
-    #id-card {
-      width: 340px;
-      height: 215px;
-      position: relative;
-      background: linear-gradient(135deg, #003049, #001f33);
+    button {
+      background: #d62828;
       color: white;
-      border-radius: 10px;
-      display: grid;
-      grid-template-columns: 110px 1fr;
-      overflow: hidden;
+      border: none;
+      cursor: pointer;
     }
-    #id-photo img {
-      width: 100%; height: 100%; object-fit: cover;
+    button:hover { background: #a91e1e; }
+    #card-preview {
+      width: 300px;
+      height: 180px;
+      background: linear-gradient(to right, #003049, #002233);
+      color: white;
+      padding: 1rem;
+      position: relative;
+      font-size: 0.9rem;
+      border-radius: 12px;
     }
-    #id-photo { background: #eee; }
-    .info {
-      padding: 10px;
-      font-size: 0.8rem;
+    #card-preview img {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: white;
     }
-    #badge {
+    #qr {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 50px;
+      height: 50px;
+    }
+    #card-info {
+      margin-left: 80px;
+    }
+    .tag {
       position: absolute;
       top: 8px;
-      right: -40px;
-      transform: rotate(45deg);
+      right: -38px;
       background: #f77f00;
-      color: white;
-      width: 120px;
-      text-align: center;
-      font-weight: bold;
+      transform: rotate(45deg);
+      padding: 2px 30px;
       font-size: 10px;
+      font-weight: bold;
     }
     #branding {
       position: absolute;
       bottom: 0;
+      left: 0;
       width: 100%;
-      background: #f77f00;
-      font-size: 12px;
-      font-weight: bold;
       text-align: center;
+      font-size: 11px;
+      background: #f77f00;
+      padding: 2px 0;
     }
-    #qr { position: absolute; bottom: 5px; right: 5px; background: white; padding: 2px; }
   </style>
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
-<div class="card">
-  <h2>🔍 Enter Phone Number</h2>
-  <input type="tel" id="phone" placeholder="e.g. 01712345678" style="width:100%;padding:10px;">
-  <button onclick="fetchDonor()" style="margin-top:10px;padding:10px;width:100%;background:#d62828;color:white;border:none;">Fetch Donor Info</button>
-</div>
-
-<div class="card">
-  <h3>📷 Upload & Crop Photo</h3>
-  <input type="file" id="photo-input">
-  <canvas id="crop-canvas" style="display:none;max-width:100%;"></canvas>
-  <button id="crop-btn" style="display:none;margin-top:10px;">Crop & Apply</button>
-</div>
-
-<div class="card">
-  <h3>🪪 Donor ID Card Preview</h3>
-  <div id="id-card">
-    <div id="badge">CERTIFIED</div>
-    <div id="id-photo"></div>
-    <div class="info">
-      <strong id="d-name">Name</strong><br>
-      <span id="d-blood">Blood Group: --</span><br>
-      <span id="d-state">State: --</span><br>
-      <span id="d-city">City: --</span><br>
-      <span id="d-phone">Phone: --</span><br>
-      <span id="d-id">ID: --</span>
-    </div>
-    <div id="branding">Look4Blood – Certified Donor</div>
-    <div id="qr"></div>
+  <div class="section">
+    <h2>📱 Enter Phone Number</h2>
+    <input type="text" id="phone" placeholder="e.g. 01712345678" />
+    <button onclick="fetchDonor()">Fetch Donor Info</button>
+    <p id="error" style="color:red;"></p>
   </div>
-</div>
 
-<div class="card" style="text-align:center">
-  <button onclick="downloadCard()" style="padding:10px 20px;background:#003049;color:#fff;border:none;">Download ID Card</button>
-</div>
+  <div class="section">
+    <h2>🖼️ Upload & Crop Photo</h2>
+    <input type="file" id="photo" accept="image/*" />
+    <canvas id="cropper" style="max-width:100%; display:none;"></canvas>
+    <button id="crop-btn" style="display:none;">Crop & Use Photo</button>
+  </div>
 
-<script>
-const supabase = supabase.createClient(
-  'https://bbvyjeljeyofswuijlyg.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'
-);
+  <div class="section">
+    <h2>🪪 Donor ID Card Preview</h2>
+    <div id="card-preview">
+      <div class="tag">CERTIFIED</div>
+      <img id="photo-preview" src="" />
+      <div id="card-info">
+        <strong id="name">Name</strong><br>
+        Blood Group: <span id="blood_group">--</span><br>
+        State: <span id="state">--</span><br>
+        City: <span id="city">--</span><br>
+        Phone: <span id="phone-display">--</span><br>
+        ID: <span id="user_id">--</span>
+      </div>
+      <div id="branding">Look4Blood – Certified Donor</div>
+      <div id="qr"></div>
+    </div>
+  </div>
 
-let cropper;
-function fetchDonor() {
-  const phone = document.getElementById("phone").value.trim();
-  if (phone.length < 10) return alert("Invalid phone number");
-  supabase.from("donors").select("*").eq("phone", phone).maybeSingle().then(({ data, error }) => {
-    if (error || !data) return alert("Donor not found");
-    document.getElementById("d-name").innerText = data.name;
-    document.getElementById("d-blood").innerText = `Blood Group: ${data.blood_group}`;
-    document.getElementById("d-state").innerText = `State: ${data.state}`;
-    document.getElementById("d-city").innerText = `City: ${data.city}`;
-    document.getElementById("d-phone").innerText = `Phone: ${data.phone}`;
-    document.getElementById("d-id").innerText = `ID: ${data.user_id}`;
-    createQR(data);
-  });
-}
+  <div class="section">
+    <button onclick="downloadCard()">Download ID Card</button>
+  </div>
 
-function createQR(donor) {
-  const q = new QRCode(document.getElementById("qr"), {
-    width: 50, height: 50
-  });
-  document.getElementById("qr").innerHTML = "";
-  q.makeCode(JSON.stringify({ name: donor.name, id: donor.user_id, bg: donor.blood_group, phone: donor.phone }));
-}
+  <script>
+    // Supabase Init
+    const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Photo upload
-const input = document.getElementById("photo-input");
-const canvas = document.getElementById("crop-canvas");
-const cropBtn = document.getElementById("crop-btn");
-input.addEventListener("change", e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const img = new Image();
-  img.onload = () => {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    canvas.style.display = "block";
-    if (cropper) cropper.destroy();
-    cropper = new Cropper(canvas, { aspectRatio: 1 });
-    cropBtn.style.display = "inline-block";
-  };
-  img.src = URL.createObjectURL(file);
-});
+    // Fetch donor info
+    async function fetchDonor() {
+      const phone = document.getElementById("phone").value.trim();
+      if (phone.length !== 11) {
+        document.getElementById("error").innerText = "⚠️ Enter a valid 11-digit phone number.";
+        return;
+      }
+      document.getElementById("error").innerText = "Loading...";
 
-cropBtn.addEventListener("click", () => {
-  const cropped = cropper.getCroppedCanvas({ width: 110, height: 110 });
-  document.getElementById("id-photo").innerHTML = `<img src="${cropped.toDataURL()}" />`;
-  cropper.destroy();
-  canvas.style.display = "none";
-  cropBtn.style.display = "none";
-});
+      const { data, error } = await supabase
+        .from("donors")
+        .select("*")
+        .eq("phone", phone)
+        .maybeSingle();
 
-function downloadCard() {
-  html2pdf()
-    .from(document.getElementById("id-card"))
-    .set({
-      filename: "donor-id-card.pdf",
-      html2canvas: { scale: 3 },
-      jsPDF: { unit: "mm", format: [86, 54], orientation: "landscape" }
-    })
-    .save();
-}
-</script>
+      if (error || !data) {
+        document.getElementById("error").innerText = "❌ Donor not found.";
+        return;
+      }
+
+      // Fill card
+      document.getElementById("error").innerText = "";
+      document.getElementById("name").innerText = data.name || "--";
+      document.getElementById("blood_group").innerText = data.blood_group || "--";
+      document.getElementById("state").innerText = data.state || "--";
+      document.getElementById("city").innerText = data.city || "--";
+      document.getElementById("phone-display").innerText = data.phone || "--";
+      document.getElementById("user_id").innerText = data.user_id || "--";
+
+      generateQR(data);
+    }
+
+    // QR Code
+    function generateQR(data) {
+      const qrEl = document.getElementById("qr");
+      qrEl.innerHTML = "";
+      new QRCode(qrEl, {
+        text: JSON.stringify({
+          name: data.name,
+          id: data.user_id,
+          phone: data.phone,
+          bg: data.blood_group
+        }),
+        width: 48,
+        height: 48
+      });
+    }
+
+    // Image Cropper
+    let cropper;
+    const canvas = document.getElementById("cropper");
+    const photoInput = document.getElementById("photo");
+    const cropBtn = document.getElementById("crop-btn");
+
+    photoInput.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        canvas.style.display = "block";
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvas.getContext("2d").drawImage(img, 0, 0);
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(canvas, { viewMode: 1, aspectRatio: 1 });
+        cropBtn.style.display = "inline-block";
+      };
+      img.src = url;
+    });
+
+    cropBtn.addEventListener("click", () => {
+      const cropped = cropper.getCroppedCanvas({ width: 60, height: 60 });
+      document.getElementById("photo-preview").src = cropped.toDataURL("image/png");
+      canvas.style.display = "none";
+      cropBtn.style.display = "none";
+    });
+
+    // Download ID Card
+    function downloadCard() {
+      html2pdf()
+        .from(document.getElementById("card-preview"))
+        .set({
+          margin: 0,
+          filename: "donor-id-card.pdf",
+          html2canvas: { scale: 3 },
+          jsPDF: { unit: "mm", format: [86, 54], orientation: "landscape" }
+        })
+        .save();
+    }
+  </script>
 </body>
 </html>
