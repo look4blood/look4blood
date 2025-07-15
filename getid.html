@@ -3,84 +3,183 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Look4Blood – Certified Donor ID Card</title>
+  <title>Look4Blood – Donor ID Card</title>
 
-  <!-- Supabase JS v2 -->
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- CropperJS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- QRCode -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- SignaturePad -->
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
+  <!-- html2pdf -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <style>
-    /* Styles trimmed for brevity; use full style block from original */
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: auto;
+    }
+    #id-card {
+      width: 340px;
+      height: 215px;
+      position: relative;
+      background: linear-gradient(135deg, #003049, #001f33);
+      color: white;
+      border-radius: 10px;
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      overflow: hidden;
+    }
+    #id-photo img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    #id-photo { background: #eee; }
+    .info {
+      padding: 10px;
+      font-size: 0.8rem;
+    }
+    #badge {
+      position: absolute;
+      top: 8px;
+      right: -40px;
+      transform: rotate(45deg);
+      background: #f77f00;
+      color: white;
+      width: 120px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 10px;
+    }
+    #branding {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: #f77f00;
+      font-size: 12px;
+      font-weight: bold;
+      text-align: center;
+    }
+    #qr { position: absolute; bottom: 5px; right: 5px; background: white; padding: 2px; }
   </style>
 </head>
 <body>
-  <h1>Look4Blood – Certified Donor | L4B Network</h1>
-  <section class="card">
-    <h2>1⃣⃣ Fetch Donor Details</h2>
-    <div class="form-row">
-      <label>Phone Number
-        <input type="tel" id="search-phone" placeholder="01712345678" />
-        <span class="error-msg" id="err-msg">Donor not found</span>
-      </label>
-      <div style="align-self:end;display:flex;align-items:center;">
-        <button id="fetch-btn">Fetch Details</button>
-        <div class="spinner" id="spinner"></div>
-      </div>
+
+<div class="card">
+  <h2>🔍 Enter Phone Number</h2>
+  <input type="tel" id="phone" placeholder="e.g. 01712345678" style="width:100%;padding:10px;">
+  <button onclick="fetchDonor()" style="margin-top:10px;padding:10px;width:100%;background:#d62828;color:white;border:none;">Fetch Donor Info</button>
+</div>
+
+<div class="card">
+  <h3>📷 Upload & Crop Photo</h3>
+  <input type="file" id="photo-input">
+  <canvas id="crop-canvas" style="display:none;max-width:100%;"></canvas>
+  <button id="crop-btn" style="display:none;margin-top:10px;">Crop & Apply</button>
+</div>
+
+<div class="card">
+  <h3>🪪 Donor ID Card Preview</h3>
+  <div id="id-card">
+    <div id="badge">CERTIFIED</div>
+    <div id="id-photo"></div>
+    <div class="info">
+      <strong id="d-name">Name</strong><br>
+      <span id="d-blood">Blood Group: --</span><br>
+      <span id="d-state">State: --</span><br>
+      <span id="d-city">City: --</span><br>
+      <span id="d-phone">Phone: --</span><br>
+      <span id="d-id">ID: --</span>
     </div>
-  </section>
-  <section class="card">
-    <h2>2⃣⃣ Donor Information</h2>
-    <form id="donor-form" class="form-row">
-      <label>Name            <input type="text" id="name" /></label>
-      <label>Blood Group     <select id="blood-group">
-        <option value="">Select</option><option>O+</option><option>O-</option>
-        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
-        <option>AB+</option><option>AB-</option></select></label>
-      <label>District        <input type="text" id="district" /></label>
-      <label>City            <input type="text" id="city" /></label>
-      <label>Age             <input type="number" id="age" /></label>
-      <label>User ID         <input type="text" id="user-id" /></label>
-    </form>
-  </section>
-  <section class="card">
-    <h2>3⃣⃣ Upload Photo</h2>
-    <input type="file" id="photo-input" accept="image/*" />
-    <canvas id="cropper-canvas" style="max-width:100%;display:none;"></canvas>
-    <button id="crop-btn" style="display:none;">Crop & Use Photo</button>
-  </section>
-  <section class="card">
-    <h2>4⃣⃣ Signature</h2>
-    <canvas id="sign-pad" style="border:1px dashed #ccc;width:100%;max-width:360px;height:120px;border-radius:8px;"></canvas>
-    <button id="clear-sign">Clear Signature</button>
-  </section>
-  <section class="card">
-    <h2>5⃣⃣ ID Card Preview</h2>
-    <div id="id-preview">
-      <div id="badge">CERTIFIED</div>
-      <div class="photo" id="id-photo"></div>
-      <div class="info">
-        <strong id="p-name">Name</strong>
-        <span id="p-blood">Blood Group: --</span>
-        <span id="p-district">District: --</span>
-        <span id="p-city">City: --</span>
-        <span id="p-age">Age: --</span>
-        <span id="p-phone">Phone: --</span>
-        <span id="p-user">ID: --</span>
-      </div>
-      <div id="branding">Look4Blood – Certified Donor</div>
-      <img id="sign-img"/>
-      <div id="qr"></div>
-    </div>
-  </section>
-  <section class="card" style="text-align:center">
-    <button id="download-btn">Download as PDF</button>
-  </section>
-  <script>
-    // JavaScript logic same as previous full working version
-    // Just ensure correct table and fields
-  </script>
+    <div id="branding">Look4Blood – Certified Donor</div>
+    <div id="qr"></div>
+  </div>
+</div>
+
+<div class="card" style="text-align:center">
+  <button onclick="downloadCard()" style="padding:10px 20px;background:#003049;color:#fff;border:none;">Download ID Card</button>
+</div>
+
+<script>
+const supabase = supabase.createClient(
+  'https://bbvyjeljeyofswuijlyg.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'
+);
+
+let cropper;
+function fetchDonor() {
+  const phone = document.getElementById("phone").value.trim();
+  if (phone.length < 10) return alert("Invalid phone number");
+  supabase.from("donors").select("*").eq("phone", phone).maybeSingle().then(({ data, error }) => {
+    if (error || !data) return alert("Donor not found");
+    document.getElementById("d-name").innerText = data.name;
+    document.getElementById("d-blood").innerText = `Blood Group: ${data.blood_group}`;
+    document.getElementById("d-state").innerText = `State: ${data.state}`;
+    document.getElementById("d-city").innerText = `City: ${data.city}`;
+    document.getElementById("d-phone").innerText = `Phone: ${data.phone}`;
+    document.getElementById("d-id").innerText = `ID: ${data.user_id}`;
+    createQR(data);
+  });
+}
+
+function createQR(donor) {
+  const q = new QRCode(document.getElementById("qr"), {
+    width: 50, height: 50
+  });
+  document.getElementById("qr").innerHTML = "";
+  q.makeCode(JSON.stringify({ name: donor.name, id: donor.user_id, bg: donor.blood_group, phone: donor.phone }));
+}
+
+// Photo upload
+const input = document.getElementById("photo-input");
+const canvas = document.getElementById("crop-canvas");
+const cropBtn = document.getElementById("crop-btn");
+input.addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    canvas.style.display = "block";
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(canvas, { aspectRatio: 1 });
+    cropBtn.style.display = "inline-block";
+  };
+  img.src = URL.createObjectURL(file);
+});
+
+cropBtn.addEventListener("click", () => {
+  const cropped = cropper.getCroppedCanvas({ width: 110, height: 110 });
+  document.getElementById("id-photo").innerHTML = `<img src="${cropped.toDataURL()}" />`;
+  cropper.destroy();
+  canvas.style.display = "none";
+  cropBtn.style.display = "none";
+});
+
+function downloadCard() {
+  html2pdf()
+    .from(document.getElementById("id-card"))
+    .set({
+      filename: "donor-id-card.pdf",
+      html2canvas: { scale: 3 },
+      jsPDF: { unit: "mm", format: [86, 54], orientation: "landscape" }
+    })
+    .save();
+}
+</script>
 </body>
 </html>
