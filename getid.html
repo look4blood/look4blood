@@ -1,3 +1,5 @@
+<!-- Paste this full code into your file -->
+<!-- Updated Look4Blood ID Card Generator with Improved Design, City, QR, and User ID -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,11 +11,10 @@
     body {
       font-family: 'Segoe UI', sans-serif;
       padding: 20px;
-      background: #fafafa;
+      background: #f0f0f0;
     }
     h1 {
       color: #d62828;
-      margin-bottom: 20px;
     }
     input[type="text"], input[type="file"] {
       padding: 8px;
@@ -29,11 +30,12 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      margin: 10px 0;
+      margin: 10px 5px 20px 0;
     }
     button:hover {
       background-color: #b71c1c;
     }
+
     .card-container {
       display: flex;
       flex-wrap: wrap;
@@ -44,100 +46,87 @@
       height: 260px;
       border-radius: 12px;
       overflow: hidden;
-      position: relative;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      background: white;
-      border: 2px solid #d62828;
-      box-sizing: border-box;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      border: 2px solid #1b1b1b;
       display: flex;
       flex-direction: column;
     }
+
     .front {
-      background: linear-gradient(to bottom right, #ffffff, #ffeaea);
-      position: relative;
+      background: linear-gradient(to bottom right, #000000, #8b0000);
+      color: #ffffff;
       padding: 20px;
-      display: flex;
-      flex-direction: column;
     }
     .branding {
       font-weight: bold;
-      font-size: 18px;
-      color: #d62828;
+      font-size: 20px;
       text-align: center;
+      color: #ffffff;
       margin-bottom: 10px;
-      user-select: none;
     }
     .front-content {
       display: flex;
-      gap: 20px;
-      flex-wrap: nowrap;
+      justify-content: space-between;
       flex: 1;
     }
     .left-side {
+      width: 120px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 130px;
     }
     .left-side .photo {
       width: 90px;
       height: 90px;
       border-radius: 50%;
-      border: 3px solid #d62828;
+      border: 2px solid #fff;
       object-fit: cover;
     }
     .left-side .name,
     .left-side .blood-group {
-      font-size: 16px;
-      margin: 8px 0 4px;
-      text-align: center;
-      color: #b22222;
+      margin-top: 8px;
       font-weight: bold;
-      user-select: text;
+      text-align: center;
     }
+
     .right-side {
       flex: 1;
-      font-size: 15px;
-      color: #333;
+      font-size: 14px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      gap: 6px;
-      user-select: text;
+      justify-content: space-evenly;
+      padding-left: 10px;
+    }
+    .right-side p {
+      margin: 2px 0;
     }
     .auth-signature {
-      position: absolute;
-      bottom: 10px;
-      right: 20px;
-      font-size: 12px;
-      color: #444;
+      font-size: 11px;
+      text-align: right;
+      margin-top: 8px;
       font-style: italic;
-      user-select: none;
+      color: #ccc;
     }
+
     .back {
-      background: #f4f4f4;
-      justify-content: space-between;
+      background: #f9f9f9;
+      border: 2px solid #1b1b1b;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       padding: 20px;
       display: flex;
       flex-direction: column;
-      border: 2px solid #d62828;
-      box-sizing: border-box;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      width: 420px;
-      height: 260px;
+      justify-content: space-between;
     }
     .qr-code canvas {
       width: 120px !important;
       height: 120px !important;
-      user-select: none;
+      align-self: center;
     }
-    .back .details {
-      font-size: 14px;
+    .details {
+      font-size: 13px;
       color: #333;
-      margin-top: 10px;
-      user-select: text;
     }
+
     #cropper-container {
       margin-top: 10px;
       max-width: 300px;
@@ -149,6 +138,7 @@
   </style>
 </head>
 <body>
+
   <h1>Look4Blood - Donor ID Card Generator</h1>
 
   <input type="text" id="phoneInput" placeholder="Enter Mobile Number" />
@@ -161,63 +151,73 @@
   </div>
 
   <div class="card-container">
+    <!-- Front Side -->
     <div class="card front" id="cardFront">
       <div class="branding">LOOK4BLOOD DONOR ID CARD</div>
       <div class="front-content">
         <div class="left-side">
           <img id="userPhoto" class="photo" src="" alt="User Photo" />
-          <p class="name"><strong>Name:</strong> <span id="name"></span></p>
-          <p class="blood-group"><strong>Blood Group:</strong> <span id="blood_group"></span></p>
+          <p class="name"><span id="name">Name</span></p>
+          <p class="blood-group"><span id="blood_group">Blood</span></p>
         </div>
         <div class="right-side">
           <p><strong>Phone:</strong> <span id="phone"></span></p>
-          <p><strong>District:</strong> <span id="district"></span></p>
+          <p><strong>City:</strong> <span id="district"></span></p>
           <p><strong>State:</strong> <span id="state"></span></p>
           <p><strong>Age:</strong> <span id="age"></span></p>
-          <p><strong>ID:</strong> <span id="user_id"></span></p>
+          <p><strong>User ID:</strong> <span id="user_id"></span></p>
         </div>
       </div>
-      <div class="auth-signature">Authorised by Look4Blood</div>
+      <div class="auth-signature">Authorized by Look4Blood Foundation</div>
     </div>
 
+    <!-- Back Side -->
     <div class="card back" id="cardBack">
-      <div id="qr" class="qr-code"></div>
+      <div class="qr-code" id="qr"></div>
       <div class="details">
-        <p><strong>Terms:</strong> This card is issued by Look4Blood Foundation for voluntary donors only.</p>
+        <p><strong>Terms:</strong> This card is issued by Look4Blood for voluntary blood donors.</p>
         <p><strong>Valid Until:</strong> 07/2026</p>
+        <p><strong>User ID:</strong> <span id="user_id_back"></span></p>
       </div>
     </div>
   </div>
 
   <button id="downloadButton">Download as PDF</button>
 
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
-    const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+    const supabase = window.supabase.createClient(
+      'https://bbvyjeljeyofswuijlyg.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'
+    );
+
     let cropper;
 
     async function fetchData() {
       const phone = document.getElementById('phoneInput').value;
-      const { data, error } = await supabaseClient.from('donors').select('*').eq('phone', phone).single();
-
+      const { data, error } = await supabase.from('donors').select('*').eq('phone', phone).single();
       if (data) {
         document.getElementById('name').textContent = data.name;
         document.getElementById('phone').textContent = data.phone;
         document.getElementById('blood_group').textContent = data.blood_group;
-        document.getElementById('district').textContent = data.district;
+        document.getElementById('district').textContent = data.district; // now used as City
         document.getElementById('state').textContent = data.state;
         document.getElementById('age').textContent = data.age;
         document.getElementById('user_id').textContent = data.user_id;
+        document.getElementById('user_id_back').textContent = data.user_id;
 
-        QRCode.toCanvas(document.getElementById("qr"), data.user_id);
+        // Generate QR code with user_id
+        document.getElementById('qr').innerHTML = ''; // Clear previous QR
+        QRCode.toCanvas(document.createElement('canvas'), data.user_id, function (err, canvas) {
+          if (!err) document.getElementById('qr').appendChild(canvas);
+        });
       } else {
-        alert('Donor not found or invalid Supabase credentials.');
+        alert("Donor not found.");
         console.error(error);
       }
     }
@@ -238,7 +238,6 @@
       pdf.addImage(front.toDataURL(), 'PNG', 0, 0, 105.6, 66.98);
       pdf.addPage();
       pdf.addImage(back.toDataURL(), 'PNG', 0, 0, 105.6, 66.98);
-
       pdf.save('donor_id_card.pdf');
     }
 
