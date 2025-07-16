@@ -25,12 +25,12 @@
 
     .toggle-btn {
       display: none;
-      background: #c62828;
-      color: white;
+      background: transparent;
+      color: black;
       border: none;
       padding: 0.5rem 1rem;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 20px;
       position: fixed;
       top: 10px;
       left: 10px;
@@ -39,7 +39,23 @@
 
     .main { flex: 1; padding: 1rem; }
     .cards { display: flex; flex-wrap: wrap; gap: 1rem; }
-    .card { background: white; padding: 1rem; border-radius: 8px; flex: 1; }
+    .card {
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      flex: 1 1 250px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #555;
+    }
+    .card p {
+      font-size: 28px;
+      font-weight: bold;
+      color: #c62828;
+    }
 
     .stats { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
     .chart-container { background: white; padding: 1rem; border-radius: 8px; flex: 1; }
