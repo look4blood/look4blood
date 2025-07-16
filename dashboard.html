@@ -143,35 +143,48 @@
 
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
 <script>
   const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // full key here
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-  async function loadFromSupabase() {
-    const { data: donors, error } = await supabase.from('donors').select('*');
+  async function loadDashboardStats() {
+    const { data: donors, error } = await supabase
+      .from('donors')
+      .select('*');
+
     if (error || !donors) {
-      console.error('❌ Supabase fetch failed:', error);
+      console.error("Error loading donors from Supabase:", error);
+      document.getElementById("blood-group-list").innerHTML = "<li>❌ Error loading blood group stats</li>";
+      document.getElementById("city-list").innerHTML = "<li>❌ Error loading city stats</li>";
+      document.getElementById("total-donors").textContent = "Error";
+      document.getElementById("eligible-donors").textContent = "Error";
+      document.getElementById("last7-donors").textContent = "Error";
       return;
     }
 
     const today = new Date();
-    let eligible = 0, last7 = 0;
+    let eligible = 0;
+    let last7 = 0;
     const bloodGroupCounts = {};
     const cityCounts = {};
 
     donors.forEach(donor => {
+      const lastDonationStr = donor.last_donation;
       const bloodGroup = donor.blood_group?.trim();
       const city = donor.city?.trim();
-      const lastDonation = donor.last_donation;
 
-      if (bloodGroup) bloodGroupCounts[bloodGroup] = (bloodGroupCounts[bloodGroup] || 0) + 1;
-      if (city) cityCounts[city] = (cityCounts[city] || 0) + 1;
+      if (bloodGroup) {
+        bloodGroupCounts[bloodGroup] = (bloodGroupCounts[bloodGroup] || 0) + 1;
+      }
 
-      if (lastDonation) {
-        const date = new Date(lastDonation);
-        const daysAgo = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+      if (city) {
+        cityCounts[city] = (cityCounts[city] || 0) + 1;
+      }
+
+      if (lastDonationStr) {
+        const donated = new Date(lastDonationStr);
+        const daysAgo = Math.floor((today - donated) / (1000 * 60 * 60 * 24));
         if (!isNaN(daysAgo)) {
           if (daysAgo >= 90) eligible++;
           if (daysAgo <= 7) last7++;
@@ -183,12 +196,12 @@
     document.getElementById("eligible-donors").textContent = eligible;
     document.getElementById("last7-donors").textContent = last7;
 
-    const bloodList = document.getElementById("blood-group-list");
-    bloodList.innerHTML = "";
+    const groupList = document.getElementById("blood-group-list");
+    groupList.innerHTML = "";
     Object.entries(bloodGroupCounts).sort().forEach(([group, count]) => {
       const li = document.createElement("li");
       li.textContent = `🩸 ${group} total donors: ${count}`;
-      bloodList.appendChild(li);
+      groupList.appendChild(li);
     });
 
     const cityList = document.getElementById("city-list");
@@ -200,7 +213,7 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded', loadFromSupabase);
+  document.addEventListener('DOMContentLoaded', loadDashboardStats);
 </script>
 
 </body>
