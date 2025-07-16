@@ -176,7 +176,8 @@
       <div class="qr-code" id="qr"></div>
       <div class="details">
         <p><strong>Terms:</strong> This card is issued by Look4Blood for voluntary blood donors.</p>
-        <p><strong>Valid Until:</strong> 07/2026</p>
+        <p><strong>Issue Date:</strong> <span id="issue_date"></span></p>
+        <p><strong>Valid Until:</strong> <span id="valid_until"></span></p>
         <p><strong>User ID:</strong> <span id="user_id_back"></span></p>
       </div>
     </div>
@@ -205,11 +206,23 @@
         document.getElementById('name').textContent = data.name;
         document.getElementById('phone').textContent = data.phone;
         document.getElementById('blood_group').textContent = data.blood_group;
-        document.getElementById('district').textContent = data.district; // now used as City
+        document.getElementById('city').textContent = data.district; // now used as City
         document.getElementById('state').textContent = data.state;
         document.getElementById('age').textContent = data.age;
         document.getElementById('user_id').textContent = data.user_id;
         document.getElementById('user_id_back').textContent = data.user_id;
+        // Set today's date as Issue Date
+const today = new Date();
+const issueDate = today.toLocaleDateString('en-GB'); // Format: DD/MM/YYYY
+
+// Set Valid Until = 1 year later
+const nextYear = new Date(today);
+nextYear.setFullYear(today.getFullYear() + 1);
+const validUntil = nextYear.toLocaleDateString('en-GB');
+
+// Set text
+document.getElementById('issue_date').textContent = issueDate;
+document.getElementById('valid_until').textContent = validUntil;
 
         // Generate QR code with user_id
         document.getElementById('qr').innerHTML = ''; // Clear previous QR
