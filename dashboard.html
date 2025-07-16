@@ -141,44 +141,37 @@
   </div>
 </div>
 
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
 <script>
-const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0F5WzWm4luslj5EW-B2fI6Mq_UrOt53608tTjbteMLb470U0FnBNWZ25b-m5iocNlel_YvVw-fdKL/pub?gid=0&single=true&output=tsv";
+  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // full key here
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-fetch(sheetUrl)
-  .then(res => res.text())
-  .then(data => {
-    const rows = data.trim().split("\n").map(row => row.split("\t"));
-    const headers = rows[0];
-    const dataRows = rows.slice(1);
-
-    const dateCol = headers.findIndex(h => h.toLowerCase().includes("last donation"));
-    const bloodCol = headers.findIndex(h => h.toLowerCase().includes("blood"));
-    const cityCol = headers.findIndex(h => h.toLowerCase().includes("city"));
+  async function loadFromSupabase() {
+    const { data: donors, error } = await supabase.from('donors').select('*');
+    if (error || !donors) {
+      console.error('❌ Supabase fetch failed:', error);
+      return;
+    }
 
     const today = new Date();
-    const total = dataRows.length;
-    let eligible = 0;
-    let last7 = 0;
-
+    let eligible = 0, last7 = 0;
     const bloodGroupCounts = {};
     const cityCounts = {};
 
-    dataRows.forEach(row => {
-      const dateStr = row[dateCol];
-      const bloodGroup = row[bloodCol]?.trim();
-      const city = row[cityCol]?.trim();
+    donors.forEach(donor => {
+      const bloodGroup = donor.blood_group?.trim();
+      const city = donor.city?.trim();
+      const lastDonation = donor.last_donation;
 
-      if (bloodGroup) {
-        bloodGroupCounts[bloodGroup] = (bloodGroupCounts[bloodGroup] || 0) + 1;
-      }
+      if (bloodGroup) bloodGroupCounts[bloodGroup] = (bloodGroupCounts[bloodGroup] || 0) + 1;
+      if (city) cityCounts[city] = (cityCounts[city] || 0) + 1;
 
-      if (city) {
-        cityCounts[city] = (cityCounts[city] || 0) + 1;
-      }
-
-      if (dateStr) {
-        const donated = new Date(dateStr);
-        const daysAgo = Math.floor((today - donated) / (1000 * 60 * 60 * 24));
+      if (lastDonation) {
+        const date = new Date(lastDonation);
+        const daysAgo = Math.floor((today - date) / (1000 * 60 * 60 * 24));
         if (!isNaN(daysAgo)) {
           if (daysAgo >= 90) eligible++;
           if (daysAgo <= 7) last7++;
@@ -186,16 +179,16 @@ fetch(sheetUrl)
       }
     });
 
-    document.getElementById("total-donors").textContent = total;
+    document.getElementById("total-donors").textContent = donors.length;
     document.getElementById("eligible-donors").textContent = eligible;
     document.getElementById("last7-donors").textContent = last7;
 
-    const groupList = document.getElementById("blood-group-list");
-    groupList.innerHTML = "";
+    const bloodList = document.getElementById("blood-group-list");
+    bloodList.innerHTML = "";
     Object.entries(bloodGroupCounts).sort().forEach(([group, count]) => {
       const li = document.createElement("li");
       li.textContent = `🩸 ${group} total donors: ${count}`;
-      groupList.appendChild(li);
+      bloodList.appendChild(li);
     });
 
     const cityList = document.getElementById("city-list");
@@ -205,15 +198,9 @@ fetch(sheetUrl)
       li.textContent = `🏙️ ${city}: ${count} donors`;
       cityList.appendChild(li);
     });
-  })
-  .catch(error => {
-    console.error("Data load error:", error);
-    document.getElementById("blood-group-list").innerHTML = "<li>❌ Error loading blood group stats</li>";
-    document.getElementById("city-list").innerHTML = "<li>❌ Error loading city stats</li>";
-    document.getElementById("total-donors").textContent = "Error";
-    document.getElementById("eligible-donors").textContent = "Error";
-    document.getElementById("last7-donors").textContent = "Error";
-  });
+  }
+
+  document.addEventListener('DOMContentLoaded', loadFromSupabase);
 </script>
 
 </body>
