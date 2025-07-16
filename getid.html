@@ -242,17 +242,30 @@ document.getElementById('valid_until').textContent = validUntil;
     }
 
     async function downloadPDF() {
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [105.6, 66.98] });
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [105.6, 66.98] });
 
-      const front = await html2canvas(document.getElementById('cardFront'));
-      const back = await html2canvas(document.getElementById('cardBack'));
+  // Use higher resolution for better quality
+  const options = {
+    scale: 3, // increases resolution
+    useCORS: true
+  };
 
-      pdf.addImage(front.toDataURL(), 'PNG', 0, 0, 105.6, 66.98);
-      pdf.addPage();
-      pdf.addImage(back.toDataURL(), 'PNG', 0, 0, 105.6, 66.98);
-      pdf.save('donor_id_card.pdf');
-    }
+  const frontCanvas = await html2canvas(document.getElementById('cardFront'), options);
+  const backCanvas = await html2canvas(document.getElementById('cardBack'), options);
+
+  const frontDataURL = frontCanvas.toDataURL('image/png');
+  const backDataURL = backCanvas.toDataURL('image/png');
+
+  // Add front side
+  pdf.addImage(frontDataURL, 'PNG', 0, 0, 105.6, 66.98);
+
+  // Add back side
+  pdf.addPage();
+  pdf.addImage(backDataURL, 'PNG', 0, 0, 105.6, 66.98);
+
+  pdf.save('donor_id_card.pdf');
+}
 
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('fetchButton').addEventListener('click', fetchData);
