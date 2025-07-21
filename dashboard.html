@@ -32,8 +32,8 @@
       cursor: pointer;
       font-size: 20px;
       position: fixed;
-      top: 10px;
-      left: 10px;
+      top: 0px;
+      left: 0px;
       z-index: 1000;
     }
 
@@ -58,9 +58,40 @@
     }
 
     .stats { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
-    .chart-container { background: white; padding: 1rem; border-radius: 8px; flex: 1; }
+    .chart-container {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      flex: 1;
+    }
+
     canvas { width: 100% !important; height: auto !important; }
-    ul { list-style: none; padding-left: 0; }
+
+    /* ✨ New Stylish Cards for List Items */
+    ul { list-style: none; padding-left: 0; margin-top: 1rem; }
+
+    .stat-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-top: 1rem;
+    }
+
+    .stat-item {
+      background: #f9f9f9;
+      padding: 10px 15px;
+      border-left: 5px solid #c62828;
+      border-radius: 8px;
+      font-weight: 500;
+      color: #444;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, background 0.3s;
+    }
+
+    .stat-item:hover {
+      transform: scale(1.03);
+      background: #ffeaea;
+    }
 
     @media (max-width: 768px) {
       .sidebar {
@@ -116,24 +147,29 @@
 
 <script>
 const { createClient } = supabase;
-const supabaseClient = createClient('https://bbvyjeljeyofswuijlyg.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I');
+const supabaseClient = createClient(
+  'https://bbvyjeljeyofswuijlyg.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'
+);
 
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   sidebar.classList.toggle('open');
 }
 
-(async()=>{
-  const {data}=await supabaseClient.from('donors').select('*');
+(async () => {
+  const { data } = await supabaseClient.from('donors').select('*');
   const total = data.length;
   document.getElementById('total').textContent = total;
+
   const eligible = data.filter(d => {
-    const days = (new Date() - new Date(d.last_donation)) / (1000*60*60*24);
+    const days = (new Date() - new Date(d.last_donation)) / (1000 * 60 * 60 * 24);
     return days >= 90;
   }).length;
   document.getElementById('eligible').textContent = eligible;
+
   const recent = data.filter(d => {
-    const days = (new Date() - new Date(d.last_donation)) / (1000*60*60*24);
+    const days = (new Date() - new Date(d.last_donation)) / (1000 * 60 * 60 * 24);
     return days <= 7;
   }).length;
   document.getElementById('recent').textContent = recent;
@@ -174,19 +210,34 @@ function toggleSidebar() {
     options: { responsive: true }
   });
 
-  const bloodList = document.getElementById('bloodList');
-  Object.entries(bloodCounts).forEach(([k,v]) => {
-    const li = document.createElement('li');
-    li.textContent = `${k}: ${v} donors`;
-    bloodList.appendChild(li);
-  });
+  // Colors used in the bloodChart (must match order of dataset)
+const bloodColors = ['#e53935', '#8e24aa', '#3949ab', '#039be5', '#00897b', '#7cb342', '#fdd835', '#fb8c00'];
 
-  const cityList = document.getElementById('cityList');
-  Object.entries(cityCounts).forEach(([k,v]) => {
-    const li = document.createElement('li');
-    li.textContent = `${k}: ${v} donors`;
-    cityList.appendChild(li);
-  });
+// Render Blood Group Chart and Cards
+const bloodList = document.getElementById('bloodList');
+bloodList.classList.add('stat-list');
+Object.entries(bloodCounts).forEach(([k, v], i) => {
+  const div = document.createElement('div');
+  div.className = 'stat-item';
+  div.textContent = `${k}: ${v} donors`;
+  div.style.borderLeftColor = bloodColors[i % bloodColors.length]; // Match chart color
+  bloodList.appendChild(div);
+});
+
+// Generate City Colors (same as in chart)
+const cityLabels = Object.keys(cityCounts);
+const cityColors = cityLabels.map((_, i) => `hsl(${i * 37 % 360}, 75%, 60%)`);
+
+// Render City Chart and Cards
+const cityList = document.getElementById('cityList');
+cityList.classList.add('stat-list');
+Object.entries(cityCounts).forEach(([k, v], i) => {
+  const div = document.createElement('div');
+  div.className = 'stat-item';
+  div.textContent = `${k}: ${v} donors`;
+  div.style.borderLeftColor = cityColors[i % cityColors.length]; // Match chart color
+  cityList.appendChild(div);
+});
 })();
 </script>
 </body>
