@@ -4,10 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Blood Donor Registration</title>
-  <!-- Supabase JS Client Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* --- Your existing CSS is preserved exactly as provided --- */
     body {
       font-family: Arial, sans-serif;
       background: #fff4f4;
@@ -16,7 +13,6 @@
       align-items: center;
       min-height: 100vh;
       padding: 20px;
-      box-sizing: border-box;
     }
 
     form {
@@ -46,7 +42,6 @@
       margin-bottom: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
-      box-sizing: border-box;
     }
 
     button {
@@ -58,48 +53,30 @@
       border-radius: 6px;
       font-size: 16px;
       cursor: pointer;
-      transition: background-color 0.3s;
     }
 
     button:hover {
       background: #b71c1c;
     }
-    
-    button:disabled {
-      background: #cccccc;
-      cursor: not-allowed;
-    }
-
-    .success, .error {
-      text-align: center;
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 5px;
-      font-weight: bold;
-    }
 
     .success {
-      color: #155724;
-      background-color: #d4edda;
-      border: 1px solid #c3e6cb;
+      text-align: center;
+      margin-top: 10px;
+      color: green;
     }
 
     .error {
-      color: #721c24;
-      background-color: #f8d7da;
-      border: 1px solid #f5c6cb;
+      text-align: center;
+      margin-top: 10px;
+      color: #c62828;
     }
 
     .checkbox-group {
       margin-top: 15px;
-      display: flex;
-      align-items: flex-start;
     }
 
     .checkbox-group input[type="checkbox"] {
       margin-right: 8px;
-      width: auto;
-      margin-top: 4px;
     }
 
     .checkbox-group label {
@@ -120,12 +97,25 @@
       margin: 0 5px;
       border-radius: 5px;
       cursor: pointer;
-      width: auto;
     }
 
     .lang-toggle button.active {
       background: #c62828;
       color: white;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .login-link a {
+      color: #c62828;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
     }
 
     #loading-overlay {
@@ -134,23 +124,14 @@
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(0, 0, 0, 0.6);
       z-index: 9999;
       justify-content: center;
       align-items: center;
-      color: #c62828;
+      color: white;
       font-size: 20px;
       flex-direction: column;
       font-family: sans-serif;
-    }
-
-    .spinner {
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid #c62828;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
     }
 
     @keyframes spin {
@@ -169,21 +150,18 @@
 
   <h2 data-en="Donor Registration" data-bn="রক্তদাতার নিবন্ধন">Donor Registration</h2>
 
-  <!-- Message area for success or error -->
-  <div id="message-area"></div>
-
   <label data-en="Full Name" data-bn="পূর্ণ নাম">Full Name</label>
   <input type="text" name="name" required>
 
   <label data-en="Age" data-bn="বয়স">Age</label>
-  <input type="number" name="age" required min="18" max="65">
+  <input type="number" name="age" required>
 
   <label data-en="Gender" data-bn="লিঙ্গ">Gender</label>
   <select name="gender" required>
     <option value="">Select</option>
-    <option value="Male" data-en="Male" data-bn="পুরুষ">Male</option>
-    <option value="Female" data-en="Female" data-bn="মহিলা">Female</option>
-    <option value="Other" data-en="Other" data-bn="অন্যান্য">Other</option>
+    <option data-en="Male" data-bn="পুরুষ">Male</option>
+    <option data-en="Female" data-bn="মহিলা">Female</option>
+    <option data-en="Other" data-bn="অন্যান্য">Other</option>
   </select>
 
   <label data-en="Blood Group" data-bn="রক্তের গ্রুপ">Blood Group</label>
@@ -198,13 +176,11 @@
   <label data-en="Phone Number" data-bn="ফোন নম্বর">Phone Number</label>
   <input type="tel" name="phone" required>
 
-  <!-- Email field is now required -->
   <label data-en="Email" data-bn="ইমেইল">Email</label>
   <input type="email" name="email" required>
 
-  <!-- New Password Field -->
   <label data-en="Password" data-bn="পাসওয়ার্ড">Password</label>
-  <input type="password" name="password" required minlength="6" autocomplete="new-password" placeholder="Minimum 6 characters">
+  <input type="password" name="password" minlength="6" required>
 
   <label data-en="State" data-bn="রাজ্য">State</label>
   <input type="text" name="state" value="Chottogram" readonly>
@@ -240,165 +216,151 @@
   <label data-en="Willing to Donate Now?" data-bn="এখন রক্ত দিতে ইচ্ছুক?">Willing to Donate Now?</label>
   <select name="available" required>
     <option value="">Select</option>
-    <option value="Yes" data-en="Yes" data-bn="হ্যাঁ">Yes</option>
-    <option value="No" data-en="No" data-bn="না">No</option>
+    <option data-en="Yes" data-bn="হ্যাঁ">Yes</option>
+    <option data-en="No" data-bn="না">No</option>
   </select>
 
   <div class="checkbox-group">
     <input type="checkbox" id="terms" name="terms" required>
     <label for="terms" data-en="I agree to the Terms and Conditions: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible." data-bn="আমি শর্তাবলীতে সম্মত: অনুগ্রহ করে ভুল তথ্য প্রদান করবেন না। এটি একটি জীবন রক্ষার বিষয়। দয়া করে সৎ এবং দায়িত্বশীল হোন।">
-      I agree to the Terms and Conditions: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible.
+      I agree to the Terms and Conditions...
     </label>
   </div>
 
-  <p style="margin-top:10px; font-style:italic; color:#444;" data-en="Your blood can be someone’s second chance at life. Be the reason someone smiles today." data-bn="আপনার রক্ত কারো জীবনের দ্বিতীয় সুযোগ হতে পারে। কারো মুখে হাসি ফোটাতে সাহায্য করুন।">
-    Your blood can be someone’s second chance at life. Be the reason someone smiles today.
+  <p style="margin-top:10px; font-style:italic; color:#444;" data-en="Your blood can be someone's second chance at life. Be the reason someone smiles today." data-bn="আপনার রক্ত কারো জীবনের দ্বিতীয় সুযোগ হতে পারে। কারো মুখে হাসি ফোটাতে সাহায্য করুন।">
+    Your blood can be someone's second chance at life...
   </p>
 
   <button type="submit" data-en="Register" data-bn="নিবন্ধন করুন">Register</button>
+  
+  <div class="login-link">
+    <span data-en="Already have an account?" data-bn="ইতিমধ্যে একটি অ্যাকাউন্ট আছে?">Already have an account?</span>
+    <a href="login.html" data-en="Login here" data-bn="এখানে লগইন করুন">Login here</a>
+  </div>
+
+  <div class="success" id="success-msg"></div>
+  <div class="error" id="error-msg"></div>
 </form>
 
 <div id="loading-overlay">
-  <div class="spinner"></div>
-  <div style="margin-top:10px;" data-en="Processing..." data-bn="প্রসেসিং...">Processing...</div>
+  <div class="spinner" style="border:6px solid #f3f3f3;border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;"></div>
+  <div style="margin-top:10px;">Processing...</div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // --- Language Toggle Function (Unchanged) ---
+  // Initialize Supabase
+  const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
+  const SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+
   function setLang(lang) {
     document.querySelectorAll('[data-en]').forEach(el => {
-        if (el.placeholder && el.dataset.enPlaceholder) {
-            el.placeholder = el.dataset[`${lang}Placeholder`];
-        }
-        const text = el.getAttribute(`data-${lang}`);
-        if (text) {
-           const textNode = Array.from(el.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
-           if(textNode) {
-               textNode.textContent = text + (el.tagName === 'LABEL' ? ' ' : '');
-           } else {
-               el.textContent = text;
-           }
-        }
+      el.textContent = el.getAttribute(`data-${lang}`);
     });
     document.querySelectorAll('.lang-toggle button').forEach(btn => btn.classList.remove('active'));
     document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
-    const submitBtn = document.querySelector('#donor-form button[type="submit"]');
-    submitBtn.textContent = submitBtn.getAttribute(`data-${lang}`);
   }
 
-
-  // --- Form Submission Logic (Updated) ---
-  const form = document.getElementById('donor-form');
-  const messageArea = document.getElementById('message-area');
+  const form = document.forms['donor-form'];
+  const successMsg = document.getElementById('success-msg');
+  const errorMsg = document.getElementById('error-msg');
   const submitBtn = form.querySelector('button[type="submit"]');
   const loadingOverlay = document.getElementById('loading-overlay');
-  
   const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec';
-
-  // =================================================================================
-  // IMPORTANT: Please replace the placeholder values below with your ACTUAL Supabase
-  // Project URL and Public Anon Key from your Supabase Dashboard.
-  // Go to Project Settings > API to find them.
-  // =================================================================================
-  const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co"; // <-- REPLACE THIS
-  const SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I"; // <-- REPLACE THIS
-
-  const { createClient } = supabase;
-  const _supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
-
-  function showMessage(type, text) {
-      messageArea.innerHTML = `<div class="${type}">${text}</div>`;
-  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    messageArea.innerHTML = ''; 
-
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-
-    // Check if the placeholder keys have been replaced
-    if (SUPABASE_URL === "YOUR_SUPABASE_URL" || SUPABASE_API_KEY === "YOUR_SUPABASE_ANON_KEY") {
-        showMessage('error', 'Configuration Error: Please update the Supabase URL and API Key in the script.');
-        return;
+    
+    successMsg.textContent = '';
+    errorMsg.textContent = '';
+    
+    if (!form.terms.checked) {
+      errorMsg.textContent = "You must agree to the terms.";
+      return;
     }
 
     submitBtn.disabled = true;
+    submitBtn.textContent = "Processing...";
     loadingOverlay.style.display = "flex";
-    const originalButtonText = submitBtn.textContent;
-    const currentLang = document.querySelector('.lang-toggle .active').getAttribute('onclick').includes('en') ? 'en' : 'bn';
-    submitBtn.textContent = submitBtn.getAttribute(`data-${currentLang}`);
-
 
     const formData = new FormData(form);
-    const email = formData.get('email');
-    const password = formData.get('password');
+    const body = {};
+    formData.forEach((value, key) => body[key] = value);
+    body.userId = `ID-${Date.now()}`;
 
     try {
-      // --- Step 1: Register user with Supabase Auth ---
-      const { data: authData, error: authError } = await _supabase.auth.signUp({
-        email: email,
-        password: password,
+      // Step 1: Create Supabase Auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: body.email,
+        password: body.password
       });
 
       if (authError) {
-        throw new Error(`Authentication Error: ${authError.message}`);
+        throw new Error(`Authentication failed: ${authError.message}`);
       }
-      
-      if (!authData.user) {
-          throw new Error("User registration succeeded, but user details could not be retrieved. Please try again or contact support.");
-      }
-      const userId = authData.user.id;
 
-      // --- Step 2: Send data to Supabase 'donors' table ---
-      const { error: dbError } = await _supabase.from('donors').insert({
-        user_id: userId,
-        name: formData.get('name'),
-        age: Number(formData.get('age')),
-        gender: formData.get('gender'),
-        blood_group: formData.get('bloodGroup'),
-        phone: formData.get('phone'),
-        email: formData.get('email'),
-        state: formData.get('state'),
-        city: formData.get('city'),
-        zip: formData.get('zip'),
-        last_donation: formData.get('lastDonation') || null,
-        times_donated: Number(formData.get('donationCount')) || 0,
-        available: formData.get('available') === "Yes",
+      // Step 2: Prepare data for database (exclude password)
+      const donorData = {
+        user_id: body.userId,
+        name: body.name,
+        age: Number(body.age),
+        gender: body.gender,
+        blood_group: body.bloodGroup,
+        phone: body.phone,
+        email: body.email,
+        state: body.state,
+        city: body.city,
+        zip: body.zip,
+        last_donation: body.lastDonation || null,
+        times_donated: Number(body.donationCount) || 0,
+        available: body.available === "Yes",
         terms: true
-      });
+      };
+
+      // Step 3: Send to Supabase donors table
+      const { error: dbError } = await supabase
+        .from('donors')
+        .insert(donorData);
 
       if (dbError) {
-        console.error("Database Insert Error Details:", dbError);
-        throw new Error(`Your user account was created, but we could not save your donor profile. This is usually due to database security policies (RLS). Please contact support.`);
+        throw new Error(`Database error: ${dbError.message}`);
       }
 
-      // --- Step 3: Send data to Google Sheets ---
-      const googleFormData = new FormData(form);
-      googleFormData.delete('password');
-      await fetch(scriptURL, { method: 'POST', body: googleFormData });
+      // Step 4: Send to Google Sheets (exclude password)
+      const googleFormData = new FormData();
+      Object.keys(body).forEach(key => {
+        if (key !== 'password') {
+          googleFormData.append(key, body[key]);
+        }
+      });
 
-      // --- Step 4: Show Success Message with email confirmation notice ---
-      showMessage('success', '✅ Registration successful! Please check your email inbox (and spam folder) for a confirmation link to activate your account.');
+      const googleResponse = await fetch(scriptURL, { 
+        method: 'POST', 
+        body: googleFormData 
+      });
+
+      if (!googleResponse.ok) {
+        throw new Error('Google Sheets submission failed');
+      }
+
+      successMsg.textContent = "✅ Registration successful! Please check your email to verify your account.";
       form.reset();
-      setLang('en'); 
+      setLang('en');
+
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2000);
 
     } catch (err) {
-      // Catch any error from the try block (Auth, DB, or Sheets)
-      showMessage('error', `❌ ${err.message}`);
-      console.error(err);
+      errorMsg.textContent = `❌ Error: ${err.message}`;
+      console.error('Registration error:', err);
     } finally {
-      // --- Final Step: Reset UI ---
       loadingOverlay.style.display = "none";
       submitBtn.disabled = false;
-      submitBtn.textContent = originalButtonText;
+      submitBtn.textContent = "Register";
     }
   });
-  
-  window.onload = () => setLang('en');
-
 </script>
 
 </body>
