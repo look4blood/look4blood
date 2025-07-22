@@ -215,13 +215,28 @@
   }
 
   // --- Supabase setup ---
+  <!-- Replace old script with this at the end of <body> -->
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
   const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';  // Replace with your actual anon key
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-  let donorToDeleteId = null; // store donor id for delete confirmation
+  // Sidebar navigation logic
+  const sections = document.querySelectorAll('.section');
+  const sidebarLinks = document.querySelectorAll('.sidebar ul li');
 
-  async function searchDonor() {
+  window.showSection = function(id) {
+    sections.forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    sidebarLinks.forEach(link => link.classList.remove('active'));
+    event.target.classList.add('active');
+  };
+
+  let donorToDeleteId = null;
+
+  window.searchDonor = async function () {
     const number = document.getElementById('donorSearchNumber').value.trim();
     const donorInfoDiv = document.getElementById('donorInfo');
     donorInfoDiv.innerHTML = 'Searching...';
@@ -239,11 +254,9 @@
         .single();
 
       if (error) {
-        if (error.code === 'PGRST116') { // no rows found
-          donorInfoDiv.innerHTML = '<p style="color:#e11d48;">No donor found with this number.</p>';
-        } else {
-          donorInfoDiv.innerHTML = `<p style="color:#e11d48;">Error: ${error.message}</p>`;
-        }
+        donorInfoDiv.innerHTML = error.code === 'PGRST116'
+          ? '<p style="color:#e11d48;">No donor found with this number.</p>'
+          : `<p style="color:#e11d48;">Error: ${error.message}</p>`;
         return;
       }
 
@@ -257,18 +270,17 @@
           <button onclick="promptDelete('${data.id}')">Delete Donor</button>
         </div>
       `;
-
     } catch (err) {
       donorInfoDiv.innerHTML = `<p style="color:#e11d48;">Unexpected error: ${err.message}</p>`;
     }
-  }
+  };
 
-  function promptDelete(id) {
+  window.promptDelete = function(id) {
     donorToDeleteId = id;
     document.getElementById('confirmBox').classList.add('active');
-  }
+  };
 
-  async function confirmDelete(confirm) {
+  window.confirmDelete = async function(confirm) {
     const confirmBox = document.getElementById('confirmBox');
     if (!confirm) {
       donorToDeleteId = null;
@@ -296,9 +308,9 @@
 
     donorToDeleteId = null;
     confirmBox.classList.remove('active');
-  }
+  };
 
-  async function updateSettings() {
+  window.updateSettings = async function () {
     const daysInput = document.getElementById('eligibilityDays');
     const days = Number(daysInput.value);
     if (isNaN(days) || days < 0) {
@@ -307,7 +319,7 @@
     }
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('settings')
         .upsert({ key: 'donation_eligibility_days', value: days.toString() }, { onConflict: 'key' });
 
@@ -320,9 +332,9 @@
     } catch (err) {
       alert('Unexpected error: ' + err.message);
     }
-  }
+  };
 
-  async function postAnnouncement() {
+  window.postAnnouncement = async function () {
     const targetPage = document.getElementById('targetPage').value;
     const text = document.getElementById('announcementText').value.trim();
 
@@ -332,7 +344,7 @@
     }
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('announcements')
         .insert([{ target_page: targetPage, text, created_at: new Date().toISOString() }]);
 
@@ -347,7 +359,7 @@
     } catch (err) {
       alert('Unexpected error: ' + err.message);
     }
-  }
+  };
 
   async function loadAnnouncements() {
     const announcementList = document.getElementById('announcementList');
@@ -381,13 +393,13 @@
     }
   }
 
-  async function addCityDistrict() {
+  window.addCityDistrict = async function () {
     alert('Add City/District functionality not yet implemented.');
-  }
+  };
 
-  async function editCityDistrict() {
+  window.editCityDistrict = async function () {
     alert('Edit City/District functionality not yet implemented.');
-  }
+  };
 
   window.addEventListener('DOMContentLoaded', loadAnnouncements);
 </script>
