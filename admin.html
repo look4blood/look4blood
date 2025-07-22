@@ -1,9 +1,395 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Hello World</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Look4Blood Admin Panel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+    }
+    body {
+      background-color: #0f0f0f;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 250px;
+      background: linear-gradient(135deg, #1b1b1b, #2e0f15);
+      padding-top: 60px;
+      transition: 0.3s;
+      z-index: 100;
+    }
+    .sidebar h2 {
+      text-align: center;
+      color: #e11d48;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      padding: 15px 20px;
+      cursor: pointer;
+      color: white;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sidebar ul li:hover, .sidebar ul li.active {
+      background: #e11d48;
+      border-left: 5px solid #fff;
+    }
+    .content {
+      margin-left: 250px;
+      padding: 30px;
+    }
+    .section {
+      display: none;
+      animation: fadeSlideIn 0.5s ease forwards;
+    }
+    .section.active {
+      display: block;
+    }
+    @keyframes fadeSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    button {
+      background: #e11d48;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #fff;
+      color: #e11d48;
+    }
+    .field-group {
+      margin-bottom: 20px;
+    }
+    .field-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    .field-group input, .field-group select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    .confirm-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1b1b1b;
+      padding: 30px;
+      border-radius: 12px;
+      border: 2px solid #e11d48;
+      z-index: 1000;
+      display: none;
+      text-align: center;
+    }
+    .confirm-box.active {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-    <h1>Hello World!</h1>
+  <div class="sidebar">
+    <h2><i class="fas fa-shield-alt"></i> Admin Panel</h2>
+    <ul>
+      <li class="active" onclick="showSection('donorMgmt')"><i class="fas fa-users"></i> Donor Management</li>
+      <li onclick="showSection('cityMgmt')"><i class="fas fa-map-marker-alt"></i> District & City Management</li>
+      <li onclick="showSection('donationTrack')"><i class="fas fa-hand-holding-heart"></i> Donation Tracking</li>
+      <li onclick="showSection('statsReports')"><i class="fas fa-chart-pie"></i> Statistics & Reports</li>
+      <li onclick="showSection('settings')"><i class="fas fa-cogs"></i> System Settings</li>
+      <li onclick="showSection('announcements')"><i class="fas fa-bullhorn"></i> Announcements</li>
+    </ul>
+  </div>
+
+  <div class="content">
+    <div id="donorMgmt" class="section active">
+      <h2>Donor Management</h2>
+      <div class="field-group">
+        <label>Search Donor by Number</label>
+        <input type="text" id="donorSearchNumber" placeholder="Enter mobile number">
+      </div>
+      <div class="action-buttons">
+        <button onclick="searchDonor()">Search</button>
+      </div>
+      <div id="donorInfo"></div>
+    </div>
+
+    <div id="cityMgmt" class="section">
+      <h2>District & City Management</h2>
+      <button onclick="addCityDistrict()">Add New District/City</button>
+      <button onclick="editCityDistrict()">Edit Existing</button>
+    </div>
+
+    <div id="donationTrack" class="section">
+      <h2>Donation Tracking</h2>
+      <div id="donationList"></div>
+    </div>
+
+    <div id="statsReports" class="section">
+      <h2>Statistics & Reports</h2>
+      <div id="statsOutput"></div>
+    </div>
+
+    <div id="settings" class="section">
+      <h2>System Settings</h2>
+      <label>Set Donation Eligibility (Days)</label>
+      <input type="number" id="eligibilityDays" value="90">
+      <button onclick="updateSettings()">Update</button>
+    </div>
+
+    <div id="announcements" class="section">
+      <h2>Announcements</h2>
+      <div class="field-group">
+        <label>Target Page</label>
+        <select id="targetPage">
+          <option value="index.html">index.html</option>
+          <option value="registerform.html">registerform.html</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Announcement Text</label>
+        <input type="text" id="announcementText">
+      </div>
+      <button onclick="postAnnouncement()">Post Announcement</button>
+      <div id="announcementList"></div>
+    </div>
+  </div>
+
+  <div id="confirmBox" class="confirm-box">
+    <p>Are you sure you want to delete this donor?</p>
+    <div class="action-buttons">
+      <button onclick="confirmDelete(true)">Yes</button>
+      <button onclick="confirmDelete(false)">No</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Existing code for sidebar navigation
+  const sections = document.querySelectorAll('.section');
+  const sidebarLinks = document.querySelectorAll('.sidebar ul li');
+
+  function showSection(id) {
+    sections.forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    sidebarLinks.forEach(link => link.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  // --- Supabase setup ---
+  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';  // Replace with your actual anon key
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  let donorToDeleteId = null; // store donor id for delete confirmation
+
+  async function searchDonor() {
+    const number = document.getElementById('donorSearchNumber').value.trim();
+    const donorInfoDiv = document.getElementById('donorInfo');
+    donorInfoDiv.innerHTML = 'Searching...';
+
+    if (!number) {
+      donorInfoDiv.innerHTML = '<p style="color:#e11d48;">Please enter a mobile number.</p>';
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('donors')
+        .select('*')
+        .eq('mobile_number', number)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') { // no rows found
+          donorInfoDiv.innerHTML = '<p style="color:#e11d48;">No donor found with this number.</p>';
+        } else {
+          donorInfoDiv.innerHTML = `<p style="color:#e11d48;">Error: ${error.message}</p>`;
+        }
+        return;
+      }
+
+      donorInfoDiv.innerHTML = `
+        <div style="background:#1a1a1a; padding:15px; border-radius:8px; margin-top:15px;">
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>Blood Group:</strong> ${data.blood_group}</p>
+          <p><strong>Mobile Number:</strong> ${data.mobile_number}</p>
+          <p><strong>Last Donation Date:</strong> ${data.last_donation_date || 'N/A'}</p>
+          <p><strong>Times Donated:</strong> ${data.times_donated || 0}</p>
+          <button onclick="promptDelete('${data.id}')">Delete Donor</button>
+        </div>
+      `;
+
+    } catch (err) {
+      donorInfoDiv.innerHTML = `<p style="color:#e11d48;">Unexpected error: ${err.message}</p>`;
+    }
+  }
+
+  function promptDelete(id) {
+    donorToDeleteId = id;
+    document.getElementById('confirmBox').classList.add('active');
+  }
+
+  async function confirmDelete(confirm) {
+    const confirmBox = document.getElementById('confirmBox');
+    if (!confirm) {
+      donorToDeleteId = null;
+      confirmBox.classList.remove('active');
+      return;
+    }
+
+    if (!donorToDeleteId) return;
+
+    try {
+      const { error } = await supabase
+        .from('donors')
+        .delete()
+        .eq('id', donorToDeleteId);
+
+      if (error) {
+        alert('Failed to delete donor: ' + error.message);
+      } else {
+        alert('Donor deleted successfully.');
+        document.getElementById('donorInfo').innerHTML = '';
+      }
+    } catch (err) {
+      alert('Unexpected error: ' + err.message);
+    }
+
+    donorToDeleteId = null;
+    confirmBox.classList.remove('active');
+  }
+
+  async function updateSettings() {
+    const daysInput = document.getElementById('eligibilityDays');
+    const days = Number(daysInput.value);
+    if (isNaN(days) || days < 0) {
+      alert('Please enter a valid number of days.');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('settings')
+        .upsert({ key: 'donation_eligibility_days', value: days.toString() }, { onConflict: 'key' });
+
+      if (error) {
+        alert('Failed to update settings: ' + error.message);
+        return;
+      }
+
+      alert('Donation eligibility updated successfully.');
+    } catch (err) {
+      alert('Unexpected error: ' + err.message);
+    }
+  }
+
+  async function postAnnouncement() {
+    const targetPage = document.getElementById('targetPage').value;
+    const text = document.getElementById('announcementText').value.trim();
+
+    if (!text) {
+      alert('Please enter announcement text.');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('announcements')
+        .insert([{ target_page: targetPage, text, created_at: new Date().toISOString() }]);
+
+      if (error) {
+        alert('Failed to post announcement: ' + error.message);
+        return;
+      }
+
+      alert('Announcement posted successfully.');
+      document.getElementById('announcementText').value = '';
+      loadAnnouncements();
+    } catch (err) {
+      alert('Unexpected error: ' + err.message);
+    }
+  }
+
+  async function loadAnnouncements() {
+    const announcementList = document.getElementById('announcementList');
+    announcementList.innerHTML = 'Loading announcements...';
+
+    try {
+      const { data, error } = await supabase
+        .from('announcements')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        announcementList.innerHTML = 'Failed to load announcements.';
+        return;
+      }
+
+      if (!data.length) {
+        announcementList.innerHTML = '<p>No announcements posted yet.</p>';
+        return;
+      }
+
+      announcementList.innerHTML = data.map(a => `
+        <div style="background:#1a1a1a; margin-bottom:10px; padding:10px; border-radius:6px;">
+          <p><strong>Page:</strong> ${a.target_page}</p>
+          <p>${a.text}</p>
+          <small style="color:#777;">Posted on: ${new Date(a.created_at).toLocaleString()}</small>
+        </div>
+      `).join('');
+    } catch (err) {
+      announcementList.innerHTML = 'Unexpected error loading announcements.';
+    }
+  }
+
+  async function addCityDistrict() {
+    alert('Add City/District functionality not yet implemented.');
+  }
+
+  async function editCityDistrict() {
+    alert('Edit City/District functionality not yet implemented.');
+  }
+
+  window.addEventListener('DOMContentLoaded', loadAnnouncements);
+</script>
 </body>
 </html>
