@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blood Donor Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    form {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #c62828;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #c62828;
+      color: white;
+      padding: 12px;
+      border: none;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #b71c1c;
+    }
+
+    .success {
+      text-align: center;
+      margin-top: 10px;
+      color: green;
+    }
+
+    .error {
+      text-align: center;
+      margin-top: 10px;
+      color: #c62828;
+    }
+
+    .lang-toggle {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .lang-toggle button {
+      background: #e0e0e0;
+      color: #333;
+      border: none;
+      padding: 8px 12px;
+      margin: 0 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .lang-toggle button.active {
+      background: #c62828;
+      color: white;
+    }
+
+    .register-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .register-link a {
+      color: #c62828;
+      text-decoration: none;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+
+    .forgot-password {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .forgot-password a {
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .forgot-password a:hover {
+      text-decoration: underline;
+    }
+
+    #loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 20px;
+      flex-direction: column;
+      font-family: sans-serif;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+<form id="login-form" name="login-form">
+  <div class="lang-toggle">
+    <button type="button" class="active" onclick="setLang('en')">English</button>
+    <button type="button" onclick="setLang('bn')">বাংলা</button>
+  </div>
+
+  <h2 data-en="Donor Login" data-bn="রক্তদাতার লগইন">Donor Login</h2>
+
+  <label data-en="Email" data-bn="ইমেইল">Email</label>
+  <input type="email" name="email" required>
+
+  <label data-en="Password" data-bn="পাসওয়ার্ড">Password</label>
+  <input type="password" name="password" required>
+
+  <button type="submit" data-en="Login" data-bn="লগইন">Login</button>
+
+  <div class="forgot-password">
+    <a href="#" onclick="forgotPassword()" data-en="Forgot your password?" data-bn="পাসওয়ার্ড ভুলে গেছেন?">Forgot your password?</a>
+  </div>
+
+  <div class="register-link">
+    <span data-en="Don't have an account?" data-bn="কোনো অ্যাকাউন্ট নেই?">Don't have an account?</span>
+    <a href="register.html" data-en="Register here" data-bn="এখানে নিবন্ধন করুন">Register here</a>
+  </div>
+
+  <div class="success" id="success-msg"></div>
+  <div class="error" id="error-msg"></div>
+</form>
+
+<div id="loading-overlay">
+  <div class="spinner" style="border:6px solid #f3f3f3;border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;"></div>
+  <div style="margin-top:10px;">Logging in...</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Initialize Supabase
+  const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
+  const SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+
+  function setLang(lang) {
+    document.querySelectorAll('[data-en]').forEach(el => {
+      el.textContent = el.getAttribute(`data-${lang}`);
+    });
+    document.querySelectorAll('.lang-toggle button').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
+  }
+
+  const form = document.forms['login-form'];
+  const successMsg = document.getElementById('success-msg');
+  const errorMsg = document.getElementById('error-msg');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const loadingOverlay = document.getElementById('loading-overlay');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    successMsg.textContent = '';
+    errorMsg.textContent = '';
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
+    loadingOverlay.style.display = "flex";
+
+    const formData = new FormData(form);
+    const email = formData.get('email');
+    const password = formData.get('password');
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      successMsg.textContent = "✅ Login successful! Redirecting...";
+      
+      // Store user session and redirect
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      setTimeout(() => {
+        // Redirect to dashboard or home page
+        window.location.href = '/'; // Change this to your desired redirect URL
+      }, 1500);
+
+    } catch (err) {
+      errorMsg.textContent = `❌ Error: ${err.message}`;
+      console.error('Login error:', err);
+    } finally {
+      loadingOverlay.style.display = "none";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Login";
+    }
+  });
+
+  async function forgotPassword() {
+    const email = prompt('Enter your email address to reset password:');
+    if (!email) return;
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/reset-password.html'
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      alert('Password reset email sent! Please check your inbox.');
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  }
+
+  // Check if user is already logged in
+  window.addEventListener('load', async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      successMsg.textContent = "You are already logged in. Redirecting...";
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1500);
+    }
+  });
+</script>
+
+</body>
+</html>
