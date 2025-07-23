@@ -290,10 +290,13 @@
     body.userId = `ID-${Date.now()}`;
 
     try {
-      // Step 1: Create Supabase Auth user
+      // Step 1: Create Supabase Auth user with email confirmation
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: body.email,
-        password: body.password
+        password: body.password,
+        options: {
+          emailRedirectTo: window.location.origin + '/login.html'
+        }
       });
 
       if (authError) {
