@@ -290,17 +290,14 @@
     body.userId = `ID-${Date.now()}`;
 
     try {
-      // Step 1: Create Supabase Auth user with email confirmation
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      // Step 1: Create Supabase Auth user with minimal signup
+      const { data, error } = await supabase.auth.signUp({
         email: body.email,
-        password: body.password,
-        options: {
-          emailRedirectTo: window.location.origin + '/login.html'
-        }
+        password: body.password
       });
 
-      if (authError) {
-        throw new Error(`Authentication failed: ${authError.message}`);
+      if (error) {
+        throw new Error(`Authentication failed: ${error.message}`);
       }
 
       // Step 2: Prepare data for database (exclude password)
@@ -347,12 +344,12 @@
         throw new Error('Google Sheets submission failed');
       }
 
-      successMsg.textContent = "✅ Registration successful! Please check your email to verify your account.";
+      successMsg.textContent = "✅ Registration successful!";
       form.reset();
       setLang('en');
 
       setTimeout(() => {
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
       }, 2000);
 
     } catch (err) {
