@@ -282,7 +282,7 @@ async function saveProfile() {
             .from('profile-images')
             .getPublicUrl(filename).data.publicUrl;
           // Save URL in donors table
-          await supabase.from('donors').update({ profile_image_url: publicUrl }).eq('user_id', window.currentUserId);
+          await supabase.from('aduit_log_entrise').update({ profile_image_url: publicUrl }).eq('id', window.currentUserId);
           document.getElementById('profileImage').src= publicUrl;
         }
         cropperInstance.destroy();
