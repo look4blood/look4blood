@@ -145,9 +145,9 @@
 </div>
 
 <!-- Cropper.js and Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
-
+<script type="module">
+  import { createClient } from 'npm:@supabase/supabase-js@^2';
+  
 <script>
   // Initialize Supabase
   const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co'; // replace with your URL
