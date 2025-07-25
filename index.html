@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Donor Network - Find Life Savers</title>
+    <title>Blood Donor Finder - Find Life Savers</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -438,9 +438,11 @@
         }
 
         table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
+    width: 100%;
+    min-width: 600px; /* ছোট ডিভাইসে horizontal scroll allow করবে */
+    border-collapse: collapse;
+    font-size: 14px;
+}
         }
 
         th {
@@ -568,9 +570,11 @@
             }
 
             .table-container {
-                margin: 0 -16px;
-                border-radius: 0;
-            }
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -16px;
+    border-radius: 0;
+}
 
             table {
                 font-size: 12px;
@@ -696,10 +700,10 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Donor Availability</label>
+                        <label class="form-label">Donor Type</label>
                         <select id="donorType" class="form-select">
                             <option value="All">All Donors</option>
-                            <option value="Eligible">Available Now</option>
+                            <option value="Eligible">Eligible</option>
                         </select>
                     </div>
                 </div>
