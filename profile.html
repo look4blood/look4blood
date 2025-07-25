@@ -192,9 +192,9 @@
   // Load profile data
   async function loadProfile(userId) {
     const { data, error } = await supabase
-      .from('donors')
+      .from('aduit_log_entrise')
       .select('*')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .single();
 
     if (error || !data) {
@@ -234,9 +234,9 @@ async function saveProfile() {
     times_donated: parseInt(document.getElementById('times_donated').textContent),
   };
   const { data, error } = await supabase
-    .from('donors')
+    .from('aduit_log_entrise')
     .update(updatedData)
-    .eq('user_id', window.currentUserId);
+    .eq('id', window.currentUserId);
   if (error) alert('Error saving: ' + error.message);
   else {
     alert('Profile updated!');
