@@ -1,246 +1,804 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Find a Blood Donor</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #fff4f4;
-      padding: 20px;
-      margin: 0;
-    }
-    h1 {
-      text-align: center;
-      color: #c62828;
-    }
-    form {
-      background: white;
-      max-width: 600px;
-      margin: 0 auto 30px;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-    select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-    }
-    button {
-      background: #c62828;
-      color: white;
-      padding: 12px;
-      border: none;
-      width: 100%;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    button:hover {
-      background: #b71c1c;
-    }
-    .result-summary {
-      margin: 20px auto 10px;
-      max-width: 900px;
-      font-weight: bold;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      max-width: 900px;
-      margin: 10px auto;
-      background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-    th {
-      background: #c62828;
-      color: white;
-    }
-    .no-results {
-      text-align: center;
-      color: red;
-      margin-top: 20px;
-    }
-    .register-btn {
-      display: block;
-      text-align: center;
-      margin-top: 20px;
-    }
-    .register-btn a {
-      background: #388e3c;
-      color: white;
-      padding: 12px 24px;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-    .register-btn a:hover {
-      background: #2e7d32;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <title>Blood Donor Network - Find Life Savers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Top Bar Styles */
+        .top-bar {
+            background: linear-gradient(135deg, #c62828 0%, #b71c1c 50%, #8e0000 100%);
+            padding: 18px 0;
+            box-shadow: 0 8px 32px rgba(198, 40, 40, 0.4), 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            color: white;
+            font-size: 26px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffffff, #f5f5f5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c62828;
+            font-size: 20px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            font-size: 14px;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn.profile:hover {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4caf50;
+        }
+
+        .nav-btn.announcement:hover {
+            background: rgba(255, 152, 0, 0.2);
+            border-color: #ff9800;
+        }
+
+        .nav-btn.login:hover {
+            background: rgba(33, 150, 243, 0.2);
+            border-color: #2196f3;
+        }
+
+        .nav-btn.register:hover {
+            background: rgba(156, 39, 176, 0.2);
+            border-color: #9c27b0;
+        }
+
+        .nav-btn.search:hover {
+            background: rgba(255, 193, 7, 0.2);
+            border-color: #ffc107;
+        }
+
+        .nav-btn.message:hover {
+            background: rgba(0, 188, 212, 0.2);
+            border-color: #00bcd4;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-btn:hover .nav-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .nav-btn.profile:hover .nav-icon {
+            transform: scale(1.2) rotate(360deg);
+        }
+
+        .nav-btn.search:hover .nav-icon {
+            transform: scale(1.2) rotate(-10deg);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+            }
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .top-bar {
+            animation: slideInFromTop 0.6s ease-out;
+        }
+
+        .nav-btn {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .nav-btn:nth-child(1) { animation-delay: 0.1s; }
+        .nav-btn:nth-child(2) { animation-delay: 0.2s; }
+        .nav-btn:nth-child(3) { animation-delay: 0.3s; }
+        .nav-btn:nth-child(4) { animation-delay: 0.4s; }
+        .nav-btn:nth-child(5) { animation-delay: 0.5s; }
+        .nav-btn:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .nav-btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            
+            .logo {
+                font-size: 20px;
+            }
+        }
+
+        /* Professional UI/UX Design System */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 0;
+            margin: 0;
+            line-height: 1.6;
+            color: #334155;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, rgba(198, 40, 40, 0.05) 0%, rgba(183, 28, 28, 0.02) 100%);
+            border-radius: 24px;
+            border: 1px solid rgba(198, 40, 40, 0.08);
+        }
+
+        .hero-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #64748b;
+            margin: 0 0 32px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 400;
+        }
+
+        /* Search Form Container */
+        .search-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c62828, #e91e63, #9c27b0);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .form-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 8px 0;
+        }
+
+        .form-subtitle {
+            color: #64748b;
+            font-size: 15px;
+            margin: 0;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #334155;
+            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 16px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #c62828;
+            box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-select:hover {
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+
+        /* Search Button */
+        .search-button {
+            width: 100%;
+            padding: 18px 32px;
+            background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+            box-shadow: 0 10px 15px -3px rgba(198, 40, 40, 0.4);
+        }
+
+        .search-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .search-button:hover::before {
+            left: 100%;
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(198, 40, 40, 0.4);
+        }
+
+        .search-button:active {
+            transform: translateY(0);
+        }
+
+        /* Results Section */
+        .results-container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .result-summary {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            font-weight: 600;
+            color: #065f46;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modern Table */
+        .table-container {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 20px 16px;
+            text-align: left;
+            border: none;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+            transform: scale(1.01);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Error/No Results */
+        .no-results {
+            background: linear-gradient(135deg, #fef2f2 0%, #fef2f2 100%);
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            padding: 40px 24px;
+            text-align: center;
+            color: #dc2626;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 24px 0;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 48px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 24px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(198, 40, 40, 0.4);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.4);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-btn.primary:hover {
+            box-shadow: 0 20px 25px -5px rgba(198, 40, 40, 0.4);
+        }
+
+        .action-btn.secondary:hover {
+            box-shadow: 0 20px 25px -5px rgba(5, 150, 105, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 16px;
+            }
+
+            .search-container {
+                padding: 24px 20px;
+                margin: 0 16px 24px 16px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .hero-section {
+                padding: 24px 16px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .action-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .table-container {
+                margin: 0 -16px;
+                border-radius: 0;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 12px 8px;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .results-container {
+            animation: fadeInUp 0.8s ease-out;
+        }
+    </style>
 </head>
 <body>
+    <!-- Stylish Animated Top Bar -->
+    <div class="top-bar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">🩸</div>
+                Blood Donor Hub
+            </div>
+            <div class="nav-buttons">
+                <a href="profile.html" class="nav-btn profile">
+                    <span class="nav-icon">👤</span>
+                    Profile
+                </a>
+                <a href="annous.html" class="nav-btn announcement">
+                    <span class="nav-icon">📢</span>
+                    Announcements
+                </a>
+                <a href="login.html" class="nav-btn login">
+                    <span class="nav-icon">🔐</span>
+                    Login
+                </a>
+                <a href="register.html" class="nav-btn register">
+                    <span class="nav-icon">📝</span>
+                    Register
+                </a>
+                <a href="message.html" class="nav-btn message">
+                    <span class="nav-icon">💬</span>
+                    Messages
+                </a>
+                <a href="search.html" class="nav-btn search">
+                    <span class="nav-icon">🔍</span>
+                    Search
+                </a>
+            </div>
+        </div>
+    </div>
 
-<h1>Find a Blood Donor</h1>
+    <!-- Professional Main Content -->
+    <div class="main-content">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="hero-title">Find Life-Saving Blood Donors</h1>
+            <p class="hero-subtitle">Connect with verified donors in your area and help save lives through our advanced search system</p>
+        </div>
 
-<form id="searchForm">
-  <label>Blood Group</label>
-  <select id="bloodGroup">
-    <option value="All">All</option>
-    <option>A+</option><option>A-</option>
-    <option>B+</option><option>B-</option>
-    <option>AB+</option><option>AB-</option>
-    <option>O+</option><option>O-</option>
-  </select>
+        <!-- Search Form -->
+        <div class="search-container">
+            <div class="form-header">
+                <h2 class="form-title">Search Blood Donors</h2>
+                <p class="form-subtitle">Use the filters below to find donors matching your specific requirements</p>
+            </div>
 
-  <label>District</label>
-  <select id="district">
-    <option value="Chottogram">Chottogram</option>
-  </select>
+            <form id="searchForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Blood Group</label>
+                        <select id="bloodGroup" class="form-select">
+                            <option value="All">All Blood Groups</option>
+                            <option>A+</option><option>A-</option>
+                            <option>B+</option><option>B-</option>
+                            <option>AB+</option><option>AB-</option>
+                            <option>O+</option><option>O-</option>
+                        </select>
+                    </div>
 
-  <label>City</label>
-  <select id="city">
-    <option value="All">All</option>
-    <option>Agrabad</option>
-    <option>Boalkhali</option>
-    <option>Bakalia</option>
-    <option>Bayazid</option>
-    <option>Chandgaon</option>
-    <option>Chawkbazar</option>
-    <option>Halishahar</option>
-    <option>Khulshi</option>
-    <option>Kotwali</option>
-    <option>Patiya</option>
-    <option>Panchlaish</option>
-    <option>Patenga</option>
-    <option>Rangunia</option>
-    <option>Raozan</option>
-  </select>
+                    <div class="form-group">
+                        <label class="form-label">District</label>
+                        <select id="district" class="form-select">
+                            <option value="Chottogram">Chottogram</option>
+                        </select>
+                    </div>
 
-  <label>Donor Type</label>
-  <select id="donorType">
-    <option value="All">All</option>
-    <option value="Eligible">Eligible</option>
-  </select>
+                    <div class="form-group">
+                        <label class="form-label">City</label>
+                        <select id="city" class="form-select">
+                            <option value="All">All Cities</option>
+                            <option>Agrabad</option>
+                            <option>Boalkhali</option>
+                            <option>Bakalia</option>
+                            <option>Bayazid</option>
+                            <option>Chandgaon</option>
+                            <option>Chawkbazar</option>
+                            <option>Halishahar</option>
+                            <option>Khulshi</option>
+                            <option>Kotwali</option>
+                            <option>Patiya</option>
+                            <option>Panchlaish</option>
+                            <option>Patenga</option>
+                            <option>Rangunia</option>
+                            <option>Raozan</option>
+                        </select>
+                    </div>
 
-  <button type="submit">Search</button>
-</form>
+                    <div class="form-group">
+                        <label class="form-label">Donor Availability</label>
+                        <select id="donorType" class="form-select">
+                            <option value="All">All Donors</option>
+                            <option value="Eligible">Available Now</option>
+                        </select>
+                    </div>
+                </div>
 
-<div class="result-summary" id="resultCount"></div>
-<div id="results"></div>
+                <button type="submit" class="search-button">
+                    🔍 Search Donors
+                </button>
+            </form>
+        </div>
 
-<div style="margin-top: 30px; text-align: center;">
-  <a href="registerform.html" style="
-    display: inline-block;
-    padding: 12px 20px;
-    background-color: #c62828;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 16px;
-    margin-right: 10px;
-  ">➕ Register as a Donor</a>
+        <!-- Results Section -->
+        <div class="results-container">
+            <div class="result-summary" id="resultCount"></div>
+            <div class="table-container" id="results"></div>
+        </div>
 
-  <a href="dashboard.html" style="
-    display: inline-block;
-    padding: 12px 20px;
-    background-color: #2e7d32;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 16px;
-  ">📊 Go to Dashboard</a>
-</div>
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="registerform.html" class="action-btn primary">
+                ➕ Register as a Donor
+            </a>
+            <a href="dashboard.html" class="action-btn secondary">
+                📊 Go to Dashboard
+            </a>
+        </div>
+    </div>
 
-<script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    <script type="module">
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-  const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
-  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  function daysSince(dateStr) {
-    const date = new Date(dateStr);
-    if (isNaN(date)) return Infinity;
-    const today = new Date();
-    const diffTime = today - date;
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  }
+        function daysSince(dateStr) {
+            const date = new Date(dateStr);
+            if (isNaN(date)) return Infinity;
+            const today = new Date();
+            const diffTime = today - date;
+            return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        }
 
-  document.getElementById("searchForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
+        document.getElementById("searchForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
 
-    const bloodGroup = document.getElementById("bloodGroup").value;
-    const district = document.getElementById("district").value;
-    const city = document.getElementById("city").value;
-    const donorType = document.getElementById("donorType").value;
+            const bloodGroup = document.getElementById("bloodGroup").value;
+            const district = document.getElementById("district").value;
+            const city = document.getElementById("city").value;
+            const donorType = document.getElementById("donorType").value;
 
-    const { data: donors, error } = await supabase.from("donors").select("*");
+            const { data: donors, error } = await supabase.from("donors").select("*");
 
-    const resultsDiv = document.getElementById("results");
-    const resultCount = document.getElementById("resultCount");
+            const resultsDiv = document.getElementById("results");
+            const resultCount = document.getElementById("resultCount");
 
-    if (error || !donors || donors.length === 0) {
-      resultCount.textContent = "";
-      resultsDiv.innerHTML = "<div class='no-results'>❌ Error fetching donor data.</div>";
-      console.error(error);
-      return;
-    }
+            if (error || !donors || donors.length === 0) {
+                resultCount.textContent = "";
+                resultsDiv.innerHTML = "<div class='no-results'>❌ Error fetching donor data.</div>";
+                console.error(error);
+                return;
+            }
 
-    const filtered = donors.filter(d => {
-      const matchesBlood = bloodGroup === "All" || d.blood_group === bloodGroup;
-      const matchesDistrict = d.state === district;
-      const matchesCity = city === "All" || d.city === city;
-      const days = daysSince(d.last_donation);
-      const isEligible = donorType === "All" || (donorType === "Eligible" && days >= 90);
+            const filtered = donors.filter(d => {
+                const matchesBlood = bloodGroup === "All" || d.blood_group === bloodGroup;
+                const matchesDistrict = d.state === district;
+                const matchesCity = city === "All" || d.city === city;
+                const days = daysSince(d.last_donation);
+                const isEligible = donorType === "All" || (donorType === "Eligible" && days >= 90);
+                return matchesBlood && matchesDistrict && matchesCity && isEligible;
+            });
 
-      return matchesBlood && matchesDistrict && matchesCity && isEligible;
-    });
+            if (filtered.length === 0) {
+                resultCount.textContent = "";
+                resultsDiv.innerHTML = "<div class='no-results'>❌ No matching donors found.</div>";
+                return;
+            }
 
-    if (filtered.length === 0) {
-      resultCount.textContent = "";
-      resultsDiv.innerHTML = "<div class='no-results'>❌ No matching donors found.</div>";
-      return;
-    }
+            resultCount.textContent = `✅ ${filtered.length} matching donor(s) found:`;
 
-    resultCount.textContent = `✅ ${filtered.length} matching donor(s) found:`;
+            let table = "<table><tr>";
+            const headers = ["Name", "Age", "Gender", "Blood Group", "Phone", "City", "Last Donation", "Times Donated"];
+            headers.forEach(h => table += `<th>${h}</th>`);
+            table += "</tr>";
 
-    let table = "<table><tr>";
-    const headers = ["Name", "Age", "Gender", "Blood Group", "Phone", "City", "Last Donation", "Times Donated"];
-    headers.forEach(h => table += `<th>${h}</th>`);
-    table += "</tr>";
+            filtered.forEach(d => {
+                table += "<tr>";
+                table += `<td>${d.name}</td>`;
+                table += `<td>${d.age || "-"}</td>`;
+                table += `<td>${d.gender || "-"}</td>`;
+                table += `<td>${d.blood_group}</td>`;
+                table += `<td>${d.phone}</td>`;
+                table += `<td>${d.city || "-"}</td>`;
+                table += `<td>${d.last_donation || "-"}</td>`;
+                table += `<td>${d.times_donated || "0"}</td>`;
+                table += "</tr>";
+            });
 
-    filtered.forEach(d => {
-      table += "<tr>";
-      table += `<td>${d.name}</td>`;
-      table += `<td>${d.age || "-"}</td>`;
-      table += `<td>${d.gender || "-"}</td>`;
-      table += `<td>${d.blood_group}</td>`;
-      table += `<td>${d.phone}</td>`;
-      table += `<td>${d.city || "-"}</td>`;
-      table += `<td>${d.last_donation || "-"}</td>`;
-      table += `<td>${d.times_donated || "0"}</td>`;
-      table += "</tr>";
-    });
-
-    table += "</table>";
-    resultsDiv.innerHTML = table;
-  });
-</script>
-
+            table += "</table>";
+            resultsDiv.innerHTML = table;
+        });
+    </script>
 </body>
 </html>
