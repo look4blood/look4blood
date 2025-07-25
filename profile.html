@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>User Profile with Supabase</title>
+<!-- Optional: Google Fonts for better typography -->
+<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet"/>
+<!-- Cropper.js CSS -->
+<link href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css" rel="stylesheet"/>
+<style>
+  /* ... (Same styles as before, omitted for brevity, include previous CSS here) ... */
+</style>
+</head>
+<body>
+
+<div id="authPrompt" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:10000;">
+  <div style="background:#fff; padding:30px; border-radius:10px; max-width:400px; width:90%; text-align:center;">
+    <h2>Please Login/Register</h2>
+    <button id="loginBtn" style="margin-top:20px; padding:10px 20px; background:#3498db; color:#fff; border:none; border-radius:8px; cursor:pointer;">Login with Email</button>
+  </div>
+</div>
+
+<div class="profile-container" style="display:none;" id="profileContainer">
+  <!-- Header with profile picture and name -->
+  <!-- ... same as previous, omitted for brevity ... -->
+  <!-- Profile picture and info -->
+  <div class="profile-header">
+    <div class="profile-image-wrapper">
+      <img src="" alt="Profile" class="profile-image" id="profileImage"/>
+      <div class="upload-overlay" title="Change Profile Picture" id="uploadBtn">📷</div>
+    </div>
+    <div class="profile-info">
+      <h1 class="name-title" id="name"></h1>
+      <div class="award-badge" id="bloodType"></div>
+    </div>
+  </div>
+
+  <!-- Stats and Progress Ring -->
+  <div class="stats-cards">
+    <div class="card">
+      <div class="progress-ring" id="progressRing">
+        <canvas id="ringCanvas" width="120" height="120"></canvas>
+      </div>
+      <div class="donation-info" id="donationStatus"></div>
+    </div>
+    <div class="card">
+      <h2 id="timesDonated"></h2>
+      <p>Times Donated</p>
+      <small>Last donation: <span id="lastDonation"></span></small>
+    </div>
+    <div class="card" style="text-align:center;">
+      <button id="likeBtn" style="border:none; background:none; font-size:2em; cursor:pointer; transition:transform 0.3s;">👍</button>
+      <h2 id="likesCount">0</h2>
+    </div>
+    <div class="card" style="text-align:center;">
+      <button id="dislikeBtn" style="border:none; background:none; font-size:2em; cursor:pointer; transition:transform 0.3s;">👎</button>
+      <h2 id="dislikesCount">0</h2>
+    </div>
+  </div>
+
+  <!-- User Info -->
+  <div class="user-info">
+    <h3>User Info</h3>
+    <!-- info rows with editable spans -->
+    <!-- ... same as previous ... -->
+    <div class="info-row">
+      <div class="info-label">Phone</div>
+      <div class="info-value"><span class="view" id="phone"></span></div>
+    </div>
+    <div class="info-row">
+      <div class="info-label">City</div>
+      <div class="info-value"><span class="view" id="city"></span></div>
+    </div>
+    <div class="info-row">
+      <div class="info-label">District</div>
+      <div class="info-value"><span class="view" id="district"></span></div>
+    </div>
+    <div class="info-row">
+      <div class="info-label">User ID</div>
+      <div class="info-value"><span class="view" id="userId"></span></div>
+    </div>
+    <div class="buttons">
+      <button class="btn-edit" id="editBtn">Edit</button>
+      <button class="btn-save" id="saveBtn" style="display:none;">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Image Cropping -->
+<div id="cropperModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:9999;">
+  <div style="background:#fff; padding:20px; border-radius:10px; max-width:600px; width:90%; position:relative;">
+    <h3>Crop Image</h3>
+    <img id="cropperImage" style="max-width:100%; display:block; margin-bottom:10px;"/>
+    <div style="text-align:right;">
+      <button id="cropBtn" style="margin-right:10px; padding:8px 16px; border:none; background:#27ae60; color:#fff; border-radius:5px;">Crop & Upload</button>
+      <button id="cancelCrop" style="padding:8px 16px; border:none; background:#e74c3c; color:#fff; border-radius:5px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Include Cropper.js from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+<!-- Include Supabase JS client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
+
+<script>
+  // Initialize Supabase client
+  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co'; // <-- replace with your URL
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // <-- replace with your key
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  let userId = null; // Store logged-in user's ID
+
+  // Authentication guard
+  async function checkAuth() {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (!session) {
+      document.getElementById('authPrompt').style.display = 'flex';
+    } else {
+      userId = session.user.id;
+      document.getElementById('authPrompt').style.display = 'none';
+      document.getElementById('profileContainer').style.display = 'block';
+      loadProfile();
+    }
+  }
+
+  document.getElementById('loginBtn').onclick = async () => {
+    // Simple Email login popup (for demo, use email/password login)
+    const email = prompt('Enter your email');
+    const password = prompt('Enter your password');
+    if (email && password) {
+      const { user, error } = await supabase.auth.signIn({ email, password });
+      if (error) alert('Login failed: ' + error.message);
+      else checkAuth();
+    }
+  };
+
+  // Fetch profile data
+  async function loadProfile() {
+    const { data, error } = await supabase
+      .from('donors')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (error || !data) {
+      alert('Error fetching profile: ' + error?.message || 'Profile not found');
+      return;
+    }
+
+    // Populate profile info
+    document.getElementById('name').textContent = data.name || 'User Name';
+    document.getElementById('bloodType').textContent = data.blood_type || 'A+';
+
+    document.getElementById('phone').textContent = data.phone || '';
+    document.getElementById('city').textContent = data.city || '';
+    document.getElementById('district').textContent = data.district || '';
+    document.getElementById('userId').textContent = data.id;
+
+    // Profile image
+    if (data.profile_image_url) {
+      document.getElementById('profileImage').src = data.profile_image_url;
+    } else {
+      document.getElementById('profileImage').src = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
+    }
+
+    // Donation info
+    const daysSince = data.days_since_last_donation || 25;
+    const maxDays = 90;
+    animateRing(Math.min(daysSince / maxDays,1));
+    if (daysSince > maxDays) {
+      document.getElementById('donationStatus').innerHTML = `❌ Overdue by ${daysSince - maxDays} days`;
+    } else {
+      document.getElementById('donationStatus').innerHTML = `✅ Can donate in ${maxDays - daysSince} days`;
+    }
+
+    document.getElementById('timesDonated').textContent = data.times_donated || 0;
+    document.getElementById('lastDonation').textContent = data.last_donation_days_ago + ' days ago';
+
+    // Likes/dislikes
+    document.getElementById('likesCount').textContent = data.likes || 0;
+    document.getElementById('dislikesCount').textContent = data.dislikes || 0;
+  }
+
+  // Save profile updates
+async function saveProfile() {
+  const updatedData = {
+    phone: document.getElementById('phone').textContent,
+    city: document.getElementById('city').textContent,
+    district: document.getElementById('district').textContent,
+  };
+  const { data, error } = await supabase
+    .from('donors')
+    .update(updatedData)
+    .eq('id', userId);
+  if (error) alert('Error saving profile: ' + error.message);
+  else {
+    alert('Profile saved!');
+    loadProfile();
+  }
+}
+
+  // Upload profile image to Supabase Storage
+  async function uploadProfileImage(blob) {
+    const filename = `profile_images/${userId}.png`;
+    const { data, error } = await supabase.storage
+      .from('profile-images') // Make sure to create this bucket
+      .upload(filename, blob, { upsert: true });
+    if (error) {
+      alert('Upload failed: ' + error.message);
+      return null;
+    }
+    // get public URL
+    const publicUrl = supabase.storage
+      .from('profile-images')
+      .getPublicUrl(filename).data.publicUrl;
+    // Save URL to profile
+    await supabase
+      .from('donors')
+      .update({ profile_image_url: publicUrl })
+      .eq('id', userId);
+    return publicUrl;
+  }
+
+  // Handle profile picture change
+  const cropperModal = document.getElementById('cropperModal');
+  const cropperImage = document.getElementById('cropperImage');
+  let cropperInstance = null;
+
+  document.getElementById('uploadBtn').onclick = () => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          cropperImage.src = reader.result;
+          cropperModal.style.display = 'flex';
+          if (cropperInstance) cropperInstance.destroy();
+          cropperInstance = new Cropper(cropperImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    fileInput.click();
+  };
+
+  document.getElementById('cropBtn').onclick = async () => {
+    if (cropperInstance) {
+      cropperInstance.getCroppedCanvas().toBlob(async blob => {
+        // Upload image
+        const url = await uploadProfileImage(blob);
+        if (url) {
+          document.getElementById('profileImage').src = url;
+        }
+        cropperInstance.destroy();
+        cropperInstance = null;
+        cropperModal.style.display = 'none';
+      });
+    }
+  };
+
+  document.getElementById('cancelCrop').onclick = () => {
+    if (cropperInstance) cropperInstance.destroy();
+    cropperInstance = null;
+    cropperModal.style.display = 'none';
+  };
+
+  // Animate ring
+  const ctx = document.getElementById('ringCanvas').getContext('2d');
+  const centerX = 60, centerY=60, radius=50, lineWidth=10;
+  function drawRing(percent) {
+    ctx.clearRect(0, 0, 120, 120);
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, 2*Math.PI);
+    ctx.strokeStyle='#e0e0e0';
+    ctx.lineWidth=lineWidth;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, -Math.PI/2, -Math.PI/2 + 2*Math.PI*percent);
+    ctx.strokeStyle='#3498db';
+    ctx.lineWidth=lineWidth;
+    ctx.lineCap='round';
+    ctx.stroke();
+  }
+
+  function animateRing(targetPercent) {
+    let startTime = null;
+    const duration = 1500;
+    function animate(time) {
+      if (!startTime) startTime=time;
+      const progress = Math.min((time-startTime)/duration,1);
+      drawRing(progress*targetPercent);
+      if (progress<1) requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+  }
+
+  // Like/dislike with animation
+  const likeBtn = document.getElementById('likeBtn');
+  const dislikesBtn = document.getElementById('dislikeBtn');
+  const likesCount = document.getElementById('likesCount');
+  const dislikesCount = document.getElementById('dislikesCount');
+
+  likeBtn.onclick = async () => {
+    let count = parseInt(likesCount.textContent) || 0;
+    count++;
+    likesCount.textContent = count;
+    likeBtn.style.transform='scale(1.2)';
+    setTimeout(()=>likeBtn.style.transform='scale(1)',200);
+    // Save to DB
+    await supabase.from('donors').update({ likes: count }).eq('id', userId);
+  };
+
+  dislikesBtn.onclick = async () => {
+    let count = parseInt(dislikesCount.textContent) || 0;
+    count++;
+    dislikesCount.textContent = count;
+    dislikesBtn.style.transform='scale(1.2)';
+    setTimeout(()=>dislikesBtn.style.transform='scale(1)',200);
+    await supabase.from('donors').update({ dislikes: count }).eq('id', userId);
+  };
+
+  // Toggle edit/save
+  const editBtn = document.getElementById('editBtn');
+  const saveBtn = document.getElementById('saveBtn');
+  const fieldIds = ['phone', 'city', 'district'];
+
+  let isEditing = false;
+  function toggleEdit(editing) {
+    fieldIds.forEach(id => {
+      const span = document.getElementById(id);
+      if (editing) {
+        const input = document.createElement('input');
+        input.type='text';
+        input.id=id + 'Input';
+        input.value=span.textContent;
+        input.style.width='100%';
+        span.replaceWith(input);
+      } else {
+        const input = document.getElementById(id + 'Input');
+        if (input) {
+          span.textContent = input.value;
+          input.replaceWith(span);
+        }
+      }
+    });
+    document.getElementById('editBtn').style.display=editing?'none':'inline-block';
+    document.getElementById('saveBtn').style.display=editing?'inline-block':'none';
+  }
+
+  document.getElementById('editBtn').onclick = () => { toggleEdit(true); };
+  document.getElementById('saveBtn').onclick = () => { saveProfile(); toggleEdit(false); };
+
+  // On page load
+  checkAuth();
+
+</script>
+</body>
+</html>
