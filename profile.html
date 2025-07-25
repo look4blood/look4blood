@@ -161,14 +161,24 @@
   // Check auth on load
   checkAuth();
 
+  // Function to get current user JSON object
+  async function getCurrentUser() {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error) {
+      console.error('Error fetching user:', error);
+      return null;
+    }
+    return user;
+  }
+
   async function checkAuth() {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (!session) {
+    const user = await getCurrentUser();
+    if (!user) {
       authPrompt.style.display = 'flex';
     } else {
       authPrompt.style.display = 'none';
       profileContainer.style.display = 'block';
-      loadProfile(session.user.id);
+      loadProfile(user.id);
     }
   }
 
@@ -208,6 +218,8 @@
 
     // Save user_id in global scope for updates
     window.currentUserId = data.user_id;
+
+    // Optionally, load other profile details or images here
   }
 
   // Save profile data
