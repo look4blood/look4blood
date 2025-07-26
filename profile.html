@@ -1,387 +1,715 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>User Profile with Supabase</title>
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet"/>
-<!-- Cropper.js CSS -->
-<link href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css" rel="stylesheet"/>
-<style>
-  /* Reset and base styles omitted for brevity, include previous styles here */
-
-  /* Overlay for login/register prompt */
-  #authPrompt {
-    display: none; /* Hidden by default, shown when not logged in */
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    align-items: center; justify-content: center;
-    z-index: 10000;
-  }
-  #authPromptContent {
-    background: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-  }
-  #authPrompt button {
-    margin: 10px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  #authPrompt button:hover {
-    filter: brightness(0.9);
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .profile-card {
+            background-color: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            transition: all 0.3s ease;
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        .profile-picture-container {
+            position: relative;
+            cursor: pointer;
+        }
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 30px;
+            height: 30px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+        .blood-type {
+            background-color: #ff4757;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .stat-card {
+            background-color: #f8fafc;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .countdown-canvas {
+            width: 100px;
+            height: 100px;
+        }
+        .info-field {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        .info-field input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            color: #475569;
+        }
+        .info-field input:disabled {
+            color: #1e293b;
+        }
+        .info-field label {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .btn {
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background-color: #10b981;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #059669;
+        }
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+        .btn-gemini {
+            background: linear-gradient(45deg, #4285F4, #9B72CB, #D96570, #F2A60C);
+            color: white;
+        }
+        .btn-gemini:hover {
+            opacity: 0.9;
+        }
+        #auth-prompt, #image-crop-modal, #story-modal {
+            background-color: rgba(0,0,0,0.5);
+        }
+        .vote-container {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            justify-content: center;
+        }
+        .vote-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+        .vote-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .vote-btn:hover .vote-icon-wrapper {
+            background-color: #cbd5e1;
+        }
+        .vote-btn svg {
+            width: 28px;
+            height: 28px;
+            transition: color 0.3s ease;
+        }
+        .vote-btn.activated .vote-icon-wrapper {
+            background-color: #d1fae5; /* Green background for like */
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+        .vote-btn.activated svg {
+            color: #10b981; /* Active like icon color */
+        }
+        .vote-btn.dislike.activated .vote-icon-wrapper {
+            background-color: #fee2e2; /* Red background for dislike */
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        }
+        .vote-btn.dislike.activated svg {
+            color: #ef4444; /* Active dislike icon color */
+        }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .animating .vote-icon-wrapper {
+            animation: pop 0.4s ease-out;
+        }
+    </style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen p-4">
 
-<!-- Auth prompt overlay -->
-<div id="authPrompt">
-  <div id="authPromptContent">
-    <h2>Please Login/Register</h2>
-    <button id="loginBtn">Login</button>
-    <button id="registerBtn">Register</button>
-  </div>
-</div>
+    <!-- Auth Prompt -->
+    <div id="auth-prompt" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="bg-white p-8 rounded-2xl shadow-lg text-center max-w-sm mx-auto">
+            <h2 class="text-2xl font-bold mb-4">Welcome!</h2>
+            <p class="text-gray-600 mb-6">Please login or register to view your profile.</p>
+            <div class="flex justify-center gap-4">
+                <a href="./login.html" class="btn btn-primary">Login</a>
+                <a href="./register.html" class="btn btn-secondary">Register</a>
+            </div>
+        </div>
+    </div>
 
-<!-- Main profile container (hidden until logged in) -->
-<div class="profile-container" style="display:none;" id="profileContainer">
-  <!-- Profile Header -->
-  <div class="profile-header">
-    <div class="profile-image-wrapper">
-      <img src="" alt="Profile" class="profile-image" id="profileImage"/>
-      <div class="upload-overlay" title="Change Profile Picture" id="uploadBtn">📷</div>
+    <!-- Image Crop Modal -->
+    <div id="image-crop-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-lg text-center max-w-md mx-auto w-full">
+            <h2 class="text-xl font-bold mb-4">Crop Your Image</h2>
+            <div class="img-container max-h-64 mb-4">
+                <img id="image-to-crop" src="" alt="Image to crop">
+            </div>
+            <div class="flex justify-center gap-4">
+                <button id="cancel-crop-btn" class="btn btn-secondary">Cancel</button>
+                <button id="crop-and-upload-btn" class="btn btn-primary">Crop & Upload</button>
+            </div>
+        </div>
     </div>
-    <div class="profile-info">
-      <h1 class="name-title" id="name"></h1>
-      <div class="award-badge" id="bloodType"></div>
+    
+    <!-- Gemini Story Modal -->
+    <div id="story-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-lg max-w-lg mx-auto w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Your Donor Story</h2>
+                <button id="close-story-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="story-content" class="text-gray-600 leading-relaxed">
+                <!-- Story will be generated here -->
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Stats & Progress -->
-  <div class="stats-cards">
-    <div class="card">
-      <div class="progress-ring" id="progressRing">
-        <canvas id="ringCanvas" width="120" height="120"></canvas>
-      </div>
-      <div class="donation-info" id="donationStatus"></div>
-    </div>
-    <div class="card">
-      <h2 id="timesDonated"></h2>
-      <p>Times Donated</p>
-      <small>Last donation: <span id="lastDonation"></span></small>
-    </div>
-    <div class="card" style="text-align:center;">
-      <button id="likeBtn" style="border:none; background:none; font-size:2em; cursor:pointer; transition:transform 0.3s;">👍</button>
-      <h2 id="likesCount">0</h2>
-    </div>
-    <div class="card" style="text-align:center;">
-      <button id="dislikeBtn" style="border:none; background:none; font-size:2em; cursor:pointer; transition:transform 0.3s;">👎</button>
-      <h2 id="dislikesCount">0</h2>
-    </div>
-  </div>
 
-  <!-- User Info -->
-  <div class="user-info">
-    <h3>User Info</h3>
-    <!-- info rows with editable spans -->
-    <div class="info-row">
-      <div class="info-label">Name</div>
-      <div class="info-value"><span class="view" id="nameField"></span></div>
-    </div>
-    <div class="info-row">
-      <div class="info-label">Age</div>
-      <div class="info-value"><span class="view" id="age"></span></div>
-    </div>
-    <div class="info-row">
-      <div class="info-label">Phone</div>
-      <div class="info-value"><span class="view" id="phone"></span></div>
-    </div>
-    <div class="info-row">
-      <div class="info-label">State</div>
-      <div class="info-value"><span class="view" id="state"></span></div>
-    </div>
-    <div class="info-row">
-      <div class="info-label">City</div>
-      <div class="info-value"><span class="view" id="city"></span></div>
-    </div>
-    <div class="info-row">
-      <div class="info-label">Blood Group</div>
-      <div class="info-value"><span class="view" id="blood_group"></span></div>
-    </div>
-    <div class="info-row">
-      <div class="info-label">Last Donation</div>
-      <div class="info-value"><span class="view" id="last_donation"></span></div>
-    </div>
-    <div class="info-row">
-      <div class="info-label">Times Donated</div>
-      <div class="info-value"><span class="view" id="times_donated"></span></div>
-    </div>
-    <div class="buttons">
-      <button class="btn-edit" id="editBtn">Edit</button>
-      <button class="btn-save" id="saveBtn" style="display:none;">Save</button>
-    </div>
-  </div>
-</div>
+    <main id="profile-container" class="profile-card w-full max-w-4xl p-6 md:p-8 hidden">
+        <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 mb-8">
+            <div class="profile-picture-container" id="profile-picture-wrapper">
+                <img id="profile-picture" src="https://placehold.co/120x120/E2E8F0/475569?text=User" alt="Profile Picture" class="profile-picture">
+                <input type="file" id="image-upload-input" class="hidden" accept="image/*">
+                <div class="badge">
+                    <img src="https://em-content.zobj.net/source/twitter/376/1st-place-medal_1f947.png" alt="Badge" class="w-6 h-6">
+                </div>
+            </div>
+            <div class="text-center md:text-left">
+                <h1 id="user-name" class="text-3xl font-bold text-gray-800">Ayla Rahman</h1>
+                <div class="flex items-center justify-center md:justify-start gap-3 mt-2">
+                    <span id="blood-group" class="blood-type">A+</span>
+                    <span id="user-age" class="text-xl text-gray-500">27</span>
+                </div>
+            </div>
+        </div>
 
-<!-- Modal for cropping image -->
-<div id="cropperModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:9999;">
-  <div style="background:#fff; padding:20px; border-radius:10px; max-width:600px; width:90%; position:relative;">
-    <h3>Crop Image</h3>
-    <img id="cropperImage" style="max-width:100%; display:block; margin-bottom:10px;"/>
-    <div style="text-align:right;">
-      <button id="cropBtn" style="margin-right:10px; padding:8px 16px; border:none; background:#27ae60; color:#fff; border-radius:5px;">Crop & Upload</button>
-      <button id="cancelCrop" style="padding:8px 16px; border:none; background:#e74c3c; color:#fff; border-radius:5px;">Cancel</button>
-    </div>
-  </div>
-</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="stat-card flex flex-col items-center justify-center">
+                <span id="times-donated" class="text-4xl font-bold text-gray-800">12</span>
+                <span class="text-gray-500 mt-1">Times Donated</span>
+                <p class="text-sm text-gray-400 mt-4">Last donation: <span id="last-donation-days-ago">25 days ago</span></p>
+            </div>
+            <div class="stat-card flex flex-col items-center justify-center">
+                <canvas id="countdown-canvas" class="countdown-canvas"></canvas>
+                <p class="text-sm text-gray-500 mt-2">You can donate again in <span id="days-until-eligible">65</span> days</p>
+            </div>
+            <div class="stat-card flex flex-col items-center justify-around">
+                <div class="vote-container">
+                    <div id="like-btn" class="vote-btn">
+                        <div class="vote-icon-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16"><path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.16 3.16 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/></svg>
+                        </div>
+                        <span id="likes-count" class="font-semibold text-lg">142</span>
+                    </div>
+                    <div id="dislike-btn" class="vote-btn dislike">
+                        <div class="vote-icon-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-hand-thumbs-down-fill" viewBox="0 0 16 16"><path d="M6.956 14.53C7.021 15.46 7.908 16.183 8.864 15.945l.261-.066c.463-.116.874-.456 1.012-.965.22-.816.533-2.511.062-4.51a9.84 9.84 0 0 1 .443.051c.713.065 1.669.072 2.516-.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.16 3.16 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1.477 12.437 0 11.5 0H8c-.605 0-1.07.081-1.466-.218a4.82 4.82 0 0 1-.97.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 1.536 2 2.154 2 3v4c0 .85.685 1.432 1.357 1.615.849-.232 1.574-.787 2.132 1.41.56.627.914 1.28 1.039 1.639.199-.575.356-1.539.428 2.59z"/></svg>
+                        </div>
+                        <span id="dislikes-count" class="font-semibold text-lg">3</span>
+                    </div>
+                </div>
+                <div id="eligibility-text" class="mt-2 text-center font-semibold"></div>
+            </div>
+        </div>
 
-<!-- Cropper.js and Supabase SDK -->
-<script type="module">
-  import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
-  
-  // Initialize Supabase
-  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co'; // replace with your URL
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // replace with your anon key
-  const supabase = createClient(supabaseUrl, supabaseKey);
-  
-  // Elements
-  const authPrompt = document.getElementById('authPrompt');
-  const profileContainer = document.getElementById('profileContainer');
+        <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">User Info</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="info-field">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" value="+90 555 123 45 67" disabled>
+                </div>
+                <div class="info-field">
+                    <label for="city">City</label>
+                    <input type="text" id="city" value="Istanbul" disabled>
+                </div>
+                <div class="info-field">
+                    <label for="user-id">User ID</label>
+                    <input type="text" id="user-id" value="L4B-20384" disabled>
+                </div>
+                <div class="info-field">
+                    <label for="district">District</label>
+                    <input type="text" id="district" value="Kadiköy" disabled>
+                </div>
+            </div>
+        </div>
 
-  // Check auth on load
-  checkAuth();
+        <div class="mt-8 flex flex-wrap justify-end gap-4">
+            <button id="generate-story-btn" class="btn btn-gemini">✨ Generate Donor Story</button>
+            <button id="edit-btn" class="btn btn-secondary">Edit</button>
+            <button id="save-btn" class="btn btn-primary hidden">Save</button>
+        </div>
+    </main>
 
-  // Function to get current user JSON object
-  async function getCurrentUser() {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (error) {
-      console.error('Error fetching user:', error);
-      return null;
-    }
-    return user;
-  }
+    <script>
+    // --- CONFIGURATION ---
+    const SUPABASE_URL = 'https://bbvyjeljeyofswuijlyg.supabase.co'; // Replace with your Supabase URL
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // Replace with your Supabase Anon Key
+    const GEMINI_API_KEY = ""; // Leave blank, will be handled by the environment
 
-  async function checkAuth() {
-    const user = await getCurrentUser();
-    if (!user) {
-      authPrompt.style.display = 'flex';
-    } else {
-      authPrompt.style.display = 'none';
-      profileContainer.style.display = 'block';
-      loadProfile(user.id);
-    }
-  }
-
-  // Redirect buttons
-  document.getElementById('loginBtn').onclick = () => {
-    window.location.href = 'userlogin.html';
-  };
-  document.getElementById('registerBtn').onclick = () => {
-    window.location.href = 'register.html';
-  };
-
-  // Load profile data
-  async function loadProfile(userId) {
-    const { data, error } = await supabase
-      .from('donors')
-      .select('*')
-      .eq('id', userId)
-      .single();
-
-    if (error || !data) {
-      alert('Error fetching profile: ' + (error?.message || 'Profile not found'));
-      return;
+    // --- SUPABASE CLIENT ---
+    const useMockData = SUPABASE_URL.includes('YOUR_SUPABASE_URL');
+    let supabase;
+    if (!useMockData) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
-    // Populate data
-    document.getElementById('name').textContent = data.name || 'No Name';
-    document.getElementById('age').textContent = data.age || '';
-    document.getElementById('phone').textContent = data.phone || '';
-    document.getElementById('state').textContent = data.state || '';
-    document.getElementById('city').textContent = data.city || '';
-    document.getElementById('bloodType').textContent = data.blood_group || '';
-    document.getElementById('last_donation').textContent = data.last_donation || '';
-    document.getElementById('times_donated').textContent = data.times_donated || '';
+    // --- DOM ELEMENTS ---
+    const authPrompt = document.getElementById('auth-prompt');
+    const profileContainer = document.getElementById('profile-container');
+    const editBtn = document.getElementById('edit-btn');
+    const saveBtn = document.getElementById('save-btn');
+    const profilePictureWrapper = document.getElementById('profile-picture-wrapper');
+    const profilePicture = document.getElementById('profile-picture');
+    const imageUploadInput = document.getElementById('image-upload-input');
+    const imageCropModal = document.getElementById('image-crop-modal');
+    const imageToCrop = document.getElementById('image-to-crop');
+    const cancelCropBtn = document.getElementById('cancel-crop-btn');
+    const cropAndUploadBtn = document.getElementById('crop-and-upload-btn');
+    const likeBtn = document.getElementById('like-btn');
+    const dislikeBtn = document.getElementById('dislike-btn');
+    const likesCountEl = document.getElementById('likes-count');
+    const dislikesCountEl = document.getElementById('dislikes-count');
+    const generateStoryBtn = document.getElementById('generate-story-btn');
+    const storyModal = document.getElementById('story-modal');
+    const storyContent = document.getElementById('story-content');
+    const closeStoryModalBtn = document.getElementById('close-story-modal-btn');
 
-    // Profile picture (optional)
-    // You can add profile_image_url in your table if desired
+    // --- STATE ---
+    let cropper = null;
+    let currentUser = null;
+    let currentProfileId = null;
+    let userVote = null; // 'like', 'dislike', or null
 
-    // Save user_id in global scope for updates
-    window.currentUserId = data.user_id;
-
-    // Optionally, load other profile details or images here
-  }
-
-  // Save profile data
-async function saveProfile() {
-  const updatedData = {
-    name: document.getElementById('name').textContent,
-    age: document.getElementById('age').textContent,
-    phone: document.getElementById('phone').textContent,
-    state: document.getElementById('state').textContent,
-    city: document.getElementById('city').textContent,
-    blood_group: document.getElementById('bloodType').textContent,
-    last_donation: document.getElementById('last_donation').textContent,
-    times_donated: parseInt(document.getElementById('times_donated').textContent),
-  };
-  const { data, error } = await supabase
-    .from('donors')
-    .update(updatedData)
-    .eq('id', window.currentUserId);
-  if (error) alert('Error saving: ' + error.message);
-  else {
-    alert('Profile updated!');
-    loadProfile(window.currentUserId);
-  }
-}
-
-  // Profile picture upload & crop
-  const cropperModal = document.getElementById('cropperModal');
-  const cropperImage = document.getElementById('cropperImage');
-  let cropperInstance = null;
-
-  document.getElementById('uploadBtn').onclick = () => {
-    const input = document.createElement('input');
-    input.type='file';
-    input.accept='image/*';
-    input.onchange= () => {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload= () => {
-        cropperImage.src= reader.result;
-        cropperModal.style.display='flex';
-        if (cropperInstance) cropperInstance.destroy();
-        cropperInstance= new Cropper(cropperImage, { aspectRatio:1, viewMode:1 });
-      };
-      reader.readAsDataURL(file);
+    // --- MOCK DATA ---
+    const mockUser = { id: 'mock-user-123', email: 'ayla.rahman@example.com' };
+    const mockDonorProfile = {
+        id: 'donor-profile-456', name: 'Ayla Rahman', age: 27, phone: '+90 555 123 45 67', city: 'Istanbul', district: 'Kadiköy', blood_group: 'A+', times_donated: 12, last_donation_date: new Date(new Date().setDate(new Date().getDate() - 25)).toISOString(), likes: 142, dislikes: 3, avatar_url: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80'
     };
-    input.click();
-  };
+    const mockUserVote = { 'donor-profile-456': 'like' };
 
-  document.getElementById('cropBtn').onclick= async () => {
-    if (cropperInstance) {
-      cropperInstance.getCroppedCanvas().toBlob( async (blob) => {
-        // Upload to Supabase Storage
-        const filename= `profile_images/${window.currentUserId}.png`;
-        const { data: uploadData, error: uploadError }= await supabase.storage
-          .from('profile-images')
-          .upload(filename, blob, { upsert: true });
-        if (uploadError) {
-          alert('Upload error: ' + uploadError.message);
+
+    // --- AUTHENTICATION & DATA FLOW ---
+    async function checkAuth() {
+        if (useMockData) {
+            console.log("Using Mock Data Mode");
+            currentUser = mockUser;
+            await loadUserProfile(mockDonorProfile.id);
+            authPrompt.classList.add('hidden');
+            profileContainer.classList.remove('hidden');
+            return;
+        }
+
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && session.user) {
+            currentUser = session.user;
+            await loadUserProfile(currentUser.id);
+            authPrompt.classList.add('hidden');
+            profileContainer.classList.remove('hidden');
         } else {
-          const publicUrl= supabase.storage
-            .from('profile-images')
-            .getPublicUrl(filename).data.publicUrl;
-          // Save URL in donors table
-          await supabase.from('donors').update({ profile_image_url: publicUrl }).eq('id', window.currentUserId);
-          document.getElementById('profileImage').src= publicUrl;
+            authPrompt.classList.remove('hidden');
+            profileContainer.classList.add('hidden');
         }
-        cropperInstance.destroy();
-        cropperInstance= null;
-        document.getElementById('cropperModal').style.display='none';
-      });
     }
-  };
-  document.getElementById('cancelCrop').onclick= () => {
-    if (cropperInstance) cropperInstance.destroy();
-    cropperInstance= null;
-    document.getElementById('cropperModal').style.display='none';
-  };
 
-  // Animate progress ring
-  const ctx = document.getElementById('ringCanvas').getContext('2d');
-  function drawRing(percent) {
-    ctx.clearRect(0, 0, 120, 120);
-    ctx.beginPath();
-    ctx.arc(60, 60, 50, 0, 2*Math.PI);
-    ctx.strokeStyle='#e0e0e0';
-    ctx.lineWidth=10;
-    ctx.stroke();
+    // --- DATA FETCHING & RENDERING ---
+    async function loadUserProfile(userId) {
+        currentProfileId = userId;
+        let profileData;
+        
+        if (useMockData) {
+            profileData = mockDonorProfile;
+            userVote = mockUserVote[userId] || null;
+        } else {
+            try {
+                const [profileResult, voteResult] = await Promise.all([
+                    supabase.from('donors').select('*').eq('id', userId).single(),
+                    supabase.from('votes').select('vote_type').eq('voter_id', currentUser.id).eq('profile_id', userId).single()
+                ]);
 
-    ctx.beginPath();
-    ctx.arc(60, 60, 50, -Math.PI/2, -Math.PI/2 + 2*Math.PI*percent);
-    ctx.strokeStyle='#3498db';
-    ctx.lineWidth=10;
-    ctx.lineCap='round';
-    ctx.stroke();
-  }
+                if (profileResult.error) throw profileResult.error;
+                if (!profileResult.data) throw new Error("Donor profile not found in the database.");
+                
+                profileData = profileResult.data;
+                userVote = voteResult.data ? voteResult.data.vote_type : null;
 
-  function animateRing(targetPercent) {
-    let start= null;
-    const duration= 1500;
-    function animate(time) {
-      if (!start) start= time;
-      const progress= Math.min((time - start)/duration,1);
-      drawRing(progress*targetPercent);
-      if (progress<1) requestAnimationFrame(animate);
-    }
-    requestAnimationFrame(animate);
-  }
-
-  // Likes & Dislikes
-  const likeBtn= document.getElementById('likeBtn');
-  const dislikeBtn= document.getElementById('dislikeBtn');
-  const likesCount= document.getElementById('likesCount');
-  const dislikesCount= document.getElementById('dislikesCount');
-
-  likeBtn.onclick= async () => {
-    let count= parseInt(likesCount.textContent)||0;
-    count++;
-    likesCount.textContent= count;
-    likeBtn.style.transform='scale(1.2)';
-    setTimeout(()=>likeBtn.style.transform='scale(1)', 200);
-    await supabase.from('donors').update({ likes: count }).eq('user_id', window.currentUserId);
-  };
-
-  dislikeBtn.onclick= async () => {
-    let count= parseInt(dislikesCount.textContent)||0;
-    count++;
-    dislikesCount.textContent= count;
-    dislikeBtn.style.transform='scale(1.2)';
-    setTimeout(()=>dislikeBtn.style.transform='scale(1)', 200);
-    await supabase.from('donors').update({ dislikes: count }).eq('user_id', window.currentUserId);
-  };
-
-  // Edit / Save profile info
-  const editBtn= document.getElementById('editBtn');
-  const saveBtn= document.getElementById('saveBtn');
-  const fieldIds= ['name', 'age', 'phone', 'state', 'city', 'blood_group', 'last_donation', 'times_donated'];
-  let isEditing= false;
-
-  function toggleEdit(editing) {
-    fieldIds.forEach(id => {
-      const span= document.getElementById(id);
-      if (editing) {
-        const input= document.createElement('input');
-        input.type='text';
-        input.id= id+'Input';
-        input.value= span.textContent;
-        input.style.width='100%';
-        span.replaceWith(input);
-      } else {
-        const input= document.getElementById(id+'Input');
-        if (input) {
-          span.textContent= input.value;
-          input.replaceWith(span);
+            } catch (error) {
+                console.error('Error loading profile from Supabase:', error.message);
+                alert('Could not load your profile. Please ensure you have a profile record in the "donors" table.');
+                authPrompt.classList.remove('hidden');
+                profileContainer.classList.add('hidden');
+                return;
+            }
         }
-      }
+        
+        renderProfile(profileData);
+    }
+
+    function renderProfile(data) {
+        document.getElementById('user-name').textContent = data.name;
+        document.getElementById('user-age').textContent = data.age;
+        document.getElementById('phone').value = data.phone;
+        document.getElementById('city').value = data.city;
+        document.getElementById('district').value = data.district;
+        document.getElementById('blood-group').textContent = data.blood_group;
+        document.getElementById('times-donated').textContent = data.times_donated;
+        document.getElementById('user-id').value = `L4B-${data.id.substring(0, 8).toUpperCase()}`;
+        likesCountEl.textContent = data.likes;
+        dislikesCountEl.textContent = data.dislikes;
+        profilePicture.src = data.avatar_url || 'https://placehold.co/120x120/E2E8F0/475569?text=User';
+
+        updateVoteUI();
+
+        const lastDonationDate = new Date(data.last_donation_date);
+        const today = new Date();
+        const daysSinceDonation = Math.floor((today - lastDonationDate) / (1000 * 60 * 60 * 24));
+        const daysUntilEligible = 90 - daysSinceDonation;
+        const isEligible = daysUntilEligible <= 0;
+
+        document.getElementById('last-donation-days-ago').textContent = `${daysSinceDonation} days ago`;
+        
+        const eligibilityTextEl = document.getElementById('eligibility-text');
+        if (isEligible) {
+            document.getElementById('days-until-eligible').parentElement.innerHTML = `Eligible for <span class="font-bold text-green-600">${-daysUntilEligible}</span> days.`;
+            eligibilityTextEl.innerHTML = `<span class="text-green-500">✅ You are eligible to donate!</span>`;
+        } else {
+            document.getElementById('days-until-eligible').textContent = daysUntilEligible;
+            eligibilityTextEl.innerHTML = `<span class="text-red-500">❌ Not eligible yet.</span>`;
+        }
+
+        drawCountdownCanvas(daysSinceDonation);
+    }
+
+    // --- COUNTDOWN WIDGET ---
+    function drawCountdownCanvas(daysSince) {
+        const canvas = document.getElementById('countdown-canvas');
+        if (!canvas.getContext) return;
+        const ctx = canvas.getContext('2d');
+        const percentage = Math.min(daysSince / 90, 1);
+        const size = 100;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = size * dpr;
+        canvas.height = size * dpr;
+        ctx.scale(dpr, dpr);
+        canvas.style.width = `${size}px`;
+        canvas.style.height = `${size}px`;
+
+        const centerX = size / 2;
+        const centerY = size / 2;
+        const radius = size / 2 - 10;
+        const startAngle = -0.5 * Math.PI;
+        const endAngle = startAngle + (2 * Math.PI * percentage);
+
+        ctx.clearRect(0, 0, size, size);
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 8;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 8;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        ctx.fillStyle = '#1e293b';
+        ctx.font = 'bold 20px Inter';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${Math.round(percentage * 100)}%`, centerX, centerY);
+    }
+
+    // --- EDIT & SAVE LOGIC ---
+    function toggleEditMode(isEditing) {
+        const nameEl = document.getElementById('user-name');
+        const ageEl = document.getElementById('user-age');
+
+        if (isEditing) {
+            const currentName = nameEl.textContent;
+            const currentAge = ageEl.textContent;
+            nameEl.innerHTML = `<input type="text" id="user-name-input" class="text-3xl font-bold bg-gray-100 rounded-lg p-1 -m-1" value="${currentName}">`;
+            ageEl.innerHTML = `<input type="number" id="user-age-input" class="text-xl text-gray-500 bg-gray-100 rounded-lg p-1 -m-1 w-16" value="${currentAge}">`;
+        } else {
+            const nameInput = document.getElementById('user-name-input');
+            const ageInput = document.getElementById('user-age-input');
+            if(nameInput) nameEl.textContent = nameInput.value;
+            if(ageInput) ageEl.textContent = ageInput.value;
+        }
+
+        ['phone', 'city', 'district'].forEach(id => {
+            const inputEl = document.getElementById(id);
+            inputEl.disabled = !isEditing;
+            inputEl.parentElement.classList.toggle('bg-gray-100', isEditing);
+        });
+
+        editBtn.classList.toggle('hidden', isEditing);
+        saveBtn.classList.toggle('hidden', !isEditing);
+    }
+
+    saveBtn.addEventListener('click', async () => {
+        toggleEditMode(false);
+        const updatedProfile = {
+            name: document.getElementById('user-name').textContent,
+            age: parseInt(document.getElementById('user-age').textContent, 10),
+            phone: document.getElementById('phone').value,
+            city: document.getElementById('city').value,
+            district: document.getElementById('district').value,
+        };
+
+        if (useMockData) {
+            console.log('Mock Save:', updatedProfile);
+            Object.assign(mockDonorProfile, updatedProfile);
+            alert('Profile saved (mock)!');
+            return;
+        }
+        
+        try {
+            const { error } = await supabase
+                .from('donors')
+                .update(updatedProfile)
+                .eq('id', currentUser.id);
+            if (error) throw error;
+            alert('Profile saved successfully!');
+        } catch (error) {
+            console.error('Error saving profile:', error.message);
+            alert('Failed to save profile. Please try again.');
+            await loadUserProfile(currentUser.id);
+        }
     });
-    document.getElementById('editBtn').style.display= editing?'none':'inline-block';
-    document.getElementById('saveBtn').style.display= editing?'inline-block':'none';
-  }
 
-  document.getElementById('editBtn').onclick= ()=> { toggleEdit(true); };
-  document.getElementById('saveBtn').onclick= ()=> { saveProfile(); toggleEdit(false); };
+    // --- VOTE LOGIC ---
+    function updateVoteUI() {
+        likeBtn.classList.toggle('activated', userVote === 'like');
+        dislikeBtn.classList.toggle('activated', userVote === 'dislike');
+    }
 
-</script>
+    function triggerAnimation(element) {
+        element.classList.add('animating');
+        element.addEventListener('animationend', () => {
+            element.classList.remove('animating');
+        }, { once: true });
+    }
+
+    async function handleVote(newVote) {
+        if (!currentUser) {
+            alert("You must be logged in to vote.");
+            return;
+        }
+        const originalVote = userVote;
+        let likes = parseInt(likesCountEl.textContent);
+        let dislikes = parseInt(dislikesCountEl.textContent);
+
+        if (newVote === originalVote) {
+            userVote = null;
+            if (newVote === 'like') likes--; else dislikes--;
+        } else {
+            if (originalVote === 'like') likes--;
+            if (originalVote === 'dislike') dislikes--;
+            if (newVote === 'like') likes++; else dislikes++;
+            userVote = newVote;
+        }
+        
+        likesCountEl.textContent = likes;
+        dislikesCountEl.textContent = dislikes;
+        updateVoteUI();
+        triggerAnimation(newVote === 'like' ? likeBtn : dislikeBtn);
+
+        if (useMockData) {
+            mockDonorProfile.likes = likes;
+            mockDonorProfile.dislikes = dislikes;
+            mockUserVote[currentProfileId] = userVote;
+            console.log('Mock vote updated:', { likes, dislikes, userVote });
+            return;
+        }
+
+        try {
+            await supabase.from('donors').update({ likes, dislikes }).eq('id', currentProfileId);
+            if (userVote) {
+                await supabase.from('votes').upsert({ voter_id: currentUser.id, profile_id: currentProfileId, vote_type: userVote });
+            } else {
+                await supabase.from('votes').delete().match({ voter_id: currentUser.id, profile_id: currentProfileId });
+            }
+        } catch (error) {
+            console.error('Error saving vote:', error.message);
+            alert('Could not save your vote. Please try again.');
+            await loadUserProfile(currentProfileId);
+        }
+    }
+
+    // --- IMAGE UPLOAD & CROP ---
+    profilePictureWrapper.addEventListener('click', () => imageUploadInput.click());
+    imageUploadInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                imageToCrop.src = reader.result;
+                imageCropModal.classList.remove('hidden');
+                cropper = new Cropper(imageToCrop, {
+                    aspectRatio: 1, viewMode: 1, background: false, responsive: true, autoCropArea: 0.8,
+                });
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    function closeCropModal() {
+        imageCropModal.classList.add('hidden');
+        if (cropper) cropper.destroy();
+        cropper = null;
+        imageUploadInput.value = '';
+    }
+    
+    cancelCropBtn.addEventListener('click', closeCropModal);
+    cropAndUploadBtn.addEventListener('click', () => {
+        if (!cropper || !currentUser) return;
+        cropAndUploadBtn.disabled = true;
+        cropAndUploadBtn.textContent = 'Uploading...';
+
+        cropper.getCroppedCanvas({ width: 256, height: 256 }).toBlob(async (blob) => {
+            const filePath = `avatars/${currentUser.id}-${Date.now()}.png`;
+            if (useMockData) {
+                const mockUrl = URL.createObjectURL(blob);
+                mockDonorProfile.avatar_url = mockUrl;
+                profilePicture.src = mockUrl;
+                alert('Image uploaded (mock)!');
+            } else {
+                try {
+                    await supabase.storage.from('profiles').upload(filePath, blob, { upsert: true });
+                    const { data: { publicUrl } } = supabase.storage.from('profiles').getPublicUrl(filePath);
+                    await supabase.from('donors').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
+                    profilePicture.src = publicUrl;
+                    alert('Profile picture updated!');
+                } catch (error) {
+                    console.error('Error uploading image:', error.message);
+                    alert('Failed to upload image.');
+                }
+            }
+            closeCropModal();
+            cropAndUploadBtn.disabled = false;
+            cropAndUploadBtn.textContent = 'Crop & Upload';
+        });
+    });
+    
+    // --- GEMINI API: DONOR STORY ---
+    async function generateDonorStory() {
+        const userName = document.getElementById('user-name').textContent;
+        const city = document.getElementById('city').value;
+        const timesDonated = document.getElementById('times-donated').textContent;
+
+        const prompt = `Write a short, inspiring story (about 3-4 sentences) for a social media post about a blood donor named ${userName} from ${city} who has donated blood ${timesDonated} times. The story should be uplifting and emphasize the positive impact of their donations on saving lives. Frame it as a small, shareable narrative. Do not use markdown.`;
+
+        generateStoryBtn.disabled = true;
+        generateStoryBtn.innerHTML = `✨ Generating...`;
+        storyContent.textContent = 'Your story is being written by look4blood...';
+        storyModal.classList.remove('hidden');
+
+        try {
+            const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                const text = result.candidates[0].content.parts[0].text;
+                storyContent.textContent = text;
+            } else {
+                throw new Error("Invalid response structure from Gemini API.");
+            }
+
+        } catch (error) {
+            console.error("Error generating story:", error);
+            storyContent.textContent = "Sorry, we couldn't generate your story at this time. Please try again later.";
+        } finally {
+            generateStoryBtn.disabled = false;
+            generateStoryBtn.innerHTML = `✨ Generate Donor Story`;
+        }
+    }
+
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        if (useMockData) {
+            const warning = document.createElement('div');
+            warning.className = 'fixed top-0 left-0 right-0 bg-yellow-300 text-yellow-800 p-2 text-center text-sm z-50';
+            warning.innerHTML = '<strong>DEMO MODE:</strong> Supabase is not configured. Using mock data. Please replace `YOUR_SUPABASE_URL` and `YOUR_SUPABASE_ANON_KEY` in the script.';
+            document.body.prepend(warning);
+        }
+        checkAuth();
+        editBtn.addEventListener('click', () => toggleEditMode(true));
+        likeBtn.addEventListener('click', () => handleVote('like'));
+        dislikeBtn.addEventListener('click', () => handleVote('dislike'));
+        generateStoryBtn.addEventListener('click', generateDonorStory);
+        closeStoryModalBtn.addEventListener('click', () => storyModal.classList.add('hidden'));
+    });
+
+    </script>
 </body>
 </html>
