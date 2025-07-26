@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Donor Finder - Find Life Savers</title>
+    <title>Blood Donor Network - Find Life Savers</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -212,8 +212,8 @@
             }
             
             .nav-btn {
-                padding: 1px 10px;
-                font-size: 12px;
+                padding: 8px 12px;
+                font-size: 14px;
             }
             
             .logo {
@@ -245,7 +245,7 @@
         /* Hero Section */
         .hero-section {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 60px;
             padding: 40px 20px;
             background: linear-gradient(135deg, rgba(198, 40, 40, 0.05) 0%, rgba(183, 28, 28, 0.02) 100%);
             border-radius: 24px;
@@ -263,7 +263,7 @@
         }
 
         .hero-subtitle {
-            font-size: 15px;
+            font-size: 18px;
             color: #64748b;
             margin: 0 0 32px 0;
             max-width: 600px;
@@ -428,24 +428,30 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        /* Modern Table */
+        /* Results Container */
+        .results-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Desktop Table Styles */
         .table-container {
             background: white;
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(226, 232, 240, 0.8);
+            animation: slideInUp 0.6s ease-out;
         }
 
-        table {
-    width: 100%;
-    min-width: 600px; /* ছোট ডিভাইসে horizontal scroll allow করবে */
-    border-collapse: collapse;
-    font-size: 14px;
+        .desktop-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
         }
 
-        th {
-            background: linear-gradient(10deg, #b71c1c 0%, #334155 250%);
+        .desktop-table th {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
             color: white;
             font-weight: 600;
             font-size: 13px;
@@ -456,24 +462,212 @@
             border: none;
         }
 
-        td {
+        .desktop-table td {
             padding: 16px;
             border-bottom: 1px solid #f1f5f9;
             color: #334155;
             font-weight: 500;
         }
 
-        tbody tr {
+        .desktop-table tbody tr {
             transition: all 0.2s ease;
         }
 
-        tbody tr:hover {
+        .desktop-table tbody tr:hover {
             background: #f8fafc;
             transform: scale(1.01);
         }
 
-        tbody tr:last-child td {
+        .desktop-table tbody tr:last-child td {
             border-bottom: none;
+        }
+
+        /* Mobile Card Styles */
+        .mobile-cards {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .donor-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin-bottom: 16px;
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .donor-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-color: #c62828;
+        }
+
+        .donor-card:active {
+            transform: translateY(-2px);
+        }
+
+        .card-left, .card-right {
+            flex: 1;
+        }
+
+        .card-left {
+            margin-right: 24px;
+        }
+
+        .donor-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: -0.2px;
+        }
+
+        .blood-group {
+            display: inline-block;
+            background: linear-gradient(135deg, #c62828, #b71c1c);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+        }
+
+        .phone-number {
+            color: #374151;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .phone-number::before {
+            content: "📞";
+            font-size: 14px;
+        }
+
+        .card-info-item {
+            margin-bottom: 8px;
+            color: #6b7280;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-info-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .card-info-value {
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design - Mobile First */
+        @media (max-width: 768px) {
+            .table-container {
+                display: none !important;
+            }
+            
+            .mobile-cards {
+                display: block !important;
+                padding: 0 8px;
+            }
+
+            .donor-card {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .card-left {
+                margin-right: 0;
+                margin-bottom: 20px;
+                border-bottom: 1px solid #f3f4f6;
+                padding-bottom: 16px;
+            }
+
+            .card-right {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .card-info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                padding: 8px;
+                background: #f8fafc;
+                border-radius: 8px;
+            }
+
+            .donor-name {
+                font-size: 20px;
+                margin-bottom: 8px;
+            }
+
+            .blood-group {
+                font-size: 16px;
+                padding: 8px 16px;
+            }
+
+            .phone-number {
+                font-size: 16px;
+                font-weight: 700;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .table-container {
+                display: block !important;
+            }
+            
+            .mobile-cards {
+                display: none !important;
+            }
         }
 
         /* Error/No Results */
@@ -538,7 +732,7 @@
         }
 
         /* Responsive Design */
-        @media (max-width: 1024px) {
+        @media (max-width: 768px) {
             .main-content {
                 padding: 20px 16px;
             }
@@ -554,7 +748,7 @@
             }
 
             .hero-section {
-                padding: 20px 16px;
+                padding: 24px 16px;
             }
 
             .action-buttons {
@@ -569,11 +763,9 @@
             }
 
             .table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin: 0 -16px;
-    border-radius: 0;
-}
+                margin: 0 -16px;
+                border-radius: 0;
+            }
 
             table {
                 font-size: 12px;
@@ -611,7 +803,7 @@
         <div class="nav-container">
             <div class="logo">
                 <div class="logo-icon">🩸</div>
-                Look4Blood
+                Blood Donor Hub
             </div>
             <div class="nav-buttons">
                 <a href="profile.html" class="nav-btn profile">
@@ -699,10 +891,10 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Donor Type</label>
+                        <label class="form-label">Donor Availability</label>
                         <select id="donorType" class="form-select">
                             <option value="All">All Donors</option>
-                            <option value="Eligible">Eligible</option>
+                            <option value="Eligible">Available Now</option>
                         </select>
                     </div>
                 </div>
@@ -716,7 +908,7 @@
         <!-- Results Section -->
         <div class="results-container">
             <div class="result-summary" id="resultCount"></div>
-            <div class="table-container" id="results"></div>
+            <div id="results"></div>
         </div>
 
         <!-- Action Buttons -->
@@ -782,7 +974,8 @@
 
             resultCount.textContent = `✅ ${filtered.length} matching donor(s) found:`;
 
-            let table = "<table><tr>";
+            // Generate Desktop Table
+            let table = `<div class="table-container"><table class="desktop-table"><tr>`;
             const headers = ["Name", "Age", "Gender", "Blood Group", "Phone", "City", "Last Donation", "Times Donated"];
             headers.forEach(h => table += `<th>${h}</th>`);
             table += "</tr>";
@@ -800,8 +993,44 @@
                 table += "</tr>";
             });
 
-            table += "</table>";
-            resultsDiv.innerHTML = table;
+            table += "</table></div>";
+
+            // Generate Mobile Cards
+            let cards = `<div class="mobile-cards">`;
+            
+            filtered.forEach((d, index) => {
+                cards += `
+                    <div class="donor-card" style="animation-delay: ${index * 0.1}s">
+                        <div class="card-left">
+                            <div class="donor-name">${d.name}</div>
+                            <div class="blood-group">${d.blood_group}</div>
+                            <div class="phone-number">${d.phone}</div>
+                        </div>
+                        <div class="card-right">
+                            <div class="card-info-item">
+                                <span class="card-info-label">City</span>
+                                <span class="card-info-value">${d.city || "-"}</span>
+                            </div>
+                            <div class="card-info-item">
+                                <span class="card-info-label">Last Donated</span>
+                                <span class="card-info-value">${d.last_donation || "-"}</span>
+                            </div>
+                            <div class="card-info-item">
+                                <span class="card-info-label">Times Donated</span>
+                                <span class="card-info-value">${d.times_donated || "0"}</span>
+                            </div>
+                            <div class="card-info-item">
+                                <span class="card-info-label">Age</span>
+                                <span class="card-info-value">${d.age || "-"}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            cards += "</div>";
+
+            resultsDiv.innerHTML = table + cards;
         });
     </script>
 </body>
