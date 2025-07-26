@@ -1,278 +1,405 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Blood Donor Login</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #fff4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Look4Blood</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    form {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
+    <style>
+        /* CSS Reset & Base Styles */
+        :root {
+            --primary-red: #e74c3c;
+            --dark-red: #c0392b;
+            --light-grey: #f4f4f9;
+            --dark-grey: #333;
+            --white: #ffffff;
+            --success-green: #2ecc71;
+            --border-color: #ddd;
+        }
 
-    h2 {
-      color: #c62828;
-      margin-bottom: 20px;
-      text-align: center;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      font-weight: bold;
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-grey);
+            color: var(--dark-grey);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
+        /* Top Bar */
+        .top-bar {
+            background-color: var(--primary-red);
+            color: var(--white);
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-    button {
-      background: #c62828;
-      color: white;
-      padding: 12px;
-      border: none;
-      width: 100%;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+        .top-bar .logo-icon {
+            margin-right: 0.5rem;
+        }
 
-    button:hover {
-      background: #b71c1c;
-    }
+        /* Main Content & Login Container */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            padding: 1rem;
+        }
 
-    .success {
-      text-align: center;
-      margin-top: 10px;
-      color: green;
-    }
+        .login-card {
+            background-color: var(--white);
+            padding: 2.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
 
-    .error {
-      text-align: center;
-      margin-top: 10px;
-      color: #c62828;
-    }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    .lang-toggle {
-      margin-bottom: 20px;
-      text-align: center;
-    }
+        .login-card h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-grey);
+        }
+        
+        .login-card .heart-icon {
+            color: var(--primary-red);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
 
-    .lang-toggle button {
-      background: #e0e0e0;
-      color: #333;
-      border: none;
-      padding: 8px 12px;
-      margin: 0 5px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+        /* Form Styling */
+        .login-form .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
 
-    .lang-toggle button.active {
-      background: #c62828;
-      color: white;
-    }
+        .login-form .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
 
-    .register-link {
-      text-align: center;
-      margin-top: 15px;
-    }
+        .login-form .input-field {
+            width: 100%;
+            padding: 12px 12px 12px 45px; /* Padding for icon */
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
 
-    .register-link a {
-      color: #c62828;
-      text-decoration: none;
-    }
+        .login-form .input-field:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+        }
 
-    .register-link a:hover {
-      text-decoration: underline;
-    }
+        .login-form .input-field:focus + i {
+            color: var(--primary-red);
+        }
+        
+        .login-form .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .login-form a {
+            color: var(--primary-red);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
 
-    .forgot-password {
-      text-align: center;
-      margin-top: 10px;
-    }
+        .login-form a:hover {
+            color: var(--dark-red);
+            text-decoration: underline;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-red);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
 
-    .forgot-password a {
-      color: #666;
-      text-decoration: none;
-      font-size: 14px;
-    }
+        .btn-login:hover {
+            background-color: var(--dark-red);
+            transform: translateY(-2px);
+        }
 
-    .forgot-password a:hover {
-      text-decoration: underline;
-    }
+        /* Links & Messages */
+        .register-link {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
 
-    #loading-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-size: 20px;
-      flex-direction: column;
-      font-family: sans-serif;
-    }
+        .message {
+            padding: 10px;
+            margin-top: 1rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: none; /* Initially hidden */
+            animation: fadeIn 0.3s;
+        }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
+        .message.success {
+            background-color: var(--success-green);
+            color: var(--white);
+        }
+
+        .message.error {
+            background-color: var(--primary-red);
+            color: var(--white);
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+            display: none; /* Initially hidden */
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--light-grey);
+            border-top-color: var(--primary-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .top-bar {
+                font-size: 1.2rem;
+                padding: 1rem;
+                text-align: center;
+            }
+            .login-card {
+                padding: 2rem 1.5rem;
+            }
+        }
+
+    </style>
 </head>
 <body>
 
-<form id="login-form" name="login-form">
-  <div class="lang-toggle">
-    <button type="button" class="active" onclick="setLang('en')">English</button>
-    <button type="button" onclick="setLang('bn')">বাংলা</button>
-  </div>
+    <header class="top-bar">
+        <span class="logo-icon">🩸</span>Look4Blood
+    </header>
 
-  <h2 data-en="Donor Login" data-bn="রক্তদাতার লগইন">Donor Login</h2>
+    <main class="container">
+        <div class="login-card">
+            <i class="fas fa-heartbeat heart-icon"></i>
+            <h1>Find a Life-Saving Donor</h1>
+            
+            <form id="login-form" class="login-form">
+                <div id="message-box" class="message"></div>
 
-  <label data-en="Email" data-bn="ইমেইল">Email</label>
-  <input type="email" name="email" required>
+                <div class="input-group">
+                    <input type="email" id="email" class="input-field" placeholder="Email Address" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="password" class="input-field" placeholder="Password" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+                
+                <div class="options">
+                    <a href="#" id="forgot-password-link">Forgot Password?</a>
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
 
-  <label data-en="Password" data-bn="পাসওয়ার্ড">Password</label>
-  <input type="password" name="password" required>
+            <p class="register-link">
+                Don't have an account? <a href="register.html">Register Now</a>
+            </p>
+        </div>
+    </main>
 
-  <button type="submit" data-en="Login" data-bn="লগইন">Login</button>
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
 
-  <div class="forgot-password">
-    <a href="#" onclick="forgotPassword()" data-en="Forgot your password?" data-bn="পাসওয়ার্ড ভুলে গেছেন?">Forgot your password?</a>
-  </div>
+    <script>
+        // --- SUPABASE CLIENT SETUP ---
+        // IMPORTANT: Replace these with your actual Supabase project URL and Anon Key
+        const SUPABASE_URL = 'https://bbvyjeljeyofswuijlyg.supabase.co'; // e.g., 'https://xyz.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
 
-  <div class="register-link">
-    <span data-en="Don't have an account?" data-bn="কোনো অ্যাকাউন্ট নেই?">Don't have an account?</span>
-    <a href="registerform.html" data-en="Register here" data-bn="এখানে নিবন্ধন করুন">Register here</a>
-  </div>
+        // Check if placeholders are still there
+        if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
+            console.warn("Supabase credentials are not set. Please replace placeholders in the script.");
+        }
 
-  <div class="success" id="success-msg"></div>
-  <div class="error" id="error-msg"></div>
-</form>
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('Supabase Initialized');
 
-<div id="loading-overlay">
-  <div class="spinner" style="border:6px solid #f3f3f3;border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;"></div>
-  <div style="margin-top:10px;">Logging in...</div>
-</div>
+        // --- DOM ELEMENT REFERENCES ---
+        const loginForm = document.getElementById('login-form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const messageBox = document.getElementById('message-box');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        
+        // --- HELPER FUNCTIONS ---
+        /**
+         * Shows the loading overlay.
+         */
+        function showLoader() {
+            loadingOverlay.style.display = 'flex';
+        }
+        
+        /**
+         * Hides the loading overlay.
+         */
+        function hideLoader() {
+            loadingOverlay.style.display = 'none';
+        }
+        
+        /**
+         * Displays a message to the user.
+         * @param {string} text - The message text.
+         * @param {('success'|'error')} type - The type of message.
+         */
+        function showMessage(text, type = 'error') {
+            messageBox.textContent = text;
+            messageBox.className = `message ${type}`;
+            messageBox.style.display = 'block';
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // Initialize Supabase
-  const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
-  const SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+        /**
+         * Hides the message box.
+         */
+        function hideMessage() {
+            messageBox.style.display = 'none';
+        }
 
-  function setLang(lang) {
-    document.querySelectorAll('[data-en]').forEach(el => {
-      el.textContent = el.getAttribute(`data-${lang}`);
-    });
-    document.querySelectorAll('.lang-toggle button').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
-  }
+        // --- EVENT LISTENERS ---
 
-  const form = document.forms['login-form'];
-  const successMsg = document.getElementById('success-msg');
-  const errorMsg = document.getElementById('error-msg');
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const loadingOverlay = document.getElementById('loading-overlay');
+        /**
+         * Handles the login form submission.
+         */
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent default form submission
+            hideMessage(); // Clear previous messages
+            showLoader();
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    successMsg.textContent = '';
-    errorMsg.textContent = '';
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Logging in...";
-    loadingOverlay.style.display = "flex";
+            try {
+                const { data, error } = await _supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
 
-    const formData = new FormData(form);
-    const email = formData.get('email');
-    const password = formData.get('password');
+                if (error) {
+                    throw error; // Throw the error to be caught by the catch block
+                }
 
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
+                // On successful login
+                console.log('Login successful:', data);
+                showMessage('Login successful! Redirecting...', 'success');
+                
+                // Redirect to profile page after a short delay
+                setTimeout(() => {
+                    window.location.href = 'profile.html';
+                }, 1500);
 
-      if (error) {
-        throw new Error(error.message);
-      }
+            } catch (error) {
+                console.error('Login Error:', error.message);
+                showMessage(error.message || 'An unexpected error occurred.', 'error');
+            } finally {
+                hideLoader(); // Always hide the loader
+            }
+        });
 
-      successMsg.textContent = "✅ Login successful! Redirecting...";
-      
-      // Store user session and redirect
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
-      setTimeout(() => {
-        // Redirect to dashboard or home page
-        window.location.href = '/'; // Change this to your desired redirect URL
-      }, 1500);
+        /**
+         * Handles the "Forgot Password" link click.
+         */
+        forgotPasswordLink.addEventListener('click', async (event) => {
+            event.preventDefault();
+            hideMessage();
 
-    } catch (err) {
-      errorMsg.textContent = `❌ Error: ${err.message}`;
-      console.error('Login error:', err);
-    } finally {
-      loadingOverlay.style.display = "none";
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Login";
-    }
-  });
+            const email = prompt("Please enter your email address to reset your password:");
 
-  async function forgotPassword() {
-    const email = prompt('Enter your email address to reset password:');
-    if (!email) return;
+            if (email) {
+                showLoader();
+                try {
+                    const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+                        redirectTo: window.location.origin, // Optional: URL to redirect to after password reset
+                    });
 
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/reset-password.html'
-      });
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    showMessage('Password reset link has been sent to your email.', 'success');
 
-      if (error) {
-        throw new Error(error.message);
-      }
+                } catch (error) {
+                    console.error('Password Reset Error:', error.message);
+                    showMessage(error.message, 'error');
+                } finally {
+                    hideLoader();
+                }
+            }
+        });
 
-      alert('Password reset email sent! Please check your inbox.');
-    } catch (err) {
-      alert(`Error: ${err.message}`);
-    }
-  }
-
-  // Check if user is already logged in
-  window.addEventListener('load', async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      successMsg.textContent = "You are already logged in. Redirecting...";
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 1500);
-    }
-  });
-</script>
-
+    </script>
 </body>
 </html>
