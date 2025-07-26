@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - Look4Blood</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-family: 'Nunito', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .back-btn, .add-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .add-btn {
+            background: #10b981;
+            color: white;
+            display: none;
+        }
+
+        .back-btn:hover, .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .announcements-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .announcement-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.8);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideInUp 0.6s ease-out forwards;
+            transition: all 0.3s ease;
+        }
+
+        .announcement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .card-timestamp {
+            font-size: 0.875rem;
+            color: #64748b;
+            white-space: nowrap;
+        }
+
+        .card-content {
+            color: #374151;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .reaction-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 2px solid #e5e7eb;
+            background: #f9fafb;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .reaction-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .reaction-btn.active {
+            border-color: #3b82f6;
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+
+        .reaction-btn.like.active {
+            border-color: #10b981;
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .reaction-btn.dislike.active {
+            border-color: #ef4444;
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.1rem;
+            margin: 50px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: white;
+            padding: 50px 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            animation: slideInUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .announcement-card {
+                padding: 20px;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .card-actions {
+                justify-content: center;
+            }
+
+            .modal-content {
+                padding: 20px;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📢 Announcements</h1>
+            <p>Stay updated with the latest news and information</p>
+        </div>
+
+        <div class="controls">
+            <a href="index.html" class="back-btn">
+                ← Back to Home
+            </a>
+            <button class="add-btn" id="addAnnouncementBtn">
+                ➕ Add Announcement
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            Loading announcements...
+        </div>
+
+        <div class="announcements-list" id="announcementsList" style="display: none;">
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h3>📭 No Announcements Yet</h3>
+            <p>Be the first to share some news!</p>
+        </div>
+    </div>
+
+    <!-- Add Announcement Modal -->
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Announcement</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <form id="announcementForm">
+                <div class="form-group">
+                    <label class="form-label" for="title">Title</label>
+                    <input type="text" id="title" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="content">Content</label>
+                    <textarea id="content" class="form-textarea" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Post Announcement</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Supabase configuration
+        const supabaseUrl = 'YOUR_SUPABASE_URL';
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let currentUser = null;
+        let userReactions = {};
+
+        // Initialize the page
+        async function init() {
+            await checkUser();
+            await loadAnnouncements();
+        }
+
+        // Check current user and admin status
+        async function checkUser() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                currentUser = user;
+                
+                if (user) {
+                    // Check if user is admin (you can customize this logic)
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (profile && profile.role === 'admin') {
+                        document.getElementById('addAnnouncementBtn').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking user:', error);
+            }
+        }
+
+        // Load announcements from Supabase
+        async function loadAnnouncements() {
+            try {
+                const { data: announcements, error } = await supabase
+                    .from('announcements')
+                    .select(`
+                        *,
+                        profiles:author_id (
+                            full_name
+                        )
+                    `)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                // Load user reactions if logged in
+                if (currentUser) {
+                    await loadUserReactions();
+                }
+
+                displayAnnouncements(announcements);
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+                document.getElementById('loading').innerHTML = 'Error loading announcements. Please try again.';
+            }
+        }
+
+        // Load user reactions
+        async function loadUserReactions() {
+            try {
+                const { data: reactions, error } = await supabase
+                    .from('announcement_reactions')
+                    .select('announcement_id, reaction')
+                    .eq('user_id', currentUser.id);
+
+                if (error) throw error;
+
+                userReactions = {};
+                reactions.forEach(reaction => {
+                    userReactions[reaction.announcement_id] = reaction.reaction;
+                });
+            } catch (error) {
+                console.error('Error loading user reactions:', error);
+            }
+        }
+
+        // Display announcements
+        function displayAnnouncements(announcements) {
+            const loading = document.getElementById('loading');
+            const list = document.getElementById('announcementsList');
+            const emptyState = document.getElementById('emptyState');
+
+            loading.style.display = 'none';
+
+            if (announcements.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            list.style.display = 'block';
+            list.innerHTML = '';
+
+            announcements.forEach((announcement, index) => {
+                const card = createAnnouncementCard(announcement, index);
+                list.appendChild(card);
+            });
+        }
+
+        // Create announcement card
+        function createAnnouncementCard(announcement, index) {
+            const card = document.createElement('div');
+            card.className = 'announcement-card';
+            card.style.animationDelay = `${index * 0.1}s`;
+
+            const timeAgo = getTimeAgo(announcement.created_at);
+            const authorName = announcement.profiles?.full_name || 'Admin';
+            const userReaction = userReactions[announcement.id];
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">${announcement.title}</div>
+                        <div class="card-timestamp">Posted by ${authorName} • ${timeAgo}</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    ${announcement.content.replace(/\n/g, '<br>')}
+                </div>
+                <div class="card-actions">
+                    <button class="reaction-btn like ${userReaction === 'like' ? 'active' : ''}" 
+                            onclick="toggleReaction('${announcement.id}', 'like')">
+                        👍 <span>${announcement.like_count || 0}</span>
+                    </button>
+                    <button class="reaction-btn dislike ${userReaction === 'dislike' ? 'active' : ''}" 
+                            onclick="toggleReaction('${announcement.id}', 'dislike')">
+                        👎 <span>${announcement.dislike_count || 0}</span>
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Toggle reaction
+        async function toggleReaction(announcementId, reactionType) {
+            if (!currentUser) {
+                alert('Please log in to react to announcements');
+                return;
+            }
+
+            try {
+                const currentReaction = userReactions[announcementId];
+                
+                if (currentReaction === reactionType) {
+                    // Remove reaction
+                    await supabase
+                        .from('announcement_reactions')
+                        .delete()
+                        .eq('user_id', currentUser.id)
+                        .eq('announcement_id', announcementId);
+                    
+                    delete userReactions[announcementId];
+                    
+                    // Update count
+                    const countField = reactionType === 'like' ? 'like_count' : 'dislike_count';
+                    await supabase.rpc('decrement_announcement_count', {
+                        announcement_id: announcementId,
+                        count_type: countField
+                    });
+                } else {
+                    // Add or update reaction
+                    if (currentReaction) {
+                        // Update existing reaction
+                        await supabase
+                            .from('announcement_reactions')
+                            .update({ reaction: reactionType })
+                            .eq('user_id', currentUser.id)
+                            .eq('announcement_id', announcementId);
+                        
+                        // Adjust counts
+                        const oldCountField = currentReaction === 'like' ? 'like_count' : 'dislike_count';
+                        const newCountField = reactionType === 'like' ? 'like_count' : 'dislike_count';
+                        
+                        await supabase.rpc('decrement_announcement_count', {
+                            announcement_id: announcementId,
+                            count_type: oldCountField
+                        });
+                        await supabase.rpc('increment_announcement_count', {
+                            announcement_id: announcementId,
+                            count_type: newCountField
+                        });
+                    } else {
+                        // Insert new reaction
+                        await supabase
+                            .from('announcement_reactions')
+                            .insert({
+                                user_id: currentUser.id,
+                                announcement_id: announcementId,
+                                reaction: reactionType
+                            });
+                        
+                        // Increment count
+                        const countField = reactionType === 'like' ? 'like_count' : 'dislike_count';
+                        await supabase.rpc('increment_announcement_count', {
+                            announcement_id: announcementId,
+                            count_type: countField
+                        });
+                    }
+                    
+                    userReactions[announcementId] = reactionType;
+                }
+
+                // Reload announcements to update UI
+                await loadAnnouncements();
+            } catch (error) {
+                console.error('Error toggling reaction:', error);
+                alert('Error updating reaction. Please try again.');
+            }
+        }
+
+        // Get time ago string
+        function getTimeAgo(dateString) {
+            const now = new Date();
+            const date = new Date(dateString);
+            const diff = now - date;
+            
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (minutes < 60) {
+                return `${minutes} minutes ago`;
+            } else if (hours < 24) {
+                return `${hours} hours ago`;
+            } else {
+                return `${days} days ago`;
+            }
+        }
+
+        // Modal functionality
+        document.getElementById('addAnnouncementBtn').addEventListener('click', () => {
+            document.getElementById('addModal').style.display = 'block';
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('addModal').style.display = 'none';
+        });
+
+        document.getElementById('addModal').addEventListener('click', (e) => {
+            if (e.target.id === 'addModal') {
+                document.getElementById('addModal').style.display = 'none';
+            }
+        });
+
+        // Form submission
+        document.getElementById('announcementForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            
+            try {
+                const { error } = await supabase
+                    .from('announcements')
+                    .insert({
+                        title,
+                        content,
+                        author_id: currentUser.id
+                    });
+
+                if (error) throw error;
+
+                document.getElementById('addModal').style.display = 'none';
+                document.getElementById('announcementForm').reset();
+                await loadAnnouncements();
+            } catch (error) {
+                console.error('Error adding announcement:', error);
+                alert('Error adding announcement. Please try again.');
+            }
+        });
+
+        // Initialize the page
+        init();
+    </script>
+</body>
+</html>
