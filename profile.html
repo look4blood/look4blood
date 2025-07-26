@@ -192,7 +192,7 @@
   // Load profile data
   async function loadProfile(userId) {
     const { data, error } = await supabase
-      .from('aduit_log_entrise')
+      .from('donors')
       .select('*')
       .eq('id', userId)
       .single();
@@ -234,7 +234,7 @@ async function saveProfile() {
     times_donated: parseInt(document.getElementById('times_donated').textContent),
   };
   const { data, error } = await supabase
-    .from('aduit_log_entrise')
+    .from('donors')
     .update(updatedData)
     .eq('id', window.currentUserId);
   if (error) alert('Error saving: ' + error.message);
@@ -282,7 +282,7 @@ async function saveProfile() {
             .from('profile-images')
             .getPublicUrl(filename).data.publicUrl;
           // Save URL in donors table
-          await supabase.from('aduit_log_entrise').update({ profile_image_url: publicUrl }).eq('id', window.currentUserId);
+          await supabase.from('donors').update({ profile_image_url: publicUrl }).eq('id', window.currentUserId);
           document.getElementById('profileImage').src= publicUrl;
         }
         cropperInstance.destroy();
