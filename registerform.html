@@ -287,7 +287,8 @@
     const formData = new FormData(form);
     const body = {};
     formData.forEach((value, key) => body[key] = value);
-    body.userId = `ID-${Date.now()}`;
+    body.custom_id = `ID-${Date.now()}`;
+    body.userId = body.custom_id;
 
     try {
       // Step 1: Create Supabase Auth user with minimal signup
