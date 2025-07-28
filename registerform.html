@@ -304,6 +304,7 @@
       // Step 2: Prepare data for database (exclude password)
       const donorData = {
         user_id: data.user.id,  // Use the actual Supabase user ID here
+        custom_id: `ID-${Date.now()}`,
         name: body.name,
         age: Number(body.age),
         gender: body.gender,
