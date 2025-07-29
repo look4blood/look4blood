@@ -182,27 +182,23 @@
   <label data-en="Password" data-bn="পাসওয়ার্ড">Password</label>
   <input type="password" name="password" minlength="6" required>
 
-  <label data-en="State" data-bn="রাজ্য">State</label>
-  <input type="text" name="state" value="Chottogram" readonly>
+  <<!-- বিভাজন ড্রপডাউন -->
+<label class="form-label">Division / বিভাগ</label>
+<select id="division" class="form-select">
+    <option value="">Select Division</option>
+</select>
 
-  <label data-en="City" data-bn="শহর">City</label>
-  <select name="city" required>
-    <option value="">Select</option>
-    <option>Agrabad</option>
-    <option>Boalkhali</option>
-    <option>Bakalia</option>
-    <option>Bayazid</option>
-    <option>Chandgaon</option>
-    <option>Chawkbazar</option>
-    <option>Halishahar</option>
-    <option>Khulshi</option>
-    <option>Kotwali</option>
-    <option>Patiya</option>
-    <option>Panchlaish</option>
-    <option>Patenga</option>
-    <option>Rangunia</option>
-    <option>Raozan</option>
-  </select>
+<!-- জেলা ড্রপডাউন -->
+<label class="form-label">District / জেলা</label>
+<select id="district" class="form-select" disabled>
+    <option value="">Select District</option>
+</select>
+
+<!-- শহর ড্রপডাউন -->
+<label class="form-label">City / শহর</label>
+<select id="city" class="form-select" disabled>
+    <option value="All">Select City</option>
+</select>
 
   <label data-en="ZIP Code" data-bn="জিপ কোড">ZIP Code</label>
   <input type="text" name="zip">
@@ -311,7 +307,8 @@
         blood_group: body.bloodGroup,
         phone: body.phone,
         email: body.email,
-        state: body.state,
+        division: body.division,
+        state: body.district,
         city: body.city,
         zip: body.zip,
         last_donation: body.lastDonation || null,
@@ -363,6 +360,105 @@
       submitBtn.textContent = "Register";
     }
   });
+  // Load the dropdowns from Supabase
+async function loadDivisions() {
+    const { data: locations, error } = await supabase
+        .from("locations")
+        .select("division")
+        .order("division");
+    if (error || !locations) {
+        console.error('Error loading divisions:', error);
+        return;
+    }
+
+    const uniqueDivisions = [...new Set(locations.map(l => l.division))];
+    const divisionSelect = document.getElementById("division");
+    divisionSelect.innerHTML = '<option value="">Select Division</option>';
+
+    uniqueDivisions.forEach(division => {
+        divisionSelect.innerHTML += `<option value="${division}">${division}</option>`;
+    });
+}
+
+// Load districts based on selected division
+async function loadDistricts(selectedDivision) {
+    const { data: locations, error } = await supabase
+        .from("locations")
+        .select("district")
+        .eq("division", selectedDivision)
+        .order("district");
+    if (error || !locations) {
+        console.error('Error loading districts:', error);
+        return;
+    }
+
+    const uniqueDistricts = [...new Set(locations.map(l => l.district))];
+    const districtSelect = document.getElementById("district");
+    districtSelect.innerHTML = '<option value="">Select District</option>';
+    districtSelect.disabled = false;
+
+    uniqueDistricts.forEach(district => {
+        districtSelect.innerHTML += `<option value="${district}">${district}</option>`;
+    });
+
+    // Reset city dropdown
+    const citySelect = document.getElementById("city");
+    citySelect.innerHTML = '<option value="All">All Cities</option>';
+    citySelect.disabled = true;
+}
+
+// Load cities based on selected district
+async function loadCities(selectedDistrict) {
+    const division = document.getElementById("division").value;
+    const { data: locations, error } = await supabase
+        .from("locations")
+        .select("city")
+        .eq("division", division)
+        .eq("district", selectedDistrict)
+        .order("city");
+    if (error || !locations) {
+        console.error('Error loading cities:', error);
+        return;
+    }
+
+    const uniqueCities = [...new Set(locations.map(l => l.city))];
+    const citySelect = document.getElementById("city");
+    citySelect.innerHTML = '<option value="All">All Cities</option>';
+    citySelect.disabled = false;
+
+    uniqueCities.forEach(city => {
+        citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+    });
+}
+
+// Event listener for division change
+document.getElementById("division").addEventListener("change", (e) => {
+    const selectedDivision = e.target.value;
+    if (selectedDivision) {
+        loadDistricts(selectedDivision);
+    } else {
+        // Reset district and city
+        document.getElementById("district").innerHTML = '<option value="">Select District</option>';
+        document.getElementById("district").disabled = true;
+        document.getElementById("city").innerHTML = '<option value="All">All Cities</option>';
+        document.getElementById("city").disabled = true;
+    }
+});
+
+// Event listener for district change
+document.getElementById("district").addEventListener("change", (e) => {
+    const selectedDistrict = e.target.value;
+    if (selectedDistrict) {
+        loadCities(selectedDistrict);
+    } else {
+        // Reset city
+        document.getElementById("city").innerHTML = '<option value="All">All Cities</option>';
+        document.getElementById("city").disabled = true;
+    }
+});
+
+// Load initial divisions when page loads
+loadDivisions();
 </script>
 
 </body>
