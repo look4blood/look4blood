@@ -182,18 +182,32 @@
         return;
       }
       
-       // 2️⃣ Insert new row into donation_updates table
-  const { error: logError } = await supabase
-    .from('donation_updates')
-    .insert([{
-      custom_id: userId,
-      name: name,
-      blood_group: bloodGroup,
-      donation_date: date,
-      place: place,
-      times_donated: times + 1
-    }]);
+       // 1️⃣ Get logged in user
+const { data: userData } = await supabase.auth.getUser();
+if (!userData?.user) {
+  submitMsg.textContent = '❌ You must be logged in to update donation.';
+  submitMsg.className = 'error';
+  return;
+}
 
+// 2️⃣ Insert with user_id for RLS
+const { error: logError } = await supabase
+  .from('donation_updates')
+  .insert([{
+    user_id: userData.user.id,  // ✅ Required for policy
+    custom_id: userId,
+    name: name,
+    blood_group: bloodGroup,
+    donation_date: date,
+    place: place,
+    times_donated: times + 1
+  }]);
+
+if (logError) {
+  submitMsg.textContent = '❌ Could not log donation update: ' + logError.message;
+  submitMsg.className = 'error';
+}
+      
   if (logError) {
     console.warn('⚠ Could not log to donation_updates table:', logError.message);
   }
