@@ -283,7 +283,7 @@
     const formData = new FormData(form);
     const body = {};
     formData.forEach((value, key) => body[key] = value);
-    body.custom_id = `ID-${Date.now()}`;
+    body.custom_id = `L4B-${Math.random().toString(36).substring(2,6).toUpperCase()}${Date.now().toString().slice(-2)}`;
     body.userId = body.custom_id;
 
     try {
