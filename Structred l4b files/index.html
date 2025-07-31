@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Blood Donor Network - Find Life Savers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Stylish Animated Top Bar -->
+    <div class="top-bar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">??</div>
+                Blood Donor Hub
+            </div>
+            <div class="nav-buttons">
+                <a href="profile.html" class="nav-btn profile">
+                    <span class="nav-icon">??</span>
+                    Profile
+                </a>
+                <a href="anouse.html" class="nav-btn announcement">
+                    <span class="nav-icon">??</span>
+                    Announcements
+                </a>
+                <a href="login.html" class="nav-btn login">
+                    <span class="nav-icon">??</span>
+                    Login
+                </a>
+                <a href="register.html" class="nav-btn register">
+                    <span class="nav-icon">??</span>
+                    Register
+                </a>
+                <a href="message.html" class="nav-btn message">
+                    <span class="nav-icon">??</span>
+                    Messages
+                </a>
+                <a href="search.html" class="nav-btn search">
+                    <span class="nav-icon">??</span>
+                    Search
+                </a>
+                <a href="feedback.html" class="nav-btn feedback">
+                    <span class="nav-icon">??</span>
+                    Feedback
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Professional Main Content -->
+    <div class="main-content">
+        <!-- Blood Group Stats -->
+        <div class="blood-stats-container" id="bloodStats">
+            <h3 class="blood-stats-title">?? Eligible Donors by Blood Group</h3>
+            <div class="blood-stats-grid" id="bloodStatsGrid">
+                <!-- Blood stats will be populated by JavaScript -->
+            </div>
+        </div>
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="hero-title">Find Life-Saving Blood Donors</h1>
+            <p class="hero-subtitle">Connect with verified donors in your area and help save lives through our advanced search system</p>
+        </div>
+        <!-- Search Form -->
+        <div class="search-container">
+            <div class="form-header">
+                <h2 class="form-title">Search Blood Donors</h2>
+                <p class="form-subtitle">Use the filters below to find donors matching your specific requirements</p>
+            </div>
+            <form id="searchForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Blood Group</label>
+                        <select id="bloodGroup" class="form-select">
+                            <option value="All">All Blood Groups</option>
+                            <option>A+</option><option>A-</option>
+                            <option>B+</option><option>B-</option>
+                            <option>AB+</option><option>AB-</option>
+                            <option>O+</option><option>O-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Division</label>
+                        <select id="division" class="form-select">
+                            <option value="">Select Division</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">District</label>
+                        <select id="district" class="form-select" disabled>
+                            <option value="">Select District</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">City</label>
+                        <select id="city" class="form-select" disabled>
+                            <option value="All">All Cities</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Donor Availability</label>
+                        <select id="donorType" class="form-select">
+                            <option value="All">All Donors</option>
+                            <option value="Eligible">Available Now</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="search-button">
+                    ?? Search Donors
+                </button>
+            </form>
+        </div>
+        <!-- Results Section -->
+        <div class="results-container">
+            <div class="result-summary" id="resultCount"></div>
+            <div id="results"></div>
+        </div>
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="registerform.html" class="action-btn primary">
+                ? Register as a Donor
+            </a>
+            <a href="dashboard.html" class="action-btn secondary">
+                ?? Go to Dashboard
+            </a>
+        </div>
+    </div>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
