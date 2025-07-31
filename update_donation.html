@@ -131,7 +131,7 @@
         statusMsg.textContent = '❌ No donor found with that number.';
         statusMsg.className = 'error';
       } else {
-        document.getElementById('userId').value = data.user_id || '';
+        document.getElementById('userId').value = data.custom_id || '';
         document.getElementById('name').value = data.name || '';
         document.getElementById('bloodGroup').value = data.blood_group || '';
         document.getElementById('timesDonated').value = data.times_donated || '0';
