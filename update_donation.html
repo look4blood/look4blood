@@ -174,7 +174,7 @@
           last_donation: date,
           times_donated: times + 1
         })
-        .eq('user_id', userId);
+        .eq('custom_id', userId);
 
       if (updateError) {
         submitMsg.textContent = '❌ Error updating Supabase.';
