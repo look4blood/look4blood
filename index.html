@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Donor Network - Find Life Savers</title>
+    <title>Look4Blood - Find Life Savers</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -19,16 +18,14 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
         }
-
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 10px;
+            padding: 0 20px;
         }
-
         .logo {
             color: white;
             font-size: 26px;
@@ -39,7 +36,6 @@
             letter-spacing: -0.5px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-
         .logo-icon {
             width: 40px;
             height: 40px;
@@ -53,13 +49,11 @@
             animation: pulse 2s infinite;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-
         .nav-buttons {
             display: flex;
-            gap: 5px;
+            gap: 15px;
             align-items: center;
         }
-
         .nav-btn {
             display: flex;
             align-items: center;
@@ -72,14 +66,13 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600;
-            font-size: 5px;
+            font-size: 14px;
             backdrop-filter: blur(15px);
             position: relative;
             overflow: hidden;
             letter-spacing: 0.3px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-
         .nav-btn::before {
             content: '';
             position: absolute;
@@ -90,65 +83,59 @@
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s;
         }
-
         .nav-btn:hover::before {
             left: 100%;
         }
-
         .nav-btn:hover {
             background: rgba(255, 255, 255, 0.2);
             border-color: rgba(255, 255, 255, 0.4);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
-
         .nav-btn.profile:hover {
             background: rgba(76, 175, 80, 0.2);
             border-color: #4caf50;
         }
-
         .nav-btn.announcement:hover {
             background: rgba(255, 152, 0, 0.2);
             border-color: #ff9800;
         }
-
         .nav-btn.login:hover {
             background: rgba(33, 150, 243, 0.2);
             border-color: #2196f3;
         }
-
         .nav-btn.register:hover {
             background: rgba(156, 39, 176, 0.2);
             border-color: #9c27b0;
         }
-
         .nav-btn.search:hover {
             background: rgba(255, 193, 7, 0.2);
             border-color: #ffc107;
         }
-
         .nav-btn.message:hover {
             background: rgba(0, 188, 212, 0.2);
             border-color: #00bcd4;
         }
-
+        .nav-btn.feedback:hover {
+            background: rgba(121, 85, 72, 0.2);
+            border-color: #795548;
+        }
         .nav-icon {
             font-size: 18px;
             transition: transform 0.3s ease;
         }
-
         .nav-btn:hover .nav-icon {
             transform: scale(1.2) rotate(5deg);
         }
-
         .nav-btn.profile:hover .nav-icon {
             transform: scale(1.2) rotate(360deg);
         }
-
         .nav-btn.search:hover .nav-icon {
             transform: scale(1.2) rotate(-10deg);
         }
-
+        .nav-btn.feedback:hover .nav-icon {
+            transform: scale(1.2) rotate(15deg);
+        }
         @keyframes pulse {
             0%, 100% {
                 transform: scale(1);
@@ -159,7 +146,6 @@
                 box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
             }
         }
-
         @keyframes slideInFromTop {
             from {
                 transform: translateY(-100%);
@@ -170,23 +156,20 @@
                 opacity: 1;
             }
         }
-
         .top-bar {
             animation: slideInFromTop 0.6s ease-out;
         }
-
         .nav-btn {
             animation: fadeInUp 0.8s ease-out forwards;
             opacity: 0;
         }
-
         .nav-btn:nth-child(1) { animation-delay: 0.1s; }
         .nav-btn:nth-child(2) { animation-delay: 0.2s; }
         .nav-btn:nth-child(3) { animation-delay: 0.3s; }
         .nav-btn:nth-child(4) { animation-delay: 0.4s; }
         .nav-btn:nth-child(5) { animation-delay: 0.5s; }
         .nav-btn:nth-child(6) { animation-delay: 0.6s; }
-
+        .nav-btn:nth-child(7) { animation-delay: 0.7s; }
         @keyframes fadeInUp {
             from {
                 transform: translateY(20px);
@@ -197,7 +180,6 @@
                 opacity: 1;
             }
         }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-container {
@@ -220,12 +202,10 @@
                 font-size: 20px;
             }
         }
-
         /* Professional UI/UX Design System */
         * {
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
@@ -235,23 +215,20 @@
             color: #334155;
             min-height: 100vh;
         }
-
         .main-content {
             max-width: 1400px;
             margin: 0 auto;
             padding: 40px 20px;
         }
-
         /* Hero Section */
         .hero-section {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 50px;
             padding: 40px 20px;
             background: linear-gradient(135deg, rgba(198, 40, 40, 0.05) 0%, rgba(183, 28, 28, 0.02) 100%);
             border-radius: 24px;
             border: 1px solid rgba(198, 40, 40, 0.08);
         }
-
         .hero-title {
             font-family: 'Poppins', sans-serif;
             font-size: clamp(28px, 5vw, 48px);
@@ -261,9 +238,8 @@
             letter-spacing: -0.5px;
             line-height: 1.2;
         }
-
         .hero-subtitle {
-            font-size: 13px;
+            font-size: 14px;
             color: #64748b;
             margin: 0 0 32px 0;
             max-width: 600px;
@@ -271,7 +247,6 @@
             margin-right: auto;
             font-weight: 400;
         }
-
         /* Search Form Container */
         .search-container {
             background: white;
@@ -284,7 +259,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .search-container::before {
             content: '';
             position: absolute;
@@ -294,12 +268,10 @@
             height: 4px;
             background: linear-gradient(90deg, #c62828, #e91e63, #9c27b0);
         }
-
         .form-header {
             text-align: center;
             margin-bottom: 32px;
         }
-
         .form-title {
             font-family: 'Poppins', sans-serif;
             font-size: 24px;
@@ -307,13 +279,11 @@
             color: #1e293b;
             margin: 0 0 8px 0;
         }
-
         .form-subtitle {
             color: #64748b;
             font-size: 15px;
             margin: 0;
         }
-
         /* Form Grid */
         .form-grid {
             display: grid;
@@ -321,11 +291,9 @@
             gap: 24px;
             margin-bottom: 32px;
         }
-
         .form-group {
             position: relative;
         }
-
         .form-label {
             display: block;
             font-weight: 600;
@@ -334,7 +302,6 @@
             font-size: 14px;
             letter-spacing: 0.3px;
         }
-
         .form-select {
             width: 100%;
             padding: 16px 20px;
@@ -352,19 +319,21 @@
             background-size: 16px;
             cursor: pointer;
         }
-
         .form-select:focus {
             outline: none;
             border-color: #c62828;
             box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
             transform: translateY(-1px);
         }
-
         .form-select:hover {
             border-color: #cbd5e1;
             transform: translateY(-1px);
         }
-
+        .form-select:disabled {
+            background-color: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
         /* Search Button */
         .search-button {
             width: 100%;
@@ -383,7 +352,6 @@
             letter-spacing: 0.3px;
             box-shadow: 0 10px 15px -3px rgba(198, 40, 40, 0.4);
         }
-
         .search-button::before {
             content: '';
             position: absolute;
@@ -394,26 +362,21 @@
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s;
         }
-
         .search-button:hover::before {
             left: 100%;
         }
-
         .search-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 20px 25px -5px rgba(198, 40, 40, 0.4);
         }
-
         .search-button:active {
             transform: translateY(0);
         }
-
         /* Results Section */
         .results-container {
             max-width: 1200px;
             margin: 0 auto;
         }
-
         .result-summary {
             background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
             border: 1px solid #bbf7d0;
@@ -427,13 +390,6 @@
             gap: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-
-        /* Results Container */
-        .results-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
         /* Desktop Table Styles */
         .table-container {
             background: white;
@@ -443,13 +399,11 @@
             border: 1px solid rgba(226, 232, 240, 0.8);
             animation: slideInUp 0.6s ease-out;
         }
-
         .desktop-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
         }
-
         .desktop-table th {
             background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
             color: white;
@@ -461,27 +415,22 @@
             text-align: left;
             border: none;
         }
-
         .desktop-table td {
             padding: 16px;
             border-bottom: 1px solid #f1f5f9;
             color: #334155;
             font-weight: 500;
         }
-
         .desktop-table tbody tr {
             transition: all 0.2s ease;
         }
-
         .desktop-table tbody tr:hover {
             background: #f8fafc;
             transform: scale(1.01);
         }
-
         .desktop-table tbody tr:last-child td {
             border-bottom: none;
         }
-
         /* Mobile Card Styles */
         .mobile-cards {
             display: none;
@@ -489,7 +438,6 @@
             margin: 0 auto;
             padding: 0 16px;
         }
-
         .donor-card {
             background: white;
             border: 1px solid #e5e7eb;
@@ -505,25 +453,20 @@
             animation-fill-mode: both;
             font-family: 'Inter', sans-serif;
         }
-
         .donor-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
             border-color: #c62828;
         }
-
         .donor-card:active {
             transform: translateY(-2px);
         }
-
         .card-left, .card-right {
             flex: 1;
         }
-
         .card-left {
             margin-right: 24px;
         }
-
         .donor-name {
             font-size: 18px;
             font-weight: 700;
@@ -532,7 +475,6 @@
             font-family: 'Poppins', sans-serif;
             letter-spacing: -0.2px;
         }
-
         .blood-group {
             display: inline-block;
             background: linear-gradient(135deg, #c62828, #b71c1c);
@@ -545,7 +487,6 @@
             letter-spacing: 0.3px;
             box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
         }
-
         .phone-number {
             color: #374151;
             font-size: 15px;
@@ -554,12 +495,10 @@
             align-items: center;
             gap: 6px;
         }
-
         .phone-number::before {
             content: "📞";
             font-size: 14px;
         }
-
         .card-info-item {
             margin-bottom: 8px;
             color: #6b7280;
@@ -568,7 +507,6 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .card-info-label {
             font-weight: 600;
             color: #374151;
@@ -576,12 +514,10 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
-
         .card-info-value {
             font-weight: 500;
             color: #1f2937;
         }
-
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -592,7 +528,6 @@
                 transform: translateY(0);
             }
         }
-
         @keyframes slideInUp {
             from {
                 opacity: 0;
@@ -603,7 +538,6 @@
                 transform: translateY(0);
             }
         }
-
         /* Responsive Design - Mobile First */
         @media (max-width: 768px) {
             .table-container {
@@ -614,27 +548,23 @@
                 display: block !important;
                 padding: 0 8px;
             }
-
             .donor-card {
                 flex-direction: column;
                 align-items: stretch;
                 padding: 20px;
                 margin-bottom: 20px;
             }
-
             .card-left {
                 margin-right: 0;
                 margin-bottom: 20px;
                 border-bottom: 1px solid #f3f4f6;
                 padding-bottom: 16px;
             }
-
             .card-right {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 12px;
             }
-
             .card-info-item {
                 flex-direction: column;
                 align-items: flex-start;
@@ -643,23 +573,19 @@
                 background: #f8fafc;
                 border-radius: 8px;
             }
-
             .donor-name {
                 font-size: 20px;
                 margin-bottom: 8px;
             }
-
             .blood-group {
                 font-size: 16px;
                 padding: 8px 16px;
             }
-
             .phone-number {
                 font-size: 16px;
                 font-weight: 700;
             }
         }
-
         @media (min-width: 769px) {
             .table-container {
                 display: block !important;
@@ -669,7 +595,6 @@
                 display: none !important;
             }
         }
-
         /* Error/No Results */
         .no-results {
             background: linear-gradient(135deg, #fef2f2 0%, #fef2f2 100%);
@@ -682,7 +607,6 @@
             font-size: 16px;
             margin: 24px 0;
         }
-
         /* Action Buttons */
         .action-buttons {
             display: flex;
@@ -691,7 +615,6 @@
             margin-top: 48px;
             flex-wrap: wrap;
         }
-
         .action-btn {
             display: inline-flex;
             align-items: center;
@@ -706,31 +629,25 @@
             position: relative;
             overflow: hidden;
         }
-
         .action-btn.primary {
             background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
             color: white;
             box-shadow: 0 10px 15px -3px rgba(198, 40, 40, 0.4);
         }
-
         .action-btn.secondary {
             background: linear-gradient(135deg, #059669 0%, #047857 100%);
             color: white;
             box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.4);
         }
-
         .action-btn:hover {
             transform: translateY(-2px);
         }
-
         .action-btn.primary:hover {
             box-shadow: 0 20px 25px -5px rgba(198, 40, 40, 0.4);
         }
-
         .action-btn.secondary:hover {
             box-shadow: 0 20px 25px -5px rgba(5, 150, 105, 0.4);
         }
-
         /* Blood Group Statistics */
         .blood-stats-container {
             max-width: 1200px;
@@ -741,7 +658,6 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(226, 232, 240, 0.8);
         }
-
         .blood-stats-title {
             font-family: 'Poppins', sans-serif;
             font-size: 20px;
@@ -750,13 +666,11 @@
             margin: 0 0 24px 0;
             text-align: center;
         }
-
         .blood-stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 16px;
         }
-
         .blood-stat-item {
             background: linear-gradient(135deg, #ffffff 0%, #fef7f7 100%);
             border: 2px solid #fee2e2;
@@ -777,14 +691,12 @@
             height: 3px;
             background: linear-gradient(90deg, #dc2626, #ef4444);
         }
-
         .blood-stat-item:hover {
             transform: translateY(-4px);
             box-shadow: 0 15px 35px rgba(220, 38, 38, 0.2);
             border-color: #dc2626;
             background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
         }
-
         .blood-type {
             display: block;
             font-size: 18px;
@@ -792,81 +704,65 @@
             color: #c62828;
             margin-bottom: 8px;
         }
-
         .blood-count {
             display: block;
             font-size: 24px;
             font-weight: 800;
             color: #1e293b;
         }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-content {
                 padding: 20px 16px;
             }
-
             .search-container {
                 padding: 24px 20px;
                 margin: 0 16px 24px 16px;
             }
-
             .form-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-
             .hero-section {
                 padding: 24px 16px;
             }
-
             .blood-stats-container {
                 margin: 0 16px 24px 16px;
                 padding: 20px;
             }
-
             .blood-stats-grid {
                 grid-template-columns: repeat(4, 1fr);
                 gap: 12px;
             }
-
             .blood-stat-item {
                 padding: 16px 8px;
             }
-
             .blood-type {
                 font-size: 16px;
             }
-
             .blood-count {
                 font-size: 20px;
             }
-
             .action-buttons {
                 flex-direction: column;
                 align-items: center;
             }
-
             .action-btn {
                 width: 100%;
                 max-width: 300px;
                 justify-content: center;
             }
-
             .table-container {
                 margin: 0 -16px;
                 border-radius: 0;
             }
-
             table {
                 font-size: 12px;
             }
-
             th, td {
                 padding: 12px 8px;
             }
         }
-
         /* Loading Animation */
         @keyframes fadeInUp {
             from {
@@ -878,11 +774,9 @@
                 transform: translateY(0);
             }
         }
-
         .search-container {
             animation: fadeInUp 0.6s ease-out;
         }
-
         .results-container {
             animation: fadeInUp 0.8s ease-out;
         }
@@ -921,10 +815,13 @@
                     <span class="nav-icon">🔍</span>
                     Search
                 </a>
+                <a href="feedback.html" class="nav-btn feedback">
+                    <span class="nav-icon">📝</span>
+                    Feedback
+                </a>
             </div>
         </div>
     </div>
-
     <!-- Professional Main Content -->
     <div class="main-content">
         <!-- Blood Group Stats -->
@@ -934,20 +831,17 @@
                 <!-- Blood stats will be populated by JavaScript -->
             </div>
         </div>
-
         <!-- Hero Section -->
         <div class="hero-section">
             <h1 class="hero-title">Find Life-Saving Blood Donors</h1>
-            <p class="hero-subtitle">Connect with verified donors in your area and help save lives through our Plartform</p>
+            <p class="hero-subtitle">Connect with verified donors in your area and help save lives through our Plartfrom</p>
         </div>
-
         <!-- Search Form -->
         <div class="search-container">
             <div class="form-header">
                 <h2 class="form-title">Search Blood Donors</h2>
                 <p class="form-subtitle">Use the filters below to find donors matching your specific requirements</p>
             </div>
-
             <form id="searchForm">
                 <div class="form-grid">
                     <div class="form-group">
@@ -960,56 +854,42 @@
                             <option>O+</option><option>O-</option>
                         </select>
                     </div>
-
+                    <div class="form-group">
+                        <label class="form-label">Division</label>
+                        <select id="division" class="form-select">
+                            <option value="">Select Division</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label class="form-label">District</label>
-                        <select id="district" class="form-select">
-                            <option value="Chottogram">Chottogram</option>
+                        <select id="district" class="form-select" disabled>
+                            <option value="">Select District</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">City</label>
-                        <select id="city" class="form-select">
+                        <select id="city" class="form-select" disabled>
                             <option value="All">All Cities</option>
-                            <option>Agrabad</option>
-                            <option>Boalkhali</option>
-                            <option>Bakalia</option>
-                            <option>Bayazid</option>
-                            <option>Chandgaon</option>
-                            <option>Chawkbazar</option>
-                            <option>Halishahar</option>
-                            <option>Khulshi</option>
-                            <option>Kotwali</option>
-                            <option>Patiya</option>
-                            <option>Panchlaish</option>
-                            <option>Patenga</option>
-                            <option>Rangunia</option>
-                            <option>Raozan</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">Donor Availability</label>
                         <select id="donorType" class="form-select">
                             <option value="All">All Donors</option>
-                            <option value="Eligible">Eligible</option>
+                            <option value="Eligible">Available Now</option>
                         </select>
                     </div>
                 </div>
-
                 <button type="submit" class="search-button">
                     🔍 Search Donors
                 </button>
             </form>
         </div>
-
         <!-- Results Section -->
         <div class="results-container">
             <div class="result-summary" id="resultCount"></div>
             <div id="results"></div>
         </div>
-
         <!-- Action Buttons -->
         <div class="action-buttons">
             <a href="registerform.html" class="action-btn primary">
@@ -1020,14 +900,15 @@
             </a>
         </div>
     </div>
-
     <script type="module">
         import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
         const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
         const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
+        
+        // Store all locations for later use
+        let allLocations = [];
+        
         function daysSince(dateStr) {
             const date = new Date(dateStr);
             if (isNaN(date)) return Infinity;
@@ -1035,84 +916,198 @@
             const diffTime = today - date;
             return Math.floor(diffTime / (1000 * 60 * 60 * 24));
         }
-
+        
         async function loadBloodGroupStats() {
             const { data: donors, error } = await supabase.from("donors").select("*");
             if (error || !donors) return;
-
             const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
             const stats = {};
-
             bloodGroups.forEach(group => {
                 const eligible = donors.filter(d => 
                     d.blood_group === group && daysSince(d.last_donation) >= 90
                 ).length;
                 stats[group] = eligible;
             });
-
             const statsGrid = document.getElementById('bloodStatsGrid');
             statsGrid.innerHTML = bloodGroups.map(group => `
                 <div class="blood-stat-item">
-                    <div style="font-size: 0px; margin-bottom: 0px; filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.3));">🩸</div>
+                    <div style="font-size: 40px; margin-bottom: 12px; filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.3));">🩸</div>
                     <span class="blood-type">${group}</span>
                     <span class="blood-count">${stats[group]}</span>
                     <div style="font-size: 11px; color: #6b7280; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Eligible</div>
                 </div>
             `).join('');
         }
-
+        
         // View profile function
         window.viewProfile = function(donorId) {
             // Redirect to profile page with donor ID
             window.location.href = `profile.html?id=${donorId}`;
         }
-
-        // Load stats on page load
+        
+        // Load divisions, districts, and cities from Supabase
+        async function loadDivisions() {
+            const { data: locations, error } = await supabase
+                .from("locations")
+                .select("*")
+                .order("division, district, city");
+            
+            if (error || !locations) return;
+            
+            // Store all locations for later use
+            allLocations = locations;
+            
+            const uniqueDivisions = [...new Set(locations.map(l => l.division))];
+            const divisionSelect = document.getElementById("division");
+            
+            divisionSelect.innerHTML = '<option value="">Select Division</option>';
+            uniqueDivisions.forEach(division => {
+                divisionSelect.innerHTML += `<option value="${division}">${division}</option>`;
+            });
+        }
+        
+        // Function to get division by district
+        function getDivisionByDistrict(district) {
+            const location = allLocations.find(loc => loc.district === district);
+            return location ? location.division : null;
+        }
+        
+        // Function to get districts by division
+        function getDistrictsByDivision(division) {
+            return [...new Set(allLocations
+                .filter(loc => loc.division === division)
+                .map(loc => loc.district))];
+        }
+        
+        // Function to get cities by district
+        function getCitiesByDistrict(district) {
+            return [...new Set(allLocations
+                .filter(loc => loc.district === district)
+                .map(loc => loc.city))];
+        }
+        
+        async function loadDistricts(selectedDivision) {
+            const districts = getDistrictsByDivision(selectedDivision);
+            const districtSelect = document.getElementById("district");
+            
+            districtSelect.innerHTML = '<option value="">Select District</option>';
+            districtSelect.disabled = false;
+            
+            districts.forEach(district => {
+                districtSelect.innerHTML += `<option value="${district}">${district}</option>`;
+            });
+            
+            // Reset city dropdown
+            const citySelect = document.getElementById("city");
+            citySelect.innerHTML = '<option value="All">All Cities</option>';
+            citySelect.disabled = true;
+        }
+        
+        async function loadCities(selectedDistrict) {
+            const cities = getCitiesByDistrict(selectedDistrict);
+            const citySelect = document.getElementById("city");
+            
+            citySelect.innerHTML = '<option value="All">All Cities</option>';
+            citySelect.disabled = false;
+            
+            cities.forEach(city => {
+                citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+            });
+        }
+        
+        // Event listeners for dropdown changes
+        document.getElementById("division").addEventListener("change", function(e) {
+            const selectedDivision = e.target.value;
+            if (selectedDivision) {
+                loadDistricts(selectedDivision);
+            } else {
+                // Reset both district and city dropdowns
+                document.getElementById("district").innerHTML = '<option value="">Select District</option>';
+                document.getElementById("district").disabled = true;
+                document.getElementById("city").innerHTML = '<option value="All">All Cities</option>';
+                document.getElementById("city").disabled = true;
+            }
+        });
+        
+        document.getElementById("district").addEventListener("change", function(e) {
+            const selectedDistrict = e.target.value;
+            if (selectedDistrict) {
+                loadCities(selectedDistrict);
+            } else {
+                // Reset city dropdown
+                document.getElementById("city").innerHTML = '<option value="All">All Cities</option>';
+                document.getElementById("city").disabled = true;
+            }
+        });
+        
+        // Load initial data on page load
         loadBloodGroupStats();
-
+        loadDivisions();
+        
         document.getElementById("searchForm").addEventListener("submit", async function (e) {
             e.preventDefault();
-
             const bloodGroup = document.getElementById("bloodGroup").value;
+            const division = document.getElementById("division").value;
             const district = document.getElementById("district").value;
             const city = document.getElementById("city").value;
             const donorType = document.getElementById("donorType").value;
-
+            
             const { data: donors, error } = await supabase.from("donors").select("*");
-
             const resultsDiv = document.getElementById("results");
             const resultCount = document.getElementById("resultCount");
-
+            
             if (error || !donors || donors.length === 0) {
                 resultCount.textContent = "";
                 resultsDiv.innerHTML = "<div class='no-results'>❌ Error fetching donor data.</div>";
                 console.error(error);
                 return;
             }
-
+            
             const filtered = donors.filter(d => {
                 const matchesBlood = bloodGroup === "All" || d.blood_group === bloodGroup;
-                const matchesDistrict = d.state === district;
-                const matchesCity = city === "All" || d.city === city;
+                
+                // Handle location filtering with proper hierarchy
+                let matchesLocation = true;
+                
+                if (division) {
+                    // Check if donor's district belongs to the selected division
+                    const donorDivision = d.state ? getDivisionByDistrict(d.state) : null;
+                    
+                    if (!donorDivision || donorDivision !== division) {
+                        matchesLocation = false;
+                    } else if (district) {
+                        // If division matches and district is selected, check district
+                        if (d.state !== district) {
+                            matchesLocation = false;
+                        } else if (city !== "All") {
+                            // If division and district match and city is selected, check city
+                            if (d.city !== city) {
+                                matchesLocation = false;
+                            }
+                        }
+                    }
+                }
+                
                 const days = daysSince(d.last_donation);
                 const isEligible = donorType === "All" || (donorType === "Eligible" && days >= 90);
-                return matchesBlood && matchesDistrict && matchesCity && isEligible;
+                
+                return matchesBlood && matchesLocation && isEligible;
             });
-
+            
             if (filtered.length === 0) {
                 resultCount.textContent = "";
                 resultsDiv.innerHTML = "<div class='no-results'>❌ No matching donors found.</div>";
                 return;
             }
-
+            
             resultCount.textContent = `✅ ${filtered.length} matching donor(s) found:`;
-
+            
             // Generate Desktop Table
             let table = `<div class="table-container"><table class="desktop-table"><tr>`;
             const headers = ["Name", "Age", "Gender", "Blood Group", "Phone", "City", "Eligibility Status", "Times Donated", "Profile"];
             headers.forEach(h => table += `<th>${h}</th>`);
             table += "</tr>";
-
+            
             filtered.forEach(d => {
                 const days = daysSince(d.last_donation);
                 const isEligible = days >= 90;
@@ -1132,9 +1127,9 @@
                 table += `<td><button onclick="viewProfile('${d.id}')" style="background: linear-gradient(135deg, #059669, #047857); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">View Profile</button></td>`;
                 table += "</tr>";
             });
-
+            
             table += "</table></div>";
-
+            
             // Generate Mobile Cards
             let cards = `<div class="mobile-cards">`;
             
@@ -1180,9 +1175,9 @@
                     </div>
                 `;
             });
-
+            
             cards += "</div>";
-
+            
             resultsDiv.innerHTML = table + cards;
         });
     </script>
