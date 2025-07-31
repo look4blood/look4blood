@@ -180,6 +180,22 @@
         submitMsg.textContent = '❌ Error updating Supabase.';
         return;
       }
+      
+       // 2️⃣ Insert new row into donation_updates table
+  const { error: logError } = await supabase
+    .from('donation_updates')
+    .insert([{
+      custom_id: userId,
+      name: name,
+      blood_group: bloodGroup,
+      donation_date: date,
+      place: place,
+      times_donated: times + 1
+    }]);
+
+  if (logError) {
+    console.warn('⚠ Could not log to donation_updates table:', logError.message);
+  }
 
       // Append to Google Sheet
       const scriptURL = 'https://script.google.com/macros/s/AKfycbwgKdkTu5z5LPlbIp0YKwqYedFz9oBqJ55kP_HbaglxIybqPqZBQJEZxAeCc1BoFNQ/exec';
