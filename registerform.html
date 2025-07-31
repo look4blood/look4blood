@@ -281,42 +281,46 @@
     loadingOverlay.style.display = "flex";
 
     const formData = new FormData(form);
-    const body = {};
-    formData.forEach((value, key) => body[key] = value);
-    body.custom_id = `L4B-${Math.random().toString(36).substring(2,6).toUpperCase()}${Date.now().toString().slice(-2)}`;
-    body.userId = body.custom_id;
+const body = {};
+formData.forEach((value, key) => body[key] = value);
 
-    try {
-      // Step 1: Create Supabase Auth user with minimal signup
-      const { data, error } = await supabase.auth.signUp({
-        email: body.email,
-        password: body.password
-      });
+// Generate custom_id once and reuse it
+const customId = `L4B-${Math.random().toString(36).substring(2,6).toUpperCase()}${Date.now().toString().slice(-2)}`;
 
-      if (error) {
-        throw new Error(`Authentication failed: ${error.message}`);
-      }
+body.custom_id = customId;
+body.userId = customId;
 
-      // Step 2: Prepare data for database (exclude password)
-      const donorData = {
-        user_id: data.user.id,  // Use the actual Supabase user ID here
-        custom_id: `L4B-${Math.random().toString(36).substring(2,6).toUpperCase()}${Date.now().toString().slice(-2)}`
-        name: body.name,
-        age: Number(body.age),
-        gender: body.gender,
-        blood_group: body.bloodGroup,
-        phone: body.phone,
-        email: body.email,
-        division: body.division,
-        state: body.district,
-        city: body.city,
-        zip: body.zip,
-        last_donation: body.lastDonation || null,
-        times_donated: Number(body.donationCount) || 0,
-        available: body.available === "Yes",
-        terms: true
-      };
+try {
+  // Step 1: Create Supabase Auth user with minimal signup
+  const { data, error } = await supabase.auth.signUp({
+    email: body.email,
+    password: body.password
+  });
 
+  if (error) {
+    throw new Error(`Authentication failed: ${error.message}`);
+  }
+
+  // Step 2: Prepare data for database (exclude password)
+  const donorData = {
+    user_id: data.user.id,              // Use Supabase user ID
+    custom_id: customId,                // Use generated custom ID
+    name: body.name,
+    age: Number(body.age),
+    gender: body.gender,
+    blood_group: body.bloodGroup,
+    phone: body.phone,
+    email: body.email,
+    division: body.division,
+    state: body.district,
+    city: body.city,
+    zip: body.zip,
+    last_donation: body.lastDonation || null,
+    times_donated: Number(body.donationCount) || 0,
+    available: body.available === "Yes",
+    terms: true
+  };
+  
       // Step 3: Send to Supabase donors table
       const { error: dbError } = await supabase
         .from('donors')
