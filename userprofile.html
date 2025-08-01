@@ -449,157 +449,157 @@
             document.getElementById('progressPercent').textContent = `${percent}%`;
         }
 
-        // Setup photo upload
-        function setupPhotoUpload() {
-            const profilePhoto = document.getElementById('profilePhoto');
-            const photoUpload = document.getElementById('photoUpload');
-            const uploadOverlay = document.querySelector('.upload-overlay');
+        // Setup photo upload (only for own profile)
+function setupPhotoUpload() {
+    const profilePhoto = document.getElementById('profilePhoto');
+    const photoUpload = document.getElementById('photoUpload');
+    const uploadOverlay = document.querySelector('.upload-overlay');
+    
+    // Click on overlay or photo to trigger file input
+    uploadOverlay.addEventListener('click', () => {
+        photoUpload.click();
+    });
+    
+    profilePhoto.addEventListener('click', () => {
+        photoUpload.click();
+    });
+    
+    // Handle file selection
+    photoUpload.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
             
-            // Click on overlay or photo to trigger file input
-            uploadOverlay.addEventListener('click', () => {
-                photoUpload.click();
-            });
-            
-            profilePhoto.addEventListener('click', () => {
-                photoUpload.click();
-            });
-            
-            // Handle file selection
-            photoUpload.addEventListener('change', (e) => {
-                if (e.target.files && e.target.files[0]) {
-                    const reader = new FileReader();
+            reader.onload = (event) => {
+                // Show crop modal
+                document.getElementById('cropImage').src = event.target.result;
+                document.getElementById('cropModal').classList.remove('hidden');
+                
+                // Initialize cropper
+                setTimeout(() => {
+                    if (cropper) {
+                        cropper.destroy();
+                    }
                     
-                    reader.onload = (event) => {
-                        // Show crop modal
-                        document.getElementById('cropImage').src = event.target.result;
-                        document.getElementById('cropModal').classList.remove('hidden');
-                        
-                        // Initialize cropper
-                        setTimeout(() => {
-                            if (cropper) {
-                                cropper.destroy();
-                            }
-                            
-                            const image = document.getElementById('cropImage');
-                            cropper = new Cropper(image, {
-                                aspectRatio: 1,
-                                viewMode: 2,
-                                autoCropArea: 0.8,
-                                responsive: true,
-                                checkCrossOrigin: false
-                            });
-                        }, 100);
-                    };
-                    
-                    reader.readAsDataURL(e.target.files[0]);
-                }
+                    const image = document.getElementById('cropImage');
+                    cropper = new Cropper(image, {
+                        aspectRatio: 1,
+                        viewMode: 2,
+                        autoCropArea: 0.8,
+                        responsive: true,
+                        checkCrossOrigin: false
+                    });
+                }, 100);
+            };
+            
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+    
+    // Cancel crop
+    document.getElementById('cancelCropBtn').addEventListener('click', () => {
+        document.getElementById('cropModal').classList.add('hidden');
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    });
+    
+    // Apply crop
+    document.getElementById('applyCropBtn').addEventListener('click', async () => {
+        if (cropper) {
+            // Get cropped canvas
+            const canvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 300,
+                minWidth: 256,
+                minHeight: 256,
+                maxWidth: 4096,
+                maxHeight: 4096,
+                fillColor: '#fff',
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
             });
             
-            // Cancel crop
-            document.getElementById('cancelCropBtn').addEventListener('click', () => {
-                document.getElementById('cropModal').classList.add('hidden');
-                if (cropper) {
+            // Convert to blob
+            canvas.toBlob(async (blob) => {
+                try {
+                    // Show loading
+                    document.getElementById('loading').style.display = 'flex';
+                    
+                    // Generate unique filename
+                    const fileName = profile-${currentUser.id}-${Date.now()}.jpg;
+                    
+                    // Check if bucket exists first
+                    const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
+                    
+                    if (bucketError) {
+                        console.error('Error checking buckets:', bucketError);
+                        throw bucketError;
+                    }
+                    
+                    const avatarBucket = buckets.find(b => b.name === 'avatars');
+                    
+                    if (!avatarBucket) {
+                        throw new Error('Storage bucket "avatars" not found. Please create it in your Supabase dashboard.');
+                    }
+                    
+                    // Upload to Supabase Storage
+                    const { data, error } = await supabase.storage
+                        .from('avatars')
+                        .upload(fileName, blob, {
+                            contentType: 'image/jpeg',
+                            upsert: false
+                        });
+                    
+                    if (error) {
+                        console.error('Upload error:', error);
+                        if (error.message.includes('bucket not found') || error.statusCode === 404) {
+                            throw new Error('Storage bucket "avatars" not found. Please create it in your Supabase dashboard.');
+                        } else {
+                            throw error;
+                        }
+                    }
+                    
+                    // Get public URL
+                    const { data: publicUrlData } = supabase.storage
+                        .from('avatars')
+                        .getPublicUrl(fileName);
+                    
+                    const avatarUrl = publicUrlData.publicUrl;
+                    
+                    // Update donor record
+                    const { error: updateError } = await supabase
+                        .from('donors')
+                        .update({ avatar_url: avatarUrl })
+                        .eq('id', donorData.id);
+                    
+                    if (updateError) throw updateError;
+                    
+                    // Update UI
+                    document.getElementById('profilePhoto').src = avatarUrl;
+                    donorData.avatar_url = avatarUrl;
+                    
+                    // Close modal and destroy cropper
+                    document.getElementById('cropModal').classList.add('hidden');
                     cropper.destroy();
                     cropper = null;
-                }
-            });
-            
-            // Apply crop
-document.getElementById('applyCropBtn').addEventListener('click', async () => {
-    if (cropper) {
-        // Get cropped canvas
-        const canvas = cropper.getCroppedCanvas({
-            width: 300,
-            height: 300,
-            minWidth: 256,
-            minHeight: 256,
-            maxWidth: 4096,
-            maxHeight: 4096,
-            fillColor: '#fff',
-            imageSmoothingEnabled: true,
-            imageSmoothingQuality: 'high' // no trailing comma
-        });
-        
-        // Convert to blob
-        canvas.toBlob(async (blob) => {
-            try {
-                // Show loading
-                document.getElementById('loading').style.display = 'flex';
-                
-                // Generate unique filename
-                const fileName = `profile-${currentUser.id}-${Date.now()}.jpg`;
-                
-                // Check if bucket exists first
-                const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
-                
-                if (bucketError) {
-                    console.error('Error checking buckets:', bucketError);
-                    throw bucketError;
-                }
-                
-                const avatarBucket = buckets.find(b => b.name === 'avatars');
-                
-                if (!avatarBucket) {
-                    throw new Error('Storage bucket "avatars" not found. Please create it in your Supabase dashboard.');
-                }
-                
-                // Upload to Supabase Storage
-                const { data, error } = await supabase.storage
-                    .from('avatars')
-                    .upload(fileName, blob, {
-                        contentType: 'image/jpeg',
-                        upsert: false
-                    });
-                
-                if (error) {
-                    console.error('Upload error:', error);
-                    if (error.message.includes('bucket not found') || error.statusCode === 404) {
-                        throw new Error('Storage bucket "avatars" not found. Please create it in your Supabase dashboard.');
+                    
+                    alert('Profile picture updated successfully!');
+                } catch (error) {
+                    console.error('Error uploading profile picture:', error);
+                    
+                    if (error.message.includes('Storage bucket "avatars" not found')) {
+                        alert('Error: The storage bucket for avatars has not been created. Please contact your administrator or create it in the Supabase dashboard.');
                     } else {
-                        throw error;
+                        alert('Error uploading profile picture: ' + error.message);
                     }
+                } finally {
+                    document.getElementById('loading').style.display = 'none';
                 }
-                
-                // Get public URL
-                const { data: publicUrlData } = supabase.storage
-                    .from('avatars')
-                    .getPublicUrl(fileName);
-                
-                const avatarUrl = publicUrlData.publicUrl;
-                
-                // Update donor record
-                const { error: updateError } = await supabase
-                    .from('donors')
-                    .update({ avatar_url: avatarUrl })
-                    .eq('id', donorData.id);
-                
-                if (updateError) throw updateError;
-                
-                // Update UI
-                document.getElementById('profilePhoto').src = avatarUrl;
-                donorData.avatar_url = avatarUrl;
-                
-                // Close modal and destroy cropper
-                document.getElementById('cropModal').classList.add('hidden');
-                cropper.destroy();
-                cropper = null;
-                
-                alert('Profile picture updated successfully!');
-            } catch (error) {
-                console.error('Error uploading profile picture:', error);
-                
-                if (error.message.includes('Storage bucket "avatars" not found')) {
-                    alert('Error: The storage bucket for avatars has not been created. Please contact your administrator or create it in the Supabase dashboard.');
-                } else {
-                    alert('Error uploading profile picture: ' + error.message);
-                }
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-            }
-        }, 'image/jpeg', 0.9);
-    }
-});
-
+            }, 'image/jpeg', 0.9);
+        }
+    });
+}
         // Setup donation history
         function setupDonationHistory() {
             const donationHistoryBtn = document.getElementById('donationHistoryBtn');
