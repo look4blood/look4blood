@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Donor Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <style>
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            stroke-dasharray: 339.292;
+            stroke-dashoffset: 339.292;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        .like-animation {
+            animation: bounce 0.3s ease-in-out;
+        }
+        .comment-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .comment-section.open {
+            max-height: 500px;
+        }
+        /* Cropper styles */
+        .cropper-container {
+            max-height: 400px;
+        }
+        .upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .profile-photo-container:hover .upload-overlay {
+            opacity: 1;
+        }
+        /* Table styles */
+        .donation-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .donation-table th, .donation-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .donation-table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+        .donation-table tr:hover {
+            background-color: #f9fafb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Loading Spinner -->
+    <div id="loading" class="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Profile Header -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+                <!-- Profile Photo -->
+                <div class="profile-photo-container relative">
+                    <img id="profilePhoto" src="https://picsum.photos/seed/default/150/150.jpg" 
+                         alt="Profile" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
+                    <div class="upload-overlay">
+                        <div class="text-white text-center">
+                            <i class="fas fa-camera text-2xl mb-2"></i>
+                            <p class="text-sm">Change Photo</p>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-2 -right-2 bg-yellow-400 rounded-full p-2 shadow-lg">
+                        <i class="fas fa-medal text-white"></i>
+                    </div>
+                    <input type="file" id="photoUpload" class="hidden" accept="image/*">
+                </div>
+                
+                <!-- Basic Info -->
+                <div class="flex-1 text-center md:text-left">
+                    <h1 id="userName" class="text-2xl font-bold text-gray-800">Loading...</h1>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-2">
+                        <span id="bloodGroup" class="bg-red-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                            A+
+                        </span>
+                        <span id="userAge" class="bg-gray-200 text-gray-700 px-4 py-1 rounded-full text-sm">
+                            27 years
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <!-- Left Side - Donation Stats -->
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Donation History</h2>
+                
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Total Donations</span>
+                        <span id="totalDonations" class="text-2xl font-bold text-red-500">12</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Last Donation</span>
+                        <span id="lastDonation" class="text-lg font-semibold text-gray-800">25 days ago</span>
+                    </div>
+                    
+                    <!-- Progress Circle -->
+                    <div class="flex flex-col items-center mt-6">
+                        <div class="relative w-40 h-40">
+                            <svg class="progress-ring w-40 h-40">
+                                <circle class="text-gray-200" stroke="currentColor" stroke-width="8" 
+                                        fill="transparent" r="54" cx="80" cy="80"/>
+                                <circle id="progressCircle" class="progress-ring__circle text-red-500" 
+                                        stroke="currentColor" stroke-width="8" fill="transparent" 
+                                        r="54" cx="80" cy="80"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="progressPercent" class="text-2xl font-bold text-gray-800">25%</span>
+                            </div>
+                        </div>
+                        <p id="nextDonationText" class="mt-4 text-center text-gray-600">
+                            You can donate again in <span class="font-semibold text-red-500">65 days</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Interactions -->
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Community Feedback</h2>
+                
+                <div class="flex justify-around mb-6">
+                    <button id="likeBtn" class="flex flex-col items-center space-y-2 transition-transform hover:scale-105">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-thumbs-up text-2xl text-green-600"></i>
+                        </div>
+                        <span id="likeCount" class="text-2xl font-bold text-green-600">142</span>
+                    </button>
+                    
+                    <button id="dislikeBtn" class="flex flex-col items-center space-y-2 transition-transform hover:scale-105">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-thumbs-down text-2xl text-red-600"></i>
+                        </div>
+                        <span id="dislikeCount" class="text-2xl font-bold text-red-600">3</span>
+                    </button>
+                </div>
+
+                <div class="space-y-3">
+                    <button id="commentBtn" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-comment mr-2"></i>View Comments
+                    </button>
+                    
+                    <button id="reportBtn" class="w-full bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors">
+                        <i class="fas fa-flag mr-2"></i>Report User
+                    </button>
+                    
+                    <button id="donationHistoryBtn" class="w-full bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors">
+                        <i class="fas fa-history mr-2"></i>Donation History
+                    </button>
+                </div>
+
+                <!-- Comments Section -->
+                <div id="commentsSection" class="comment-section mt-4">
+                    <div class="border-t pt-4">
+                        <h3 class="font-semibold mb-3">Comments</h3>
+                        <div id="commentsList" class="space-y-3 max-h-60 overflow-y-auto mb-3">
+                            <!-- Comments will be loaded here -->
+                        </div>
+                        <div class="flex space-x-2">
+                            <input id="commentInput" type="text" placeholder="Add a comment..." 
+                                   class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button id="addCommentBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info Section -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">User Information</h2>
+            
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-sm text-gray-600">Phone Number</label>
+                        <input id="phoneInput" type="tel" disabled 
+                               class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm text-gray-600">City</label>
+                        <input id="cityInput" type="text" disabled 
+                               class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-sm text-gray-600">Division</label>
+                        <input id="districtInput" type="text" disabled 
+                               class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm text-gray-600">User ID</label>
+                        <input id="userIdInput" type="text" readonly 
+                               class="w-full px-3 py-2 border rounded-lg bg-gray-100 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-center space-x-4">
+            <button id="editBtn" class="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+                <i class="fas fa-edit mr-2"></i>Edit Profile
+            </button>
+            <button id="saveBtn" class="bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-600 transition-colors hidden">
+                <i class="fas fa-save mr-2"></i>Save Changes
+            </button>
+        </div>
+    </div>
+
+    <!-- Crop Modal -->
+    <div id="cropModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-4 max-w-md w-full mx-4">
+            <h3 class="text-xl font-semibold mb-4">Crop Your Profile Picture</h3>
+            <div class="mb-4">
+                <img id="cropImage" class="max-w-full">
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button id="cancelCropBtn" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                    Cancel
+                </button>
+                <button id="applyCropBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                    Apply
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donation History Modal -->
+    <div id="donationHistoryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-semibold">Donation History</h3>
+                <button id="closeDonationHistoryBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="donation-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Place</th>
+                            <th>Blood Group</th>
+                            <th>Donation #</th>
+                        </tr>
+                    </thead>
+                    <tbody id="donationHistoryList">
+                        <!-- Donation history will be loaded here -->
+                    </tbody>
+                </table>
+                <div id="noDonationHistory" class="text-center py-8 text-gray-500 hidden">
+                    <i class="fas fa-history text-4xl mb-2"></i>
+                    <p>No donation history found</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div id="reportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-semibold mb-4">Report User</h3>
+            <form id="reportForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Reason</label>
+                    <select id="reportReason" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select a reason</option>
+                        <option value="inappropriate">Inappropriate behavior</option>
+                        <option value="fake">Fake profile</option>
+                        <option value="spam">Spam</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea id="reportDescription" rows="3" 
+                              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelReportBtn" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                        Submit Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cropper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Global variables
+        let currentUser = null;
+        let donorData = null;
+        let isEditMode = false;
+        let userInteraction = null;
+        let cropper = null;
+
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+            if (currentUser) {
+                await loadDonorProfile();
+                await checkUserInteraction();
+            }
+            
+            // Setup photo upload
+            setupPhotoUpload();
+            
+            // Setup donation history
+            setupDonationHistory();
+        });
+
+        // Authentication check
+        async function checkAuth() {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            
+            if (error || !user) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            currentUser = user;
+        }
+
+        // Load donor profile
+        async function loadDonorProfile() {
+            try {
+                const { data, error } = await supabase
+                    .from('donors')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+                
+                donorData = data;
+                updateUI();
+            } catch (error) {
+                console.error('Error loading donor data:', error);
+                alert('Error loading profile data');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Update UI with donor data
+        function updateUI() {
+            // Profile info
+            document.getElementById('userName').textContent = donorData.name;
+            document.getElementById('bloodGroup').textContent = donorData.blood_group;
+            document.getElementById('userAge').textContent = `${donorData.age} years`;
+            
+            if (donorData.avatar_url) {
+                document.getElementById('profilePhoto').src = donorData.avatar_url;
+            }
+
+            // Donation stats
+            document.getElementById('totalDonations').textContent = donorData.times_donated || 0;
+            
+            const lastDonationDate = new Date(donorData.last_donation);
+            const daysSinceLastDonation = Math.floor((new Date() - lastDonationDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('lastDonation').textContent = `${daysSinceLastDonation} days ago`;
+            
+            // Calculate progress
+            const daysRemaining = Math.max(0, 90 - daysSinceLastDonation);
+            const progressPercent = Math.min(100, Math.floor((daysSinceLastDonation / 90) * 100));
+            
+            updateProgressCircle(progressPercent);
+            document.getElementById('nextDonationText').innerHTML = 
+                daysRemaining > 0 
+                    ? `You can donate again in <span class="font-semibold text-red-500">${daysRemaining} days</span>`
+                    : 'You are eligible to donate now!';
+
+            // Interaction counts
+            document.getElementById('likeCount').textContent = donorData.thumbs_up || 0;
+            document.getElementById('dislikeCount').textContent = donorData.thumbs_down || 0;
+
+            // User info
+            document.getElementById('phoneInput').value = donorData.phone || '';
+            document.getElementById('cityInput').value = donorData.city || '';
+            document.getElementById('districtInput').value = donorData.division || '';
+            document.getElementById('userIdInput').value = donorData.custom_id || donorData.id.toString().substring(0, 8);
+        }
+
+        // Update progress circle
+        function updateProgressCircle(percent) {
+            const circle = document.getElementById('progressCircle');
+            const radius = 54;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (percent / 100) * circumference;
+            
+            circle.style.strokeDashoffset = offset;
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+        }
+
+        // Setup photo upload
+        function setupPhotoUpload() {
+            const profilePhoto = document.getElementById('profilePhoto');
+            const photoUpload = document.getElementById('photoUpload');
+            const uploadOverlay = document.querySelector('.upload-overlay');
+            
+            // Click on overlay or photo to trigger file input
+            uploadOverlay.addEventListener('click', () => {
+                photoUpload.click();
+            });
+            
+            profilePhoto.addEventListener('click', () => {
+                photoUpload.click();
+            });
+            
+            // Handle file selection
+            photoUpload.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = (event) => {
+                        // Show crop modal
+                        document.getElementById('cropImage').src = event.target.result;
+                        document.getElementById('cropModal').classList.remove('hidden');
+                        
+                        // Initialize cropper
+                        setTimeout(() => {
+                            if (cropper) {
+                                cropper.destroy();
+                            }
+                            
+                            const image = document.getElementById('cropImage');
+                            cropper = new Cropper(image, {
+                                aspectRatio: 1,
+                                viewMode: 2,
+                                autoCropArea: 0.8,
+                                responsive: true,
+                                checkCrossOrigin: false
+                            });
+                        }, 100);
+                    };
+                    
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+            
+            // Cancel crop
+            document.getElementById('cancelCropBtn').addEventListener('click', () => {
+                document.getElementById('cropModal').classList.add('hidden');
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+            });
+            
+            // Apply crop
+            document.getElementById('applyCropBtn').addEventListener('click', async () => {
+                if (cropper) {
+                    // Get cropped canvas
+                    const canvas = cropper.getCroppedCanvas({
+                        width: 300,
+                        height: 300,
+                        minWidth: 256,
+                        minHeight: 256,
+                        maxWidth: 4096,
+                        maxHeight: 4096,
+                        fillColor: '#fff',
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high',
+                    });
+                    
+                    // Convert to blob
+                    canvas.toBlob(async (blob) => {
+                        try {
+                            // Show loading
+                            document.getElementById('loading').style.display = 'flex';
+                            
+                            // Generate unique filename
+                            const fileName = `profile-${currentUser.id}-${Date.now()}.jpg`;
+                            
+                            // Upload to Supabase Storage
+                            const { data, error } = await supabase.storage
+                                .from('avatars')
+                                .upload(fileName, blob, {
+                                    contentType: 'image/jpeg',
+                                    upsert: false
+                                });
+                            
+                            if (error) throw error;
+                            
+                            // Get public URL
+                            const { data: publicUrlData } = supabase.storage
+                                .from('avatars')
+                                .getPublicUrl(fileName);
+                            
+                            const avatarUrl = publicUrlData.publicUrl;
+                            
+                            // Update donor record
+                            const { error: updateError } = await supabase
+                                .from('donors')
+                                .update({ avatar_url: avatarUrl })
+                                .eq('id', donorData.id);
+                            
+                            if (updateError) throw updateError;
+                            
+                            // Update UI
+                            document.getElementById('profilePhoto').src = avatarUrl;
+                            donorData.avatar_url = avatarUrl;
+                            
+                            // Close modal and destroy cropper
+                            document.getElementById('cropModal').classList.add('hidden');
+                            cropper.destroy();
+                            cropper = null;
+                            
+                            alert('Profile picture updated successfully!');
+                        } catch (error) {
+                            console.error('Error uploading profile picture:', error);
+                            alert('Error uploading profile picture');
+                        } finally {
+                            document.getElementById('loading').style.display = 'none';
+                        }
+                    }, 'image/jpeg', 0.9);
+                }
+            });
+        }
+
+        // Setup donation history
+        function setupDonationHistory() {
+            const donationHistoryBtn = document.getElementById('donationHistoryBtn');
+            const donationHistoryModal = document.getElementById('donationHistoryModal');
+            const closeDonationHistoryBtn = document.getElementById('closeDonationHistoryBtn');
+            
+            donationHistoryBtn.addEventListener('click', async () => {
+                // Show loading
+                document.getElementById('loading').style.display = 'flex';
+                
+                try {
+                    // Fetch donation history
+                    const { data, error } = await supabase
+                        .from('donation_updates')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .order('donation_date', { ascending: false });
+                    
+                    if (error) throw error;
+                    
+                    // Populate donation history table
+                    const donationHistoryList = document.getElementById('donationHistoryList');
+                    const noDonationHistory = document.getElementById('noDonationHistory');
+                    
+                    if (data && data.length > 0) {
+                        donationHistoryList.innerHTML = data.map(donation => `
+                            <tr>
+                                <td>${new Date(donation.donation_date).toLocaleDateString()}</td>
+                                <td>${donation.place || 'N/A'}</td>
+                                <td><span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">${donation.blood_group}</span></td>
+                                <td>#${donation.times_donated}</td>
+                            </tr>
+                        `).join('');
+                        donationHistoryList.classList.remove('hidden');
+                        noDonationHistory.classList.add('hidden');
+                    } else {
+                        donationHistoryList.innerHTML = '';
+                        donationHistoryList.classList.add('hidden');
+                        noDonationHistory.classList.remove('hidden');
+                    }
+                    
+                    // Show modal
+                    donationHistoryModal.classList.remove('hidden');
+                } catch (error) {
+                    console.error('Error loading donation history:', error);
+                    alert('Error loading donation history');
+                } finally {
+                    document.getElementById('loading').style.display = 'none';
+                }
+            });
+            
+            closeDonationHistoryBtn.addEventListener('click', () => {
+                donationHistoryModal.classList.add('hidden');
+            });
+            
+            // Close modal when clicking outside
+            donationHistoryModal.addEventListener('click', (e) => {
+                if (e.target === donationHistoryModal) {
+                    donationHistoryModal.classList.add('hidden');
+                }
+            });
+        }
+
+        // Check if user has already liked/disliked
+        async function checkUserInteraction() {
+            const { data, error } = await supabase
+                .from('user_interactions')
+                .select('interaction_type')
+                .eq('user_id', currentUser.id)
+                .eq('target_donor_id', donorData.id)
+                .single();
+
+            if (!error && data) {
+                userInteraction = data.interaction_type;
+                updateInteractionButtons();
+            }
+        }
+
+        // Update interaction buttons based on user's interaction
+        function updateInteractionButtons() {
+            const likeBtn = document.getElementById('likeBtn');
+            const dislikeBtn = document.getElementById('dislikeBtn');
+            
+            if (userInteraction === 'like') {
+                likeBtn.classList.add('opacity-50');
+                dislikeBtn.classList.add('opacity-50');
+            } else if (userInteraction === 'dislike') {
+                likeBtn.classList.add('opacity-50');
+                dislikeBtn.classList.add('opacity-50');
+            }
+        }
+
+        // Handle like/dislike
+        document.getElementById('likeBtn').addEventListener('click', async () => {
+            if (userInteraction) return;
+            
+            await handleInteraction('like');
+        });
+
+        document.getElementById('dislikeBtn').addEventListener('click', async () => {
+            if (userInteraction) return;
+            
+            await handleInteraction('dislike');
+        });
+
+        async function handleInteraction(type) {
+            try {
+                // Update donor stats
+                const updateField = type === 'like' ? 'thumbs_up' : 'thumbs_down';
+                const { error } = await supabase
+                    .from('donors')
+                    .update({ [updateField]: (donorData[updateField] || 0) + 1 })
+                    .eq('id', donorData.id);
+
+                if (error) throw error;
+
+                // Record user interaction
+                await supabase
+                    .from('user_interactions')
+                    .insert({
+                        user_id: currentUser.id,
+                        target_donor_id: donorData.id,
+                        interaction_type: type
+                    });
+
+                // Update UI
+                userInteraction = type;
+                const countElement = type === 'like' ? 'likeCount' : 'dislikeCount';
+                const btn = type === 'like' ? document.getElementById('likeBtn') : document.getElementById('dislikeBtn');
+                
+                document.getElementById(countElement).textContent = 
+                    (donorData[type === 'like' ? 'thumbs_up' : 'thumbs_down'] || 0) + 1;
+                
+                btn.classList.add('like-animation');
+                updateInteractionButtons();
+                
+                setTimeout(() => btn.classList.remove('like-animation'), 300);
+            } catch (error) {
+                console.error('Error handling interaction:', error);
+                alert('Error updating interaction');
+            }
+        }
+
+        // Comment functionality
+        document.getElementById('commentBtn').addEventListener('click', () => {
+            const section = document.getElementById('commentsSection');
+            section.classList.toggle('open');
+            
+            if (section.classList.contains('open')) {
+                loadComments();
+            }
+        });
+
+        async function loadComments() {
+            try {
+                const { data, error } = await supabase
+                    .from('comments')
+                    .select(`
+                        *,
+                        donors(name, avatar_url)
+                    `)
+                    .eq('target_donor_id', donorData.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const commentsList = document.getElementById('commentsList');
+                commentsList.innerHTML = data.map(comment => `
+                    <div class="flex space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <img src="${comment.donors?.avatar_url || 'https://picsum.photos/seed/default/40/40.jpg'}" 
+                             alt="User" class="w-10 h-10 rounded-full">
+                        <div class="flex-1">
+                            <p class="font-semibold text-sm">${comment.donors?.name || 'Anonymous'}</p>
+                            <p class="text-gray-700">${comment.content}</p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                ${new Date(comment.created_at).toLocaleDateString()}
+                            </p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+        }
+
+        // Add comment
+        document.getElementById('addCommentBtn').addEventListener('click', async () => {
+            const input = document.getElementById('commentInput');
+            const content = input.value.trim();
+            
+            if (!content) return;
+
+            try {
+                const { error } = await supabase
+                    .from('comments')
+                    .insert({
+                        user_id: currentUser.id,
+                        target_donor_id: donorData.id,
+                        content: content
+                    });
+
+                if (error) throw error;
+
+                input.value = '';
+                loadComments();
+            } catch (error) {
+                console.error('Error adding comment:', error);
+                alert('Error adding comment');
+            }
+        });
+
+        // Report functionality
+        document.getElementById('reportBtn').addEventListener('click', () => {
+            document.getElementById('reportModal').classList.remove('hidden');
+        });
+
+        document.getElementById('cancelReportBtn').addEventListener('click', () => {
+            document.getElementById('reportModal').classList.add('hidden');
+        });
+
+        document.getElementById('reportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const reason = document.getElementById('reportReason').value;
+            const description = document.getElementById('reportDescription').value;
+            
+            if (!reason) {
+                alert('Please select a reason');
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('reports')
+                    .insert({
+                        reporter_id: currentUser.id,
+                        reported_donor_id: donorData.id,
+                        reason: reason,
+                        description: description
+                    });
+
+                if (error) throw error;
+
+                alert('Report submitted successfully');
+                document.getElementById('reportModal').classList.add('hidden');
+                document.getElementById('reportForm').reset();
+            } catch (error) {
+                console.error('Error submitting report:', error);
+                alert('Error submitting report');
+            }
+        });
+
+        // Edit/Save functionality
+        document.getElementById('editBtn').addEventListener('click', () => {
+            isEditMode = true;
+            document.getElementById('editBtn').classList.add('hidden');
+            document.getElementById('saveBtn').classList.remove('hidden');
+            
+            // Enable editable fields
+            document.getElementById('phoneInput').disabled = false;
+            document.getElementById('cityInput').disabled = false;
+            document.getElementById('districtInput').disabled = false;
+            
+            // Change background to indicate edit mode
+            document.getElementById('phoneInput').classList.remove('bg-gray-50');
+            document.getElementById('cityInput').classList.remove('bg-gray-50');
+            document.getElementById('districtInput').classList.remove('bg-gray-50');
+        });
+
+        document.getElementById('saveBtn').addEventListener('click', async () => {
+            try {
+                const updateData = {
+                    phone: document.getElementById('phoneInput').value,
+                    city: document.getElementById('cityInput').value,
+                    division: document.getElementById('districtInput').value
+                };
+
+                const { error } = await supabase
+                    .from('donors')
+                    .update(updateData)
+                    .eq('id', donorData.id);
+
+                if (error) throw error;
+
+                // Update local data
+                donorData = { ...donorData, ...updateData };
+                
+                // Exit edit mode
+                isEditMode = false;
+                document.getElementById('editBtn').classList.remove('hidden');
+                document.getElementById('saveBtn').classList.add('hidden');
+                
+                // Disable fields
+                document.getElementById('phoneInput').disabled = true;
+                document.getElementById('cityInput').disabled = true;
+                document.getElementById('districtInput').disabled = true;
+                
+                // Restore background
+                document.getElementById('phoneInput').classList.add('bg-gray-50');
+                document.getElementById('cityInput').classList.add('bg-gray-50');
+                document.getElementById('districtInput').classList.add('bg-gray-50');
+                
+                alert('Profile updated successfully');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Error updating profile');
+            }
+        });
+    </script>
+</body>
+</html>
