@@ -517,7 +517,7 @@ document.getElementById('applyCropBtn').addEventListener('click', async () => {
             maxHeight: 4096,
             fillColor: '#fff',
             imageSmoothingEnabled: true,
-            imageSmoothingQuality: 'high',
+            imageSmoothingQuality: 'high' // no trailing comma
         });
         
         // Convert to blob
@@ -527,7 +527,7 @@ document.getElementById('applyCropBtn').addEventListener('click', async () => {
                 document.getElementById('loading').style.display = 'flex';
                 
                 // Generate unique filename
-                const fileName = profile-${currentUser.id}-${Date.now()}.jpg;
+                const fileName = `profile-${currentUser.id}-${Date.now()}.jpg`;
                 
                 // Check if bucket exists first
                 const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
