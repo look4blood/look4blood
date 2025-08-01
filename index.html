@@ -945,7 +945,7 @@ window.viewProfile = function(donorId) {
     console.log('Viewing profile for donor ID:', donorId); // Debug log
     if (donorId) {
         // Redirect to profile page with donor ID
-        window.location.href = profile.html?id=${encodeURIComponent(donorId)};
+        window.location.href = `profile.html?id=${encodeURIComponent(donorId)}`;
     } else {
         console.error('No donor ID provided');
         alert('Error: Donor ID not found');
