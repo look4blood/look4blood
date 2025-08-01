@@ -527,7 +527,7 @@ document.getElementById('applyCropBtn').addEventListener('click', async () => {
                 document.getElementById('loading').style.display = 'flex';
                 
                 // Generate unique filename
-                const fileName = profile-${currentUser.id}-${Date.now()}.jpg;
+                const fileName = `profile-${currentUser.id}-${Date.now()}.jpg`;
                 
                 // Check if bucket exists first
                 const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
