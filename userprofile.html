@@ -505,20 +505,101 @@
             });
             
             // Apply crop
-            document.getElementById('applyCropBtn').addEventListener('click', async () => {
-                if (cropper) {
-                    // Get cropped canvas
-                    const canvas = cropper.getCroppedCanvas({
-                        width: 300,
-                        height: 300,
-                        minWidth: 256,
-                        minHeight: 256,
-                        maxWidth: 4096,
-                        maxHeight: 4096,
-                        fillColor: '#fff',
-                        imageSmoothingEnabled: true,
-                        imageSmoothingQuality: 'high',
+document.getElementById('applyCropBtn').addEventListener('click', async () => {
+    if (cropper) {
+        // Get cropped canvas
+        const canvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300,
+            minWidth: 256,
+            minHeight: 256,
+            maxWidth: 4096,
+            maxHeight: 4096,
+            fillColor: '#fff',
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+        
+        // Convert to blob
+        canvas.toBlob(async (blob) => {
+            try {
+                // Show loading
+                document.getElementById('loading').style.display = 'flex';
+                
+                // Generate unique filename
+                const fileName = profile-${currentUser.id}-${Date.now()}.jpg;
+                
+                // Check if bucket exists first
+                const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
+                
+                if (bucketError) {
+                    console.error('Error checking buckets:', bucketError);
+                    throw bucketError;
+                }
+                
+                const avatarBucket = buckets.find(b => b.name === 'avatars');
+                
+                if (!avatarBucket) {
+                    throw new Error('Storage bucket "avatars" not found. Please create it in your Supabase dashboard.');
+                }
+                
+                // Upload to Supabase Storage
+                const { data, error } = await supabase.storage
+                    .from('avatars')
+                    .upload(fileName, blob, {
+                        contentType: 'image/jpeg',
+                        upsert: false
                     });
+                
+                if (error) {
+                    console.error('Upload error:', error);
+                    if (error.message.includes('bucket not found') || error.statusCode === 404) {
+                        throw new Error('Storage bucket "avatars" not found. Please create it in your Supabase dashboard.');
+                    } else {
+                        throw error;
+                    }
+                }
+                
+                // Get public URL
+                const { data: publicUrlData } = supabase.storage
+                    .from('avatars')
+                    .getPublicUrl(fileName);
+                
+                const avatarUrl = publicUrlData.publicUrl;
+                
+                // Update donor record
+                const { error: updateError } = await supabase
+                    .from('donors')
+                    .update({ avatar_url: avatarUrl })
+                    .eq('id', donorData.id);
+                
+                if (updateError) throw updateError;
+                
+                // Update UI
+                document.getElementById('profilePhoto').src = avatarUrl;
+                donorData.avatar_url = avatarUrl;
+                
+                // Close modal and destroy cropper
+                document.getElementById('cropModal').classList.add('hidden');
+                cropper.destroy();
+                cropper = null;
+                
+                alert('Profile picture updated successfully!');
+            } catch (error) {
+                console.error('Error uploading profile picture:', error);
+                
+                if (error.message.includes('Storage bucket "avatars" not found')) {
+                    alert('Error: The storage bucket for avatars has not been created. Please contact your administrator or create it in the Supabase dashboard.');
+                } else {
+                    alert('Error uploading profile picture: ' + error.message);
+                }
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }, 'image/jpeg', 0.9);
+    }
+});
+            
                     
                     // Convert to blob
                     canvas.toBlob(async (blob) => {
