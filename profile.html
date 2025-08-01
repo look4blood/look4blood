@@ -352,20 +352,40 @@
         let cropper = null;
 
         // Check authentication on page load
-        document.addEventListener('DOMContentLoaded', async () => {
-            await checkAuth();
-            if (currentUser) {
-                await loadDonorProfile();
-                await checkUserInteraction();
-            }
-            
-            // Setup photo upload
-            setupPhotoUpload();
-            
-            // Setup donation history
-            setupDonationHistory();
-        });
-
+document.addEventListener('DOMContentLoaded', async () => {
+    // Get donor ID from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const donorId = urlParams.get('id');
+    
+    console.log('Retrieved donor ID from URL:', donorId); // Debug log
+    
+    if (!donorId) {
+        alert('No donor ID specified. Redirecting to donor list...');
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    await checkAuth();
+    
+    if (currentUser) {
+        // Check if this is the user's own profile
+        isOwnProfile = currentUser.id === donorId;
+        console.log('Is own profile:', isOwnProfile); // Debug log
+    }
+    
+    // Load the donor profile
+    await loadDonorProfile(donorId);
+    await checkUserInteraction();
+    
+    // Setup photo upload only if it's the user's own profile
+    if (isOwnProfile) {
+        setupPhotoUpload();
+    }
+    
+    // Setup donation history
+    setupDonationHistory();
+});
+        
         // Authentication check
         async function checkAuth() {
             const { data: { user }, error } = await supabase.auth.getUser();
@@ -379,26 +399,45 @@
         }
 
         // Load donor profile
-        async function loadDonorProfile() {
-            try {
-                const { data, error } = await supabase
-                    .from('donors')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .single();
+async function loadDonorProfile(donorId) {
+    try {
+        console.log('Loading donor profile for ID:', donorId); // Debug log
+        
+        // Load donor data
+        const { data, error } = await supabase
+            .from('donors')
+            .select('*')
+            .eq('id', donorId)
+            .single();
 
-                if (error) throw error;
-                
-                donorData = data;
-                updateUI();
-            } catch (error) {
-                console.error('Error loading donor data:', error);
-                alert('Error loading profile data');
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-            }
+        if (error) {
+            console.error('Supabase error:', error);
+            throw error;
         }
-
+        
+        if (!data) {
+            console.error('No donor data found for ID:', donorId);
+            throw new Error('Donor not found');
+        }
+        
+        console.log('Donor data loaded:', data); // Debug log
+        
+        donorData = data;
+        updateUI();
+        
+        // Hide edit button if it's not the user's own profile
+        if (!isOwnProfile) {
+            document.getElementById('editBtn').style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error loading donor data:', error);
+        alert('Error loading profile data: ' + error.message);
+        window.location.href = 'index.html';
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+    }
+}
+        
         // Update UI with donor data
         function updateUI() {
             // Profile info
