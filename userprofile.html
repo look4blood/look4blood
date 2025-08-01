@@ -79,7 +79,6 @@
     <div id="loading" class="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
     </div>
-
     <!-- Main Container -->
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <!-- Profile Header -->
@@ -115,7 +114,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Stats Section -->
         <div class="grid md:grid-cols-2 gap-6 mb-6">
             <!-- Left Side - Donation Stats -->
@@ -153,7 +151,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Right Side - Interactions -->
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Community Feedback</h2>
@@ -173,7 +170,6 @@
                         <span id="dislikeCount" class="text-2xl font-bold text-red-600">3</span>
                     </button>
                 </div>
-
                 <div class="space-y-3">
                     <button id="commentBtn" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
                         <i class="fas fa-comment mr-2"></i>View Comments
@@ -187,7 +183,6 @@
                         <i class="fas fa-history mr-2"></i>Donation History
                     </button>
                 </div>
-
                 <!-- Comments Section -->
                 <div id="commentsSection" class="comment-section mt-4">
                     <div class="border-t pt-4">
@@ -206,7 +201,6 @@
                 </div>
             </div>
         </div>
-
         <!-- User Info Section -->
         <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">User Information</h2>
@@ -241,7 +235,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Action Buttons -->
         <div class="flex justify-center space-x-4">
             <button id="editBtn" class="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors">
@@ -252,7 +245,6 @@
             </button>
         </div>
     </div>
-
     <!-- Crop Modal -->
     <div id="cropModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50">
         <div class="bg-white rounded-lg p-4 max-w-md w-full mx-4">
@@ -270,7 +262,6 @@
             </div>
         </div>
     </div>
-
     <!-- Donation History Modal -->
     <div id="donationHistoryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
         <div class="bg-white rounded-2xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -302,7 +293,6 @@
             </div>
         </div>
     </div>
-
     <!-- Report Modal -->
     <div id="reportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
         <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
@@ -334,7 +324,6 @@
             </form>
         </div>
     </div>
-
     <!-- Cropper.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     
@@ -343,14 +332,14 @@
         const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
+        
         // Global variables
         let currentUser = null;
         let donorData = null;
         let isEditMode = false;
         let userInteraction = null;
         let cropper = null;
-
+        
         // Check authentication on page load
         document.addEventListener('DOMContentLoaded', async () => {
             await checkAuth();
@@ -365,7 +354,7 @@
             // Setup donation history
             setupDonationHistory();
         });
-
+        
         // Authentication check
         async function checkAuth() {
             const { data: { user }, error } = await supabase.auth.getUser();
@@ -377,7 +366,7 @@
             
             currentUser = user;
         }
-
+        
         // Load donor profile
         async function loadDonorProfile() {
             try {
@@ -386,7 +375,7 @@
                     .select('*')
                     .eq('user_id', currentUser.id)
                     .single();
-
+                
                 if (error) throw error;
                 
                 donorData = data;
@@ -398,7 +387,7 @@
                 document.getElementById('loading').style.display = 'none';
             }
         }
-
+        
         // Update UI with donor data
         function updateUI() {
             // Profile info
@@ -409,7 +398,7 @@
             if (donorData.avatar_url) {
                 document.getElementById('profilePhoto').src = donorData.avatar_url;
             }
-
+            
             // Donation stats
             document.getElementById('totalDonations').textContent = donorData.times_donated || 0;
             
@@ -426,18 +415,18 @@
                 daysRemaining > 0 
                     ? `You can donate again in <span class="font-semibold text-red-500">${daysRemaining} days</span>`
                     : 'You are eligible to donate now!';
-
+            
             // Interaction counts
             document.getElementById('likeCount').textContent = donorData.thumbs_up || 0;
             document.getElementById('dislikeCount').textContent = donorData.thumbs_down || 0;
-
+            
             // User info
             document.getElementById('phoneInput').value = donorData.phone || '';
             document.getElementById('cityInput').value = donorData.city || '';
             document.getElementById('districtInput').value = donorData.division || '';
             document.getElementById('userIdInput').value = donorData.custom_id || donorData.id.toString().substring(0, 8);
         }
-
+        
         // Update progress circle
         function updateProgressCircle(percent) {
             const circle = document.getElementById('progressCircle');
@@ -448,164 +437,164 @@
             circle.style.strokeDashoffset = offset;
             document.getElementById('progressPercent').textContent = `${percent}%`;
         }
-
+        
         // Setup photo upload (only for own profile)
-function setupPhotoUpload() {
-    const profilePhoto = document.getElementById('profilePhoto');
-    const photoUpload = document.getElementById('photoUpload');
-    const uploadOverlay = document.querySelector('.upload-overlay');
-    
-    // Click on overlay or photo to trigger file input
-    uploadOverlay.addEventListener('click', () => {
-        photoUpload.click();
-    });
-    
-    profilePhoto.addEventListener('click', () => {
-        photoUpload.click();
-    });
-    
-    // Handle file selection
-    photoUpload.addEventListener('change', (e) => {
-        if (e.target.files && e.target.files[0]) {
-            const reader = new FileReader();
+        function setupPhotoUpload() {
+            const profilePhoto = document.getElementById('profilePhoto');
+            const photoUpload = document.getElementById('photoUpload');
+            const uploadOverlay = document.querySelector('.upload-overlay');
             
-            reader.onload = (event) => {
-                // Show crop modal
-                document.getElementById('cropImage').src = event.target.result;
-                document.getElementById('cropModal').classList.remove('hidden');
-                
-                // Initialize cropper
-                setTimeout(() => {
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                    
-                    const image = document.getElementById('cropImage');
-                    cropper = new Cropper(image, {
-                        aspectRatio: 1,
-                        viewMode: 2,
-                        autoCropArea: 0.8,
-                        responsive: true,
-                        checkCrossOrigin: false
-                    });
-                }, 100);
-            };
-            
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
-    
-    // Cancel crop
-    document.getElementById('cancelCropBtn').addEventListener('click', () => {
-        document.getElementById('cropModal').classList.add('hidden');
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
-    });
-    
-    // Apply crop
-    document.getElementById('applyCropBtn').addEventListener('click', async () => {
-        if (cropper) {
-            // Get cropped canvas
-            const canvas = cropper.getCroppedCanvas({
-                width: 300,
-                height: 300,
-                minWidth: 256,
-                minHeight: 256,
-                maxWidth: 4096,
-                maxHeight: 4096,
-                fillColor: '#fff',
-                imageSmoothingEnabled: true,
-                imageSmoothingQuality: 'high',
+            // Click on overlay or photo to trigger file input
+            uploadOverlay.addEventListener('click', () => {
+                photoUpload.click();
             });
             
-            // Convert to blob
-            canvas.toBlob(async (blob) => {
-                try {
-                    // Show loading
-                    document.getElementById('loading').style.display = 'flex';
+            profilePhoto.addEventListener('click', () => {
+                photoUpload.click();
+            });
+            
+            // Handle file selection
+            photoUpload.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
                     
-                    // Generate unique filename
-                    const fileName = profile-${currentUser.id}-${Date.now()}.jpg;
+                    reader.onload = (event) => {
+                        // Show crop modal
+                        document.getElementById('cropImage').src = event.target.result;
+                        document.getElementById('cropModal').classList.remove('hidden');
+                        
+                        // Initialize cropper
+                        setTimeout(() => {
+                            if (cropper) {
+                                cropper.destroy();
+                            }
+                            
+                            const image = document.getElementById('cropImage');
+                            cropper = new Cropper(image, {
+                                aspectRatio: 1,
+                                viewMode: 2,
+                                autoCropArea: 0.8,
+                                responsive: true,
+                                checkCrossOrigin: false
+                            });
+                        }, 100);
+                    };
                     
-                    // Check if bucket exists first
-                    const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
-                    
-                    if (bucketError) {
-                        console.error('Error checking buckets:', bucketError);
-                        throw bucketError;
-                    }
-                    
-                    const avatarBucket = buckets.find(b => b.name === 'avatars');
-                    
-                    if (!avatarBucket) {
-                        throw new Error('Storage bucket "avatars" not found. Please create it in your Supabase dashboard.');
-                    }
-                    
-                    // Upload to Supabase Storage
-                    const { data, error } = await supabase.storage
-                        .from('avatars')
-                        .upload(fileName, blob, {
-                            contentType: 'image/jpeg',
-                            upsert: false
-                        });
-                    
-                    if (error) {
-                        console.error('Upload error:', error);
-                        if (error.message.includes('bucket not found') || error.statusCode === 404) {
-                            throw new Error('Storage bucket "avatars" not found. Please create it in your Supabase dashboard.');
-                        } else {
-                            throw error;
-                        }
-                    }
-                    
-                    // Get public URL
-                    const { data: publicUrlData } = supabase.storage
-                        .from('avatars')
-                        .getPublicUrl(fileName);
-                    
-                    const avatarUrl = publicUrlData.publicUrl;
-                    
-                    // Update donor record
-                    const { error: updateError } = await supabase
-                        .from('donors')
-                        .update({ avatar_url: avatarUrl })
-                        .eq('id', donorData.id);
-                    
-                    if (updateError) throw updateError;
-                    
-                    // Update UI
-                    document.getElementById('profilePhoto').src = avatarUrl;
-                    donorData.avatar_url = avatarUrl;
-                    
-                    // Close modal and destroy cropper
-                    document.getElementById('cropModal').classList.add('hidden');
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+            
+            // Cancel crop
+            document.getElementById('cancelCropBtn').addEventListener('click', () => {
+                document.getElementById('cropModal').classList.add('hidden');
+                if (cropper) {
                     cropper.destroy();
                     cropper = null;
-                    
-                    alert('Profile picture updated successfully!');
-                } catch (error) {
-                    console.error('Error uploading profile picture:', error);
-                    
-                    if (error.message.includes('Storage bucket "avatars" not found')) {
-                        alert('Error: The storage bucket for avatars has not been created. Please contact your administrator or create it in the Supabase dashboard.');
-                    } else {
-                        alert('Error uploading profile picture: ' + error.message);
-                    }
-                } finally {
-                    document.getElementById('loading').style.display = 'none';
                 }
-            }, 'image/jpeg', 0.9);
+            });
+            
+            // Apply crop
+            document.getElementById('applyCropBtn').addEventListener('click', async () => {
+                if (cropper) {
+                    // Get cropped canvas
+                    const canvas = cropper.getCroppedCanvas({
+                        width: 300,
+                        height: 300,
+                        minWidth: 256,
+                        minHeight: 256,
+                        maxWidth: 4096,
+                        maxHeight: 4096,
+                        fillColor: '#fff',
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high',
+                    });
+                    
+                    // Convert to blob
+                    canvas.toBlob(async (blob) => {
+                        try {
+                            // Show loading
+                            document.getElementById('loading').style.display = 'flex';
+                            
+                            // Generate unique filename
+                            const fileName = `profile-${currentUser.id}-${Date.now()}.jpg`;
+                            
+                            // Check if bucket exists first
+                            const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
+                            
+                            if (bucketError) {
+                                console.error('Error checking buckets:', bucketError);
+                                throw bucketError;
+                            }
+                            
+                            const avatarBucket = buckets.find(b => b.name === 'avatars');
+                            
+                            if (!avatarBucket) {
+                                throw new Error('Storage bucket "avatars" not found. Please create it in your Supabase dashboard.');
+                            }
+                            
+                            // Upload to Supabase Storage
+                            const { data, error } = await supabase.storage
+                                .from('avatars')
+                                .upload(fileName, blob, {
+                                    contentType: 'image/jpeg',
+                                    upsert: false
+                                });
+                            
+                            if (error) {
+                                console.error('Upload error:', error);
+                                if (error.message.includes('bucket not found') || error.statusCode === 404) {
+                                    throw new Error('Storage bucket "avatars" not found. Please create it in your Supabase dashboard.');
+                                } else {
+                                    throw error;
+                                }
+                            }
+                            
+                            // Get public URL
+                            const { data: publicUrlData } = supabase.storage
+                                .from('avatars')
+                                .getPublicUrl(fileName);
+                            
+                            const avatarUrl = publicUrlData.publicUrl;
+                            
+                            // Update donor record
+                            const { error: updateError } = await supabase
+                                .from('donors')
+                                .update({ avatar_url: avatarUrl })
+                                .eq('id', donorData.id);
+                            
+                            if (updateError) throw updateError;
+                            
+                            // Update UI
+                            document.getElementById('profilePhoto').src = avatarUrl;
+                            donorData.avatar_url = avatarUrl;
+                            
+                            // Close modal and destroy cropper
+                            document.getElementById('cropModal').classList.add('hidden');
+                            cropper.destroy();
+                            cropper = null;
+                            
+                            alert('Profile picture updated successfully!');
+                        } catch (error) {
+                            console.error('Error uploading profile picture:', error);
+                            
+                            if (error.message.includes('Storage bucket "avatars" not found')) {
+                                alert('Error: The storage bucket for avatars has not been created. Please contact your administrator or create it in the Supabase dashboard.');
+                            } else {
+                                alert('Error uploading profile picture: ' + error.message);
+                            }
+                        } finally {
+                            document.getElementById('loading').style.display = 'none';
+                        }
+                    }, 'image/jpeg', 0.9);
+                }
+            });
         }
-    });
-}
+        
         // Setup donation history
         function setupDonationHistory() {
             const donationHistoryBtn = document.getElementById('donationHistoryBtn');
             const donationHistoryModal = document.getElementById('donationHistoryModal');
             const closeDonationHistoryBtn = document.getElementById('closeDonationHistoryBtn');
-        }
             
             donationHistoryBtn.addEventListener('click', async () => {
                 // Show loading
@@ -663,7 +652,7 @@ function setupPhotoUpload() {
                 }
             });
         }
-
+        
         // Check if user has already liked/disliked
         async function checkUserInteraction() {
             const { data, error } = await supabase
@@ -672,13 +661,13 @@ function setupPhotoUpload() {
                 .eq('user_id', currentUser.id)
                 .eq('target_donor_id', donorData.id)
                 .single();
-
+            
             if (!error && data) {
                 userInteraction = data.interaction_type;
                 updateInteractionButtons();
             }
         }
-
+        
         // Update interaction buttons based on user's interaction
         function updateInteractionButtons() {
             const likeBtn = document.getElementById('likeBtn');
@@ -692,20 +681,20 @@ function setupPhotoUpload() {
                 dislikeBtn.classList.add('opacity-50');
             }
         }
-
+        
         // Handle like/dislike
         document.getElementById('likeBtn').addEventListener('click', async () => {
             if (userInteraction) return;
             
             await handleInteraction('like');
         });
-
+        
         document.getElementById('dislikeBtn').addEventListener('click', async () => {
             if (userInteraction) return;
             
             await handleInteraction('dislike');
         });
-
+        
         async function handleInteraction(type) {
             try {
                 // Update donor stats
@@ -714,9 +703,9 @@ function setupPhotoUpload() {
                     .from('donors')
                     .update({ [updateField]: (donorData[updateField] || 0) + 1 })
                     .eq('id', donorData.id);
-
+                
                 if (error) throw error;
-
+                
                 // Record user interaction
                 await supabase
                     .from('user_interactions')
@@ -725,7 +714,7 @@ function setupPhotoUpload() {
                         target_donor_id: donorData.id,
                         interaction_type: type
                     });
-
+                
                 // Update UI
                 userInteraction = type;
                 const countElement = type === 'like' ? 'likeCount' : 'dislikeCount';
@@ -743,7 +732,7 @@ function setupPhotoUpload() {
                 alert('Error updating interaction');
             }
         }
-
+        
         // Comment functionality
         document.getElementById('commentBtn').addEventListener('click', () => {
             const section = document.getElementById('commentsSection');
@@ -753,7 +742,7 @@ function setupPhotoUpload() {
                 loadComments();
             }
         });
-
+        
         async function loadComments() {
             try {
                 const { data, error } = await supabase
@@ -764,9 +753,9 @@ function setupPhotoUpload() {
                     `)
                     .eq('target_donor_id', donorData.id)
                     .order('created_at', { ascending: false });
-
+                
                 if (error) throw error;
-
+                
                 const commentsList = document.getElementById('commentsList');
                 commentsList.innerHTML = data.map(comment => `
                     <div class="flex space-x-3 p-3 bg-gray-50 rounded-lg">
@@ -785,14 +774,14 @@ function setupPhotoUpload() {
                 console.error('Error loading comments:', error);
             }
         }
-
+        
         // Add comment
         document.getElementById('addCommentBtn').addEventListener('click', async () => {
             const input = document.getElementById('commentInput');
             const content = input.value.trim();
             
             if (!content) return;
-
+            
             try {
                 const { error } = await supabase
                     .from('comments')
@@ -801,9 +790,9 @@ function setupPhotoUpload() {
                         target_donor_id: donorData.id,
                         content: content
                     });
-
+                
                 if (error) throw error;
-
+                
                 input.value = '';
                 loadComments();
             } catch (error) {
@@ -811,16 +800,16 @@ function setupPhotoUpload() {
                 alert('Error adding comment');
             }
         });
-
+        
         // Report functionality
         document.getElementById('reportBtn').addEventListener('click', () => {
             document.getElementById('reportModal').classList.remove('hidden');
         });
-
+        
         document.getElementById('cancelReportBtn').addEventListener('click', () => {
             document.getElementById('reportModal').classList.add('hidden');
         });
-
+        
         document.getElementById('reportForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -831,7 +820,7 @@ function setupPhotoUpload() {
                 alert('Please select a reason');
                 return;
             }
-
+            
             try {
                 const { error } = await supabase
                     .from('reports')
@@ -841,9 +830,9 @@ function setupPhotoUpload() {
                         reason: reason,
                         description: description
                     });
-
+                
                 if (error) throw error;
-
+                
                 alert('Report submitted successfully');
                 document.getElementById('reportModal').classList.add('hidden');
                 document.getElementById('reportForm').reset();
@@ -852,7 +841,7 @@ function setupPhotoUpload() {
                 alert('Error submitting report');
             }
         });
-
+        
         // Edit/Save functionality
         document.getElementById('editBtn').addEventListener('click', () => {
             isEditMode = true;
@@ -869,7 +858,7 @@ function setupPhotoUpload() {
             document.getElementById('cityInput').classList.remove('bg-gray-50');
             document.getElementById('districtInput').classList.remove('bg-gray-50');
         });
-
+        
         document.getElementById('saveBtn').addEventListener('click', async () => {
             try {
                 const updateData = {
@@ -877,14 +866,14 @@ function setupPhotoUpload() {
                     city: document.getElementById('cityInput').value,
                     division: document.getElementById('districtInput').value
                 };
-
+                
                 const { error } = await supabase
                     .from('donors')
                     .update(updateData)
                     .eq('id', donorData.id);
-
+                
                 if (error) throw error;
-
+                
                 // Update local data
                 donorData = { ...donorData, ...updateData };
                 
