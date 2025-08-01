@@ -527,7 +527,7 @@ document.getElementById('applyCropBtn').addEventListener('click', async () => {
                 document.getElementById('loading').style.display = 'flex';
                 
                 // Generate unique filename
-                const fileName = `profile-${currentUser.id}-${Date.now()}.jpg`;
+                const fileName = profile-${currentUser.id}-${Date.now()}.jpg;
                 
                 // Check if bucket exists first
                 const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
@@ -599,62 +599,6 @@ document.getElementById('applyCropBtn').addEventListener('click', async () => {
         }, 'image/jpeg', 0.9);
     }
 });
-            
-                    
-                    // Convert to blob
-                    canvas.toBlob(async (blob) => {
-                        try {
-                            // Show loading
-                            document.getElementById('loading').style.display = 'flex';
-                            
-                            // Generate unique filename
-                            const fileName = `profile-${currentUser.id}-${Date.now()}.jpg`;
-                            
-                            // Upload to Supabase Storage
-                            const { data, error } = await supabase.storage
-                                .from('avatars')
-                                .upload(fileName, blob, {
-                                    contentType: 'image/jpeg',
-                                    upsert: false
-                                });
-                            
-                            if (error) throw error;
-                            
-                            // Get public URL
-                            const { data: publicUrlData } = supabase.storage
-                                .from('avatars')
-                                .getPublicUrl(fileName);
-                            
-                            const avatarUrl = publicUrlData.publicUrl;
-                            
-                            // Update donor record
-                            const { error: updateError } = await supabase
-                                .from('donors')
-                                .update({ avatar_url: avatarUrl })
-                                .eq('id', donorData.id);
-                            
-                            if (updateError) throw updateError;
-                            
-                            // Update UI
-                            document.getElementById('profilePhoto').src = avatarUrl;
-                            donorData.avatar_url = avatarUrl;
-                            
-                            // Close modal and destroy cropper
-                            document.getElementById('cropModal').classList.add('hidden');
-                            cropper.destroy();
-                            cropper = null;
-                            
-                            alert('Profile picture updated successfully!');
-                        } catch (error) {
-                            console.error('Error uploading profile picture:', error);
-                            alert('Error uploading profile picture');
-                        } finally {
-                            document.getElementById('loading').style.display = 'none';
-                        }
-                    }, 'image/jpeg', 0.9);
-                }
-            });
-        }
 
         // Setup donation history
         function setupDonationHistory() {
