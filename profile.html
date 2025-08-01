@@ -1,622 +1,587 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>User Profile</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-<!-- Supabase JS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-  /* TailwindCSS already provides styling. Additional custom styles for animations if needed */
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Donor Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/supabase-js@2.39.7"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            stroke-dasharray: 339.292;
+            stroke-dashoffset: 339.292;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        .like-animation {
+            animation: bounce 0.3s ease-in-out;
+        }
+        .comment-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .comment-section.open {
+            max-height: 500px;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-700">
-
-<!-- Auth Prompt -->
-<div id="auth-prompt" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden transition-opacity duration-300">
-  <div class="bg-white p-8 rounded-3xl shadow-xl max-w-sm w-full transform scale-0 transition-transform duration-300" id="auth-box">
-    <h2 class="text-3xl font-bold mb-4 text-center text-gray-800">Welcome!</h2>
-    <p class="text-gray-600 mb-6 text-center">Please login or register to view your profile.</p>
-    <div class="flex justify-center gap-4">
-      <a href="./userlogin.html" class="btn btn-primary px-4 py-2 rounded-lg shadow hover:shadow-lg transition">Login</a>
-      <a href="./registerfrom.html" class="btn btn-secondary px-4 py-2 rounded-lg shadow hover:shadow-lg transition">Register</a>
-    </div>
-  </div>
-</div>
-
-<!-- Image Crop Modal -->
-<div id="image-crop-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden transition-opacity duration-300">
-  <div class="bg-white p-4 rounded-3xl shadow-lg max-w-md w-full transform scale-0 transition-transform duration-300" id="crop-box">
-    <h2 class="text-xl font-semibold mb-4 text-center text-gray-800">Crop Your Image</h2>
-    <div class="img-container mb-4 max-h-64 overflow-hidden rounded-lg border border-gray-300">
-      <img id="image-to-crop" src="" alt="Image to crop" class="w-full h-full object-contain" />
-    </div>
-    <div class="flex justify-center gap-4">
-      <button id="cancel-crop-btn" class="btn btn-secondary px-4 py-2 rounded-lg shadow hover:shadow-lg transition">Cancel</button>
-      <button id="crop-and-upload-btn" class="btn btn-primary px-4 py-2 rounded-lg shadow hover:shadow-lg transition">Crop & Upload</button>
-    </div>
-  </div>
-</div>
-
-<!-- Gemini Story Modal -->
-<div id="story-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden transition-opacity duration-300">
-  <div class="bg-white p-8 rounded-3xl shadow-xl max-w-lg w-full transform scale-0 transition-transform duration-300" id="story-box">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-bold text-gray-800">Your Donor Story</h2>
-      <button id="close-story-modal-btn" class="text-gray-500 hover:text-gray-800 text-2xl font-semibold">&times;</button>
-    </div>
-    <div id="story-content" class="text-gray-600 leading-relaxed text-lg">
-      <!-- Story will be generated here -->
-    </div>
-  </div>
-</div>
-
-<!-- Profile Main Content -->
-<main id="profile-container" class="max-w-5xl mx-auto p-6 md:p-8 bg-white rounded-3xl shadow-lg hidden transition-all duration-300 ease-in-out">
-  <!-- Profile header -->
-  <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 mb-8">
-    <!-- Profile picture -->
-    <div class="relative cursor-pointer w-32 h-32 rounded-full overflow-hidden shadow-lg border-4 border-white hover:scale-105 transition-transform duration-200" id="profile-picture-wrapper">
-      <img id="profile-picture" src="https://placehold.co/120x120/E2E8F0/475569?text=User" alt="Profile Picture" class="w-full h-full object-cover" />
-      <input type="file" id="image-upload-input" class="hidden" accept="image/*" />
-      <div class="absolute bottom-0 right-0 bg-white p-1 rounded-full shadow-lg cursor-pointer hover:bg-gray-100 transition" title="Change Photo">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l4 4 4-4m-4-4h4m-4 0H9m4-4H9" />
-        </svg>
-      </div>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Loading Spinner -->
+    <div id="loading" class="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
     </div>
 
-    <!-- User info -->
-    <div class="flex-1 text-center md:text-left">
-      <h1 id="user-name" class="text-4xl md:text-5xl font-extrabold mb-2 text-gray-800 transition-colors duration-300">{Loading}</h1>
-      <div class="flex items-center justify-center md:justify-start gap-3">
-        <span id="blood-group" class="bg-red-100 text-red-600 font-semibold px-3 py-1 rounded-full text-sm uppercase tracking-wide">{Blood}</span>
-        <span id="user-age" class="text-xl text-gray-500 font-medium">{Age}</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Stats & Countdown -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <!-- Times Donated & Last Donation -->
-    <div class="bg-gray-50 p-4 rounded-xl shadow hover:shadow-xl transition duration-300 ease-in-out">
-      <div class="flex flex-col items-center justify-center">
-        <div class="text-3xl font-bold text-gray-800">{TimesDonated}</div>
-        <div class="text-gray-500 text-sm uppercase tracking-wide mt-1">Times Donated</div>
-        <div class="mt-2 text-sm text-gray-400">Last donation: <span id="last-donation-days-ago">{LastDonation}</span></div>
-      </div>
-    </div>
-    <!-- Countdown -->
-    <div class="bg-gray-50 p-4 rounded-xl shadow hover:shadow-xl transition duration-300 ease-in-out">
-      <div class="flex flex-col items-center justify-center">
-        <canvas id="countdown-canvas" class="w-24 h-24 mb-2 transition-transform duration-300 hover:scale-105"></canvas>
-        <div class="text-gray-500 text-sm">You can donate again in</div>
-        <div id="days-until-eligible" class="text-xl font-semibold text-gray-800 mt-1">{Days}</div>
-        <div id="eligibility-text" class="mt-2 text-center"></div>
-      </div>
-    </div>
-    <!-- Likes & Dislikes -->
-    <div class="bg-gray-50 p-4 rounded-xl shadow hover:shadow-xl transition duration-300">
-      <div class="flex flex-col items-center justify-center">
-        <!-- Buttons -->
-        <div class="flex gap-4 mb-4">
-          <button id="like-btn" class="vote-btn px-3 py-2 rounded-xl shadow-md bg-white hover:bg-green-100 transition transform hover:scale-105 active:scale-95" aria-label="Like">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 inline-block mb-1" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.16 3.16 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z" />
-            </svg>
-            <div class="text-center text-sm font-semibold text-gray-700">{Likes}</div>
-          </button>
-          <button id="dislike-btn" class="vote-btn px-3 py-2 rounded-xl shadow-md bg-white hover:bg-red-100 transition transform hover:scale-105 active:scale-95" aria-label="Dislike">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 inline-block mb-1" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M6.956 14.53C7.021 15.46 7.908 16 8.864 15.945l.261-.066c.463-.116.874-.456 1.012-.965.22-.816.533-2.511.062-4.51a9.84 9.84 0 0 1 .443.051c.713.065 1.669.072 2.516-.21.518-.173.994-.681 1.2-1.273.184-.532.16-1.162-.234-1.733.058-.119.103-.242.138-.363.077-.27.113-.567.113-.856 0-.289-.036-.586-.113-.856-.039-.135-.09-.273-.16-.404.169-.387.107-.819-.003-1.148a3.16 3.16 0 0 1-.488-.901c.054-.152.076-.312.076-.465 0-.305-.089-.625-.253-.912C13.1.477 12.437 0 11.5 0H8c-.605 0-1.07.081-1.466.218a4.82 4.82 0 0 1-.97.484l-.048-.03c-.504.307-.999.609-2.068.722C2.682 1.536 2 2.154 2 3v4c0 .85.685 1.432 1.357 1.615.849.232 1.574.787 2.132 1.41.56.627.914 1.28 1.039 1.639.199-.575.356-1.539.428-2.59z" />
-            </svg>
-            <div class="text-center text-sm font-semibold text-gray-700">{Dislikes}</div>
-          </button>
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Profile Header -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+                <!-- Profile Photo -->
+                <div class="relative">
+                    <img id="profilePhoto" src="https://picsum.photos/seed/default/150/150.jpg" 
+                         alt="Profile" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
+                    <div class="absolute -bottom-2 -right-2 bg-yellow-400 rounded-full p-2 shadow-lg">
+                        <i class="fas fa-medal text-white"></i>
+                    </div>
+                </div>
+                
+                <!-- Basic Info -->
+                <div class="flex-1 text-center md:text-left">
+                    <h1 id="userName" class="text-2xl font-bold text-gray-800">Loading...</h1>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-2">
+                        <span id="bloodGroup" class="bg-red-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                            A+
+                        </span>
+                        <span id="userAge" class="bg-gray-200 text-gray-700 px-4 py-1 rounded-full text-sm">
+                            27 years
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- Eligibility -->
-        <div id="eligibility-text" class="text-center text-sm font-semibold text-gray-700"></div>
-        <div class="mt-2 text-gray-500 text-xs">Tap buttons to vote</div>
-      </div>
+
+        <!-- Stats Section -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <!-- Left Side - Donation Stats -->
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Donation History</h2>
+                
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Total Donations</span>
+                        <span id="totalDonations" class="text-2xl font-bold text-red-500">12</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Last Donation</span>
+                        <span id="lastDonation" class="text-lg font-semibold text-gray-800">25 days ago</span>
+                    </div>
+                    
+                    <!-- Progress Circle -->
+                    <div class="flex flex-col items-center mt-6">
+                        <div class="relative w-40 h-40">
+                            <svg class="progress-ring w-40 h-40">
+                                <circle class="text-gray-200" stroke="currentColor" stroke-width="8" 
+                                        fill="transparent" r="54" cx="80" cy="80"/>
+                                <circle id="progressCircle" class="progress-ring__circle text-red-500" 
+                                        stroke="currentColor" stroke-width="8" fill="transparent" 
+                                        r="54" cx="80" cy="80"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="progressPercent" class="text-2xl font-bold text-gray-800">25%</span>
+                            </div>
+                        </div>
+                        <p id="nextDonationText" class="mt-4 text-center text-gray-600">
+                            You can donate again in <span class="font-semibold text-red-500">65 days</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Interactions -->
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Community Feedback</h2>
+                
+                <div class="flex justify-around mb-6">
+                    <button id="likeBtn" class="flex flex-col items-center space-y-2 transition-transform hover:scale-105">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-thumbs-up text-2xl text-green-600"></i>
+                        </div>
+                        <span id="likeCount" class="text-2xl font-bold text-green-600">142</span>
+                    </button>
+                    
+                    <button id="dislikeBtn" class="flex flex-col items-center space-y-2 transition-transform hover:scale-105">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-thumbs-down text-2xl text-red-600"></i>
+                        </div>
+                        <span id="dislikeCount" class="text-2xl font-bold text-red-600">3</span>
+                    </button>
+                </div>
+
+                <div class="space-y-3">
+                    <button id="commentBtn" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-comment mr-2"></i>View Comments
+                    </button>
+                    
+                    <button id="reportBtn" class="w-full bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors">
+                        <i class="fas fa-flag mr-2"></i>Report User
+                    </button>
+                </div>
+
+                <!-- Comments Section -->
+                <div id="commentsSection" class="comment-section mt-4">
+                    <div class="border-t pt-4">
+                        <h3 class="font-semibold mb-3">Comments</h3>
+                        <div id="commentsList" class="space-y-3 max-h-60 overflow-y-auto mb-3">
+                            <!-- Comments will be loaded here -->
+                        </div>
+                        <div class="flex space-x-2">
+                            <input id="commentInput" type="text" placeholder="Add a comment..." 
+                                   class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button id="addCommentBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info Section -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">User Information</h2>
+            
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-sm text-gray-600">Phone Number</label>
+                        <input id="phoneInput" type="tel" disabled 
+                               class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm text-gray-600">City</label>
+                        <input id="cityInput" type="text" disabled 
+                               class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-sm text-gray-600">Division</label>
+                        <input id="districtInput" type="text" disabled 
+                               class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm text-gray-600">User ID</label>
+                        <input id="userIdInput" type="text" readonly 
+                               class="w-full px-3 py-2 border rounded-lg bg-gray-100 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-center space-x-4">
+            <button id="editBtn" class="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+                <i class="fas fa-edit mr-2"></i>Edit Profile
+            </button>
+            <button id="saveBtn" class="bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-600 transition-colors hidden">
+                <i class="fas fa-save mr-2"></i>Save Changes
+            </button>
+        </div>
     </div>
-  </div>
 
-  <!-- User info (not editable except phone & city) -->
-  <div class="mt-8">
-    <h3 class="text-xl font-bold mb-4 text-gray-800">User Info</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="flex flex-col">
-        <label for="phone" class="mb-1 font-medium">Phone</label>
-        <input type="tel" id="phone" disabled class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
-      </div>
-      <div class="flex flex-col">
-        <label for="city" class="mb-1 font-medium">City</label>
-        <input type="text" id="city" disabled class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
-      </div>
-      <div class="flex flex-col">
-        <label for="user-id" class="mb-1 font-medium">User ID</label>
-        <input type="text" id="user-id" disabled class="border border-gray-300 rounded px-3 py-2 bg-gray-100" />
-      </div>
-      <div class="flex flex-col">
-        <label for="blood-group" class="mb-1 font-medium">Blood Group</label>
-        <input type="text" id="blood-group" disabled class="border border-gray-300 rounded px-3 py-2 bg-gray-100" />
-      </div>
+    <!-- Report Modal -->
+    <div id="reportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-semibold mb-4">Report User</h3>
+            <form id="reportForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Reason</label>
+                    <select id="reportReason" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select a reason</option>
+                        <option value="inappropriate">Inappropriate behavior</option>
+                        <option value="fake">Fake profile</option>
+                        <option value="spam">Spam</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea id="reportDescription" rows="3" 
+                              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelReportBtn" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                        Submit Report
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
 
-  <!-- Buttons -->
-  <div class="mt-8 flex justify-end gap-4">
-    <button id="generate-story-btn" class="btn btn-primary px-4 py-2 rounded-lg shadow hover:shadow-xl transition" title="Generate Story">✨ Generate Donor Story</button>
-    <button id="edit-btn" class="btn btn-secondary px-4 py-2 rounded-lg shadow hover:shadow-xl transition">✏️ Edit</button>
-    <button id="save-btn" class="btn btn-primary px-4 py-2 rounded-lg shadow hover:shadow-xl transition hidden">💾 Save</button>
-  </div>
-</main>
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-<script>
-  // --- CONFIG ---
-  const SUPABASE_URL = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // <-- replace with your actual key
-  const GEMINI_API_KEY = ''; // optional
+        // Global variables
+        let currentUser = null;
+        let donorData = null;
+        let isEditMode = false;
+        let userInteraction = null;
 
-  // --- INIT ---
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+            if (currentUser) {
+                await loadDonorProfile();
+                await checkUserInteraction();
+            }
+        });
 
-  // DOM Elements
-  const authPrompt = document.getElementById('auth-prompt');
-  const profileContainer = document.getElementById('profile-container');
-  const editBtn = document.getElementById('edit-btn');
-  const saveBtn = document.getElementById('save-btn');
-  const profilePicture = document.getElementById('profile-picture');
-  const imageUploadInput = document.getElementById('image-upload-input');
-  const imageToCrop = document.getElementById('image-to-crop');
-  const imageCropModal = document.getElementById('image-crop-modal');
-  const cancelCropBtn = document.getElementById('cancel-crop-btn');
-  const cropAndUploadBtn = document.getElementById('crop-and-upload-btn');
-  const likeBtn = document.getElementById('like-btn');
-  const dislikeBtn = document.getElementById('dislike-btn');
-  const likesCountEl = document.querySelector('#likes-count');
-  const dislikesCountEl = document.querySelector('#dislikes-count');
-  const generateStoryBtn = document.getElementById('generate-story-btn');
-  const storyModal = document.getElementById('story-modal');
-  const storyContent = document.getElementById('story-content');
-  const closeStoryModalBtn = document.getElementById('close-story-modal-btn');
-
-  // State
-  let cropper = null;
-  let currentUser = null;
-  let currentProfileId = null;
-  let userVote = null; // 'like', 'dislike', or null
-  let profileData = null;
-
-  // --- MOCK DATA (for demo/testing) ---
-  const useMockData = false; // set true to test without real supabase
-  const mockUser = { id: 'mock-user-123', email: 'test@example.com' };
-  const mockDonorProfile = {
-    id: '1234',
-    name: 'Ayla Rahman',
-    age: 27,
-    phone: '+90 555 123 45 67',
-    city: 'Istanbul',
-    district: 'Kadiköy',
-    blood_group: 'A+',
-    times_donated: 12,
-    last_donation_date: new Date(new Date().setDate(new Date().getDate() - 25)).toISOString(),
-    likes: 142,
-    dislikes: 3,
-    avatar_url: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&auto=format&fit=crop&w=880&q=80'
-  };
-  const mockUserVote = { '1234': 'like' };
-
-  // --- AUTH & LOAD ---
-  async function checkAuth() {
-    if (useMockData) {
-      currentUser = mockUser;
-      await loadUserProfile(mockDonorProfile.id);
-      toggleAuthPrompt(false);
-      return;
-    }
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session && session.user) {
-      currentUser = session.user;
-      await loadUserProfile(currentUser.id);
-      toggleAuthPrompt(false);
-    } else {
-      toggleAuthPrompt(true);
-    }
-  }
-
-  function toggleAuthPrompt(show) {
-    authPrompt.classList.toggle('hidden', !show);
-    authPrompt.querySelector('#auth-box').classList.toggle('scale-0', !show);
-    if (show) {
-      authPrompt.classList.add('flex');
-    } else {
-      authPrompt.classList.remove('flex');
-    }
-  }
-
-  // --- LOAD PROFILE ---
-  async function loadUserProfile(userId) {
-    currentProfileId = userId;
-    if (useMockData) {
-      profileData = mockDonorProfile;
-      userVote = mockUserVote[profileData.id] || null;
-    } else {
-      try {
-        const { data, error } = await supabase
-          .from('donors')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
-
-        if (error && error.code !== 'PGRST116') throw error;
-        if (!data) {
-          alert('No donor profile found. Please create one.');
-          toggleAuthPrompt(true);
-          return;
+        // Authentication check
+        async function checkAuth() {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            
+            if (error || !user) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            currentUser = user;
         }
-        profileData = data;
 
-        // Fetch vote
-        const voteRes = await supabase
-          .from('votes')
-          .select('vote_type')
-          .eq('voter_id', currentUser.id)
-          .eq('profile_id', profileData.id)
-          .single();
+        // Load donor profile
+        async function loadDonorProfile() {
+            try {
+                const { data, error } = await supabase
+                    .from('donors')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
 
-        userVote = voteRes.data ? voteRes.data.vote_type : null;
-      } catch (err) {
-        console.error('Error loading profile:', err);
-        alert('Error loading profile.');
-        toggleAuthPrompt(true);
-        return;
-      }
-    }
-    renderProfile();
-  }
-
-  // --- RENDER PROFILE ---
-  function renderProfile() {
-    document.getElementById('user-name').textContent = profileData.name;
-    document.getElementById('user-age').textContent = profileData.age;
-    document.getElementById('phone').value = profileData.phone;
-    document.getElementById('city').value = profileData.city;
-    document.getElementById('state').value = profileData.district;
-    document.getElementById('blood-group').textContent = profileData.blood_group;
-    document.getElementById('times-donated').textContent = profileData.times_donated;
-    document.getElementById('last-donation-days-ago').textContent = `${calculateDaysSince(profileData.last_donation_date)} days ago`;
-    likesCountEl.textContent = profileData.likes;
-    dislikesCountEl.textContent = profileData.dislikes;
-    profilePicture.src = profileData.avatar_url || 'https://placehold.co/120x120/E2E8F0/475569?text=User';
-
-    updateVoteUI();
-
-    // Draw countdown
-    drawCountdownCanvas(calculateDaysSince(profileData.last_donation_date));
-
-    // Set read-only fields
-    document.getElementById('user-id').value = profileData.custom_id; 
-    document.getElementById('blood-group').value = profileData.blood_group;
-    document.getElementById('times-donated').value = profileData.times_donated;
-    document.getElementById('last-donation-days-ago').textContent = `${calculateDaysSince(profileData.last_donation_date)} days ago`;
-  }
-
-  function calculateDaysSince(dateStr) {
-    const lastDate = new Date(dateStr);
-    const diff = Math.floor((new Date() - lastDate) / (1000 * 60 * 60 * 24));
-    return diff >= 0 ? diff : 0;
-  }
-
-  function drawCountdownCanvas(daysSince) {
-    const canvas = document.getElementById('countdown-canvas');
-    if (!canvas || !canvas.getContext) return;
-    const ctx = canvas.getContext('2d');
-    const size = 100;
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = size * dpr;
-    canvas.height = size * dpr;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, size, size);
-    const centerX = size / 2;
-    const centerY = size / 2;
-    const radius = size / 2 - 10;
-    const percentage = Math.min(daysSince / 90, 1);
-    const startAngle = -0.5 * Math.PI;
-    const endAngle = startAngle + (2 * Math.PI * percentage);
-
-    // Background circle
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#E2E8F0';
-    ctx.lineWidth = 8;
-    ctx.stroke();
-
-    // Progress arc
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-    ctx.strokeStyle = '#10B981';
-    ctx.lineWidth = 8;
-    ctx.lineCap = 'round';
-    ctx.stroke();
-
-    // Text
-    ctx.fillStyle = '#1E293B';
-    ctx.font = 'bold 20px Inter';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(`${Math.round(percentage * 100)}%`, centerX, centerY);
-  }
-
-  // --- VOTE ---
-  function updateVoteUI() {
-    // toggle class for active state
-    toggleVoteButton('like', userVote === 'like');
-    toggleVoteButton('dislike', userVote === 'dislike');
-  }
-
-  function toggleVoteButton(type, isActive) {
-    const btn = document.getElementById(`${type}-btn`);
-    if (isActive) {
-      btn.classList.add('bg-green-200', 'scale-105');
-    } else {
-      btn.classList.remove('bg-green-200', 'scale-105');
-    }
-  }
-
-  async function handleVote(voteType) {
-    if (!currentUser) {
-      alert('Please login first');
-      return;
-    }
-    const prevVote = userVote;
-
-    // Update local state
-    if (voteType === prevVote) {
-      userVote = null;
-    } else {
-      userVote = voteType;
-    }
-
-    // Update counts visually
-    let likes = parseInt(likesCountEl.textContent);
-    let dislikes = parseInt(dislikesCountEl.textContent);
-    if (voteType === prevVote) {
-      // Remove vote
-      if (voteType === 'like') likes--;
-      if (voteType === 'dislike') dislikes--;
-    } else {
-      // Change vote
-      if (prevVote === 'like') likes--;
-      if (prevVote === 'dislike') dislikes--;
-      if (voteType === 'like') likes++;
-      if (voteType === 'dislike') dislikes++;
-    }
-    likesCountEl.textContent = likes;
-    dislikesCountEl.textContent = dislikes;
-    updateVoteUI();
-
-    // Save to Supabase
-    if (!useMockData) {
-      try {
-        await supabase.from('donors').update({ likes, dislikes }).eq('id', currentProfileId);
-        if (userVote) {
-          await supabase.from('votes').upsert({ voter_id: currentUser.id, profile_id: currentProfileId, vote_type: userVote });
-        } else {
-          await supabase.from('votes').delete().match({ voter_id: currentUser.id, profile_id: currentProfileId });
+                if (error) throw error;
+                
+                donorData = data;
+                updateUI();
+            } catch (error) {
+                console.error('Error loading donor data:', error);
+                alert('Error loading profile data');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
         }
-      } catch (err) {
-        console.error('Vote save error:', err);
-      }
-    }
-  }
 
-  // --- IMAGE UPLOAD & CROP ---
-  document.querySelector('#profile-picture-wrapper').addEventListener('click', () => imageUploadInput.click());
-  imageUploadInput.addEventListener('change', (e) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      document.getElementById('image-to-crop').src = reader.result;
-      // Show modal
-      showModal('image-crop-modal');
-      cropper = new Cropper(document.getElementById('image-to-crop'), {
-        aspectRatio: 1,
-        viewMode: 1,
-        background: false,
-        autoCropArea: 0.8,
-        responsive: true,
-      });
-    };
-    reader.readAsDataURL(e.target.files[0]);
-  });
+        // Update UI with donor data
+        function updateUI() {
+            // Profile info
+            document.getElementById('userName').textContent = donorData.name;
+            document.getElementById('bloodGroup').textContent = donorData.blood_group;
+            document.getElementById('userAge').textContent = `${donorData.age} years`;
+            
+            if (donorData.avatar_url) {
+                document.getElementById('profilePhoto').src = donorData.avatar_url;
+            }
 
-  // Show Modal with transition
-  function showModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.classList.remove('hidden');
-    const box = modal.querySelector('div');
-    setTimeout(() => {
-      modal.classList.add('bg-opacity-50');
-      box.classList.remove('scale-0');
-      box.classList.add('scale-100');
-    }, 10);
-  }
-  // Hide Modal
-  function hideModal(modalId) {
-    const modal = document.getElementById(modalId);
-    const box = modal.querySelector('div');
-    box.classList.remove('scale-100');
-    box.classList.add('scale-0');
-    setTimeout(() => {
-      modal.classList.remove('bg-opacity-50');
-      modal.classList.add('hidden');
-    }, 300);
-    if (modalId === 'image-crop-modal' && cropper) {
-      cropper.destroy();
-      cropper = null;
-    }
-  }
+            // Donation stats
+            document.getElementById('totalDonations').textContent = donorData.times_donated || 0;
+            
+            const lastDonationDate = new Date(donorData.last_donation);
+            const daysSinceLastDonation = Math.floor((new Date() - lastDonationDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('lastDonation').textContent = `${daysSinceLastDonation} days ago`;
+            
+            // Calculate progress
+            const daysRemaining = Math.max(0, 90 - daysSinceLastDonation);
+            const progressPercent = Math.min(100, Math.floor((daysSinceLastDonation / 90) * 100));
+            
+            updateProgressCircle(progressPercent);
+            document.getElementById('nextDonationText').innerHTML = 
+                daysRemaining > 0 
+                    ? `You can donate again in <span class="font-semibold text-red-500">${daysRemaining} days</span>`
+                    : 'You are eligible to donate now!';
 
-  cancelCropBtn.onclick = () => hideModal('image-crop-modal');
-  document.getElementById('crop-and-upload-btn').onclick = () => {
-    if (!cropper || !currentUser) return;
-    cropAndUploadBtn.disabled = true;
-    cropAndUploadBtn.innerHTML = 'Uploading...';
+            // Interaction counts
+            document.getElementById('likeCount').textContent = donorData.thumbs_up || 0;
+            document.getElementById('dislikeCount').textContent = donorData.thumbs_down || 0;
 
-    cropper.getCroppedCanvas({ width: 256, height: 256 }).toBlob(async (blob) => {
-      const filePath = `avatars/${currentUser.id}-${Date.now()}.png`;
-      if (useMockData) {
-        const mockUrl = URL.createObjectURL(blob);
-        profilePicture.src = mockUrl;
-        alert('Mock upload success!');
-      } else {
-        try {
-          await supabase.storage.from('profiles').upload(filePath, blob, { upsert: true });
-          const { data: { publicUrl } } = await supabase.storage.from('profiles').getPublicUrl(filePath);
-          await supabase.from('donors').update({ avatar_url: publicUrl }).eq('id', currentProfileId);
-          profilePicture.src = publicUrl;
-          alert('Profile picture updated!');
-        } catch (err) {
-          console.error('Upload error:', err);
-          alert('Failed to upload image.');
+            // User info
+            document.getElementById('phoneInput').value = donorData.phone || '';
+            document.getElementById('cityInput').value = donorData.city || '';
+            document.getElementById('districtInput').value = donorData.division || '';
+            document.getElementById('userIdInput').value = donorData.custom_id || donorData.id.toString().substring(0, 8);
         }
-      }
-      hideModal('image-crop-modal');
-      cropAndUploadBtn.disabled = false;
-      cropAndUploadBtn.innerHTML = 'Crop & Upload';
-    });
-  };
 
-  // --- GENERATE STORY ---
-async function generateDonorStory() {
-  const name = document.getElementById('user-name').textContent;
-  const city = document.getElementById('city').value;
-  const times = document.getElementById('times-donated').textContent;
+        // Update progress circle
+        function updateProgressCircle(percent) {
+            const circle = document.getElementById('progressCircle');
+            const radius = 54;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (percent / 100) * circumference;
+            
+            circle.style.strokeDashoffset = offset;
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+        }
 
-  const prompt = `Write a short, inspiring story (about 3-4 sentences) for a social media post about a blood donor named ${name} from ${city} who has donated blood ${times} times. The story should be uplifting and emphasize the positive impact of their donations on saving lives. Frame it as a small, shareable narrative.`;
-  generateStoryBtn.disabled = true;
-  generateStoryBtn.innerHTML = `✨ Generating...`;
-  storyContent.innerHTML = 'Your story is being written...';
-  showModal('story-modal');
+        // Check if user has already liked/disliked
+        async function checkUserInteraction() {
+            const { data, error } = await supabase
+                .from('user_interactions')
+                .select('interaction_type')
+                .eq('user_id', currentUser.id)
+                .eq('target_donor_id', donorData.id)
+                .single();
 
-  try {
-    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+            if (!error && data) {
+                userInteraction = data.interaction_type;
+                updateInteractionButtons();
+            }
+        }
 
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (!response.ok) throw new Error(`API error: ${response.status}`);
-    const result = await response.json();
+        // Update interaction buttons based on user's interaction
+        function updateInteractionButtons() {
+            const likeBtn = document.getElementById('likeBtn');
+            const dislikeBtn = document.getElementById('dislikeBtn');
+            
+            if (userInteraction === 'like') {
+                likeBtn.classList.add('opacity-50');
+                dislikeBtn.classList.add('opacity-50');
+            } else if (userInteraction === 'dislike') {
+                likeBtn.classList.add('opacity-50');
+                dislikeBtn.classList.add('opacity-50');
+            }
+        }
 
-    const storyText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-    storyContent.textContent = storyText || "Couldn't generate story.";
-  } catch (err) {
-    console.error('Story error:', err);
-    storyContent.textContent = "Error generating story.";
-  }
-  generateStoryBtn.disabled = false;
-  generateStoryBtn.innerHTML = `✨ Generate Donor Story`;
-}
+        // Handle like/dislike
+        document.getElementById('likeBtn').addEventListener('click', async () => {
+            if (userInteraction) return;
+            
+            await handleInteraction('like');
+        });
 
-function showModal(id) {
-  const modal = document.getElementById(id);
-  modal.classList.remove('hidden');
-  setTimeout(() => {
-    modal.classList.add('bg-opacity-50');
-    modal.querySelector('div').classList.remove('scale-0');
-    modal.querySelector('div').classList.add('scale-100');
-  }, 10);
-}
-function hideModal(id) {
-  const modal = document.getElementById(id);
-  modal.querySelector('div').classList.remove('scale-100');
-  modal.querySelector('div').classList.add('scale-0');
-  setTimeout(() => {
-    modal.classList.remove('bg-opacity-50');
-    modal.classList.add('hidden');
-  }, 300);
-  if (id === 'image-crop-modal' && cropper) {
-    cropper.destroy();
-    cropper = null;
-  }
-}
+        document.getElementById('dislikeBtn').addEventListener('click', async () => {
+            if (userInteraction) return;
+            
+            await handleInteraction('dislike');
+        });
 
-// --- Edit & Save ---
-let isEditing = false;
-function toggleEditMode(editing) {
-  isEditing = editing;
-  document.querySelectorAll('#phone, #city').forEach(el => {
-    el.disabled = !editing;
-    el.classList.toggle('border-2', editing);
-    el.classList.toggle('border-gray-300', !editing);
-    if (editing) {
-      el.classList.remove('bg-gray-100');
-      el.classList.add('bg-white');
-    } else {
-      el.classList.remove('border-2');
-      el.classList.remove('bg-white');
-      el.classList.add('bg-gray-100');
-    }
-  });
-  // Toggle buttons
-  document.getElementById('save-btn').classList.toggle('hidden', !editing);
-  document.getElementById('edit-btn').classList.toggle('hidden', editing);
-}
+        async function handleInteraction(type) {
+            try {
+                // Update donor stats
+                const updateField = type === 'like' ? 'thumbs_up' : 'thumbs_down';
+                const { error } = await supabase
+                    .from('donors')
+                    .update({ [updateField]: (donorData[updateField] || 0) + 1 })
+                    .eq('id', donorData.id);
 
-// -- Save profile changes
-document.getElementById('save-btn').onclick = async () => {
-  toggleEditMode(false);
-  // Save to database
-  if (!profileData) return;
-  const updatedPhone = document.getElementById('phone').value.trim();
-  const updatedCity = document.getElementById('city').value.trim();
+                if (error) throw error;
 
-  if (useMockData) {
-    profileData.phone = updatedPhone;
-    profileData.city = updatedCity;
-    alert('Mock profile updated!');
-    return;
-  }
+                // Record user interaction
+                await supabase
+                    .from('user_interactions')
+                    .insert({
+                        user_id: currentUser.id,
+                        target_donor_id: donorData.id,
+                        interaction_type: type
+                    });
 
-  try {
-    await supabase.from('donors').update({ phone: updatedPhone, city: updatedCity }).eq('id', profileData.id);
-    profileData.phone = updatedPhone;
-    profileData.city = updatedCity;
-    alert('Profile updated!');
-  } catch (err) {
-    console.error('Update error:', err);
-    alert('Failed to update profile.');
-  }
-};
+                // Update UI
+                userInteraction = type;
+                const countElement = type === 'like' ? 'likeCount' : 'dislikeCount';
+                const btn = type === 'like' ? document.getElementById('likeBtn') : document.getElementById('dislikeBtn');
+                
+                document.getElementById(countElement).textContent = 
+                    (donorData[type === 'like' ? 'thumbs_up' : 'thumbs_down'] || 0) + 1;
+                
+                btn.classList.add('like-animation');
+                updateInteractionButtons();
+                
+                setTimeout(() => btn.classList.remove('like-animation'), 300);
+            } catch (error) {
+                console.error('Error handling interaction:', error);
+                alert('Error updating interaction');
+            }
+        }
 
-// --- Event Listeners ---
-document.addEventListener('DOMContentLoaded', () => {
-  if (useMockData) {
-    const warning = document.createElement('div');
-    warning.className = 'fixed top-0 left-0 right-0 bg-yellow-300 text-yellow-800 p-2 text-center z-50 font-semibold animate-bounce';
-    warning.innerHTML = '<strong>DEMO MODE:</strong> Using mock data. Replace the config with your real Supabase details.';
-    document.body.prepend(warning);
-  }
-  checkAuth();
+        // Comment functionality
+        document.getElementById('commentBtn').addEventListener('click', () => {
+            const section = document.getElementById('commentsSection');
+            section.classList.toggle('open');
+            
+            if (section.classList.contains('open')) {
+                loadComments();
+            }
+        });
 
-  document.getElementById('edit-btn').onclick = () => toggleEditMode(true);
-  document.getElementById('save-btn').onclick = () => {
-    // save profile
-    document.getElementById('save-btn').click();
-  };
-  document.getElementById('like-btn').onclick = () => handleVote('like');
-  document.getElementById('dislike-btn').onclick = () => handleVote('dislike');
-  document.getElementById('generate-story-btn').onclick = generateDonorStory;
-  document.getElementById('close-story-modal-btn').onclick = () => hideModal('story-modal');
-});
-</script>
+        async function loadComments() {
+            try {
+                const { data, error } = await supabase
+                    .from('comments')
+                    .select(`
+                        *,
+                        donors(name, avatar_url)
+                    `)
+                    .eq('target_donor_id', donorData.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const commentsList = document.getElementById('commentsList');
+                commentsList.innerHTML = data.map(comment => `
+                    <div class="flex space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <img src="${comment.donors?.avatar_url || 'https://picsum.photos/seed/default/40/40.jpg'}" 
+                             alt="User" class="w-10 h-10 rounded-full">
+                        <div class="flex-1">
+                            <p class="font-semibold text-sm">${comment.donors?.name || 'Anonymous'}</p>
+                            <p class="text-gray-700">${comment.content}</p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                ${new Date(comment.created_at).toLocaleDateString()}
+                            </p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+        }
+
+        // Add comment
+        document.getElementById('addCommentBtn').addEventListener('click', async () => {
+            const input = document.getElementById('commentInput');
+            const content = input.value.trim();
+            
+            if (!content) return;
+
+            try {
+                const { error } = await supabase
+                    .from('comments')
+                    .insert({
+                        user_id: currentUser.id,
+                        target_donor_id: donorData.id,
+                        content: content
+                    });
+
+                if (error) throw error;
+
+                input.value = '';
+                loadComments();
+            } catch (error) {
+                console.error('Error adding comment:', error);
+                alert('Error adding comment');
+            }
+        });
+
+        // Report functionality
+        document.getElementById('reportBtn').addEventListener('click', () => {
+            document.getElementById('reportModal').classList.remove('hidden');
+        });
+
+        document.getElementById('cancelReportBtn').addEventListener('click', () => {
+            document.getElementById('reportModal').classList.add('hidden');
+        });
+
+        document.getElementById('reportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const reason = document.getElementById('reportReason').value;
+            const description = document.getElementById('reportDescription').value;
+            
+            if (!reason) {
+                alert('Please select a reason');
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('reports')
+                    .insert({
+                        reporter_id: currentUser.id,
+                        reported_donor_id: donorData.id,
+                        reason: reason,
+                        description: description
+                    });
+
+                if (error) throw error;
+
+                alert('Report submitted successfully');
+                document.getElementById('reportModal').classList.add('hidden');
+                document.getElementById('reportForm').reset();
+            } catch (error) {
+                console.error('Error submitting report:', error);
+                alert('Error submitting report');
+            }
+        });
+
+        // Edit/Save functionality
+        document.getElementById('editBtn').addEventListener('click', () => {
+            isEditMode = true;
+            document.getElementById('editBtn').classList.add('hidden');
+            document.getElementById('saveBtn').classList.remove('hidden');
+            
+            // Enable editable fields
+            document.getElementById('phoneInput').disabled = false;
+            document.getElementById('cityInput').disabled = false;
+            document.getElementById('districtInput').disabled = false;
+            
+            // Change background to indicate edit mode
+            document.getElementById('phoneInput').classList.remove('bg-gray-50');
+            document.getElementById('cityInput').classList.remove('bg-gray-50');
+            document.getElementById('districtInput').classList.remove('bg-gray-50');
+        });
+
+        document.getElementById('saveBtn').addEventListener('click', async () => {
+            try {
+                const updateData = {
+                    phone: document.getElementById('phoneInput').value,
+                    city: document.getElementById('cityInput').value,
+                    division: document.getElementById('districtInput').value
+                };
+
+                const { error } = await supabase
+                    .from('donors')
+                    .update(updateData)
+                    .eq('id', donorData.id);
+
+                if (error) throw error;
+
+                // Update local data
+                donorData = { ...donorData, ...updateData };
+                
+                // Exit edit mode
+                isEditMode = false;
+                document.getElementById('editBtn').classList.remove('hidden');
+                document.getElementById('saveBtn').classList.add('hidden');
+                
+                // Disable fields
+                document.getElementById('phoneInput').disabled = true;
+                document.getElementById('cityInput').disabled = true;
+                document.getElementById('districtInput').disabled = true;
+                
+                // Restore background
+                document.getElementById('phoneInput').classList.add('bg-gray-50');
+                document.getElementById('cityInput').classList.add('bg-gray-50');
+                document.getElementById('districtInput').classList.add('bg-gray-50');
+                
+                alert('Profile updated successfully');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Error updating profile');
+            }
+        });
+    </script>
 </body>
 </html>
