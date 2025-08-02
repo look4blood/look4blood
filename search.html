@@ -1,1369 +1,832 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Look4Blood - Coming Soon</title>
-<!-- Font Awesome CDN for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-<style>
-/* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-:root {
-    /* Color Palette */
-    --primary-color: #e74c3c;
-    --secondary-color: #3498db;
-    --accent-color: #2ecc71;
-    --bg-primary: #0a0e27;
-    --bg-secondary: #1a1f3a;
-    --bg-tertiary: #2c3e50;
-    --text-primary: #ffffff;
-    --text-secondary: #bdc3c7;
-    --text-muted: #95a5a6;
-    --border-color: #34495e;
-    --success-color: #2ecc71;
-    --warning-color: #f39c12;
-    --info-color: #3498db;
-    /* Typography */
-    --font-primary: 'Inter', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    /* Spacing */
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 1rem;
-    --spacing-md: 1.5rem;
-    --spacing-lg: 2rem;
-    --spacing-xl: 3rem;
-    --spacing-xxl: 4rem;
-    /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
-    /* Shadows */
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
-    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
-    --shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.25);
-}
-body {
-    font-family: var(--font-primary);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.6;
-    overflow-x: hidden;
-}
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 var(--spacing-md);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor Search - Look4Blood</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* Background Elements */
-.bg-elements {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: -1;
-}
-.code-rain {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(231, 76, 60, 0.03) 50%,
-        transparent 100%
-    );
-    animation: codeRain 20s linear infinite;
-}
-@keyframes codeRain {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-.floating-icons {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-.floating-icons i {
-    position: absolute;
-    color: rgba(231, 76, 60, 0.1);
-    font-size: 2rem;
-    animation: float 6s ease-in-out infinite;
-}
-.floating-icons i:nth-child(1) {
-    top: 10%; left: 10%; animation-delay: 0s;
-}
-.floating-icons i:nth-child(2) {
-    top: 20%; right: 15%; animation-delay: 1s;
-}
-.floating-icons i:nth-child(3) {
-    top: 60%; left: 5%; animation-delay: 2s;
-}
-.floating-icons i:nth-child(4) {
-    bottom: 20%; right: 10%; animation-delay: 3s;
-}
-.floating-icons i:nth-child(5) {
-    bottom: 10%; left: 20%; animation-delay: 4s;
-}
-@keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
-}
+        :root {
+            --primary-color: #dc2626;
+            --primary-dark: #991b1b;
+            --primary-light: #ef4444;
+            --secondary-color: #7c3aed;
+            --success-color: #16a34a;
+            --warning-color: #d97706;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f3f4f6;
+            --bg-white: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
 
-/* Header Styles */
-.header {
-    position: fixed;
-    top: 0; left: 0; width: 100%;
-    background: rgba(10,14,39,0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-color);
-    z-index: 1000;
-    padding: var(--spacing-sm) 0;
-}
-.header .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.logo {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-}
-.logo i { font-size: 1.8rem; }
-.nav {
-    display: flex;
-    gap: var(--spacing-lg);
-    align-items: center;
-}
-.nav-link {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-    position: relative;
-    transition: color 0.3s ease;
-}
-.nav-link:hover {
-    color: var(--primary-color);
-}
-.nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0; height: 2px;
-    background: var(--primary-color);
-    transition: width 0.3s ease;
-}
-.nav-link:hover::after {
-    width: 100%;
-}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
 
-/* Language Toggle */
-.language-toggle {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    background: transparent;
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xs) var(--spacing-md);
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-.language-toggle:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    background: rgba(231, 76, 60, 0.1);
-}
-.language-toggle i { font-size: 1rem; }
-#currentLang {
-    font-family: var(--font-mono);
-    font-weight: 600;
-}
+        /* Header with Search */
+        .header {
+            background-color: var(--bg-white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.95);
+            border-bottom: 2px solid var(--primary-color);
+        }
 
-/* Hero Section */
-.hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    padding: var(--spacing-xxl) 0;
-    margin-top: 80px;
-}
-.hero-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-xxl);
-    align-items: center;
-}
-@media(max-width:768px){
-    .hero-content {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-}
-.hero-text {
-    max-width: 600px;
-}
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    background: rgba(46, 204, 113, 0.1);
-    color: var(--accent-color);
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-lg);
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-bottom: var(--spacing-md);
-}
-.status-dot {
-    width: 8px; height: 8px;
-    background: var(--accent-color);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-}
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-.hero-title {
-    font-size: 3.5rem;
-    font-weight: 700;
-    line-height: 1.2;
-    margin-bottom: var(--spacing-md);
-}
-.gradient-text {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-.hero-subtitle {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-xl);
-    line-height: 1.6;
-}
-.coming-soon {
-    margin-bottom: var(--spacing-xl);
-}
-.coming-soon h2 {
-    font-size: 2rem;
-    color: var(--primary-color);
-    margin-bottom: var(--spacing-md);
-    text-align: center;
-}
-.countdown {
-    display: flex;
-    gap: var(--spacing-md);
-    justify-content: center;
-    margin-bottom: var(--spacing-lg);
-}
-.countdown-item {
-    text-align: center;
-    background: var(--bg-secondary);
-    padding: var(--spacing-md);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-    min-width: 80px;
-}
-.countdown-item span {
-    display: block;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    font-family: var(--font-mono);
-}
-.countdown-item label {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.cta-buttons {
-    display: flex;
-    gap: var(--spacing-md);
-    flex-wrap: wrap;
-}
-.btn {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-md) var(--spacing-lg);
-    border: none;
-    border-radius: var(--radius-lg);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-.btn-primary {
-    background: var(--primary-color);
-    color: white;
-}
-.btn-primary:hover {
-    background: #c0392b;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-.btn-secondary {
-    background: transparent;
-    color: var(--text-primary);
-    border: 2px solid var(--border-color);
-}
-.btn-secondary:hover {
-    background: var(--bg-secondary);
-    border-color: var(--primary-color);
-    transform: translateY(-2px);
-}
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
 
-/* Coding Animation Section */
-.hero-animation {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.coding-workspace {
-    position: relative;
-    width: 100%;
-    max-width: 500px;
-}
-.monitor {
-    background: var(--bg-secondary);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-md);
-    box-shadow: var(--shadow-xl);
-    border: 2px solid var(--border-color);
-}
-.screen {
-    background: #1e1e1e;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    border: 1px solid #333;
-}
-.window-header {
-    background: #2d2d30;
-    padding: var(--spacing-sm);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-.window-controls {
-    display: flex;
-    gap: var(--spacing-xs);
-}
-.control {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-}
-.control.close { background: #ff5f56; }
-.control.minimize { background: #ffbd2e; }
-.control.maximize { background: #27ca3f; }
-.window-title {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    font-family: var(--font-mono);
-}
-.code-editor {
-    display: flex;
-    min-height: 300px;
-}
-.line-numbers {
-    background: #252526;
-    padding: var(--spacing-md) var(--spacing-sm);
-    color: #858585;
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    user-select: none;
-}
-.line-numbers span {
-    display: block;
-    line-height: 1.5;
-}
-.code-content {
-    flex: 1;
-    padding: var(--spacing-md);
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    position: relative;
-}
-.code-line {
-    line-height: 1.5;
-    min-height: 1.5em;
-    position: relative;
-}
-.indent { padding-left: 2em; }
-.indent2 { padding-left: 4em; }
-.keyword { color: #569cd6; }
-.class-name { color: #4ec9b0; }
-.function { color: #dcdcaa; }
-.property { color: #9cdcfe; }
-.parameter { color: #9cdcfe; }
-.punctuation { color: #d4d4d4; }
-.operator { color: #d4d4d4; }
-.typing-cursor {
-    position: absolute;
-    right: var(--spacing-md);
-    bottom: var(--spacing-md);
-    font-size: 1.2rem;
-    color: var(--primary-color);
-    animation: blink 1s step-start infinite;
-}
-@keyframes blink {
-    50% { opacity: 0; }
-}
-.developer {
-    position: absolute;
-    bottom: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 80px;
-}
-.developer-head {
-    width: 25px;
-    height: 25px;
-    background: #f4d2a7;
-    border-radius: 50%;
-    margin: 0 auto 5px;
-    position: relative;
-}
-.developer-head::before {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    height: 15px;
-    background: #8b4513;
-    border-radius: 10px;
-}
-.developer-body {
-    width: 30px;
-    height: 35px;
-    background: var(--primary-color);
-    margin: 0 auto;
-    border-radius: var(--radius-sm);
-}
-.developer-arms {
-    position: absolute;
-    top: 30px;
-    width: 100%;
-}
-.arm {
-    width: 20px;
-    height: 4px;
-    background: #f4d2a7;
-    border-radius: 2px;
-    position: absolute;
-}
-.left-arm {
-    left: 5px;
-    transform-origin: right center;
-    animation: typeLeft 2s ease-in-out infinite;
-}
-.right-arm {
-    right: 5px;
-    transform-origin: left center;
-    animation: typeRight 2s ease-in-out infinite;
-}
-@keyframes typeLeft {
-    0%, 100% { transform: rotate(-10deg); }
-    50% { transform: rotate(-30deg); }
-}
-@keyframes typeRight {
-    0%, 100% { transform: rotate(10deg); }
-    50% { transform: rotate(30deg); }
-}
-.keyboard {
-    position: absolute;
-    bottom: -50px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-}
-.key-row {
-    display: flex;
-    gap: 3px;
-    margin-bottom: 3px;
-    justify-content: center;
-}
-.key {
-    width: 12px;
-    height: 8px;
-    background: var(--bg-tertiary);
-    border-radius: 2px;
-    border: 1px solid var(--border-color);
-    animation: keyPress 3s ease-in-out infinite;
-}
-.key:nth-child(odd) {
-    animation-delay: 0.5s;
-}
-@keyframes keyPress {
-    0%, 90%, 100% { transform: translateY(0); }
-    5%, 10% { transform: translateY(2px); background: var(--primary-color); }
-}
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
 
-/* Sections styles */
-.about, .features, .notify {
-    padding: var(--spacing-xxl) 0;
-}
-.about {
-    background: var(--bg-secondary);
-}
-.section-header {
-    text-align: center;
-    margin-bottom: var(--spacing-xxl);
-}
-.section-header h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-md);
-}
-.section-header p {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-}
-.about-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--spacing-xl);
-}
-.about-card {
-    background: var(--bg-primary);
-    padding: var(--spacing-xl);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--border-color);
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.about-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-}
-.card-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto var(--spacing-md);
-}
-.card-icon i {
-    font-size: 2rem;
-    color: white;
-}
-.about-card h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: var(--spacing-md);
-}
-.about-card p {
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
-.features-list {
-    max-width: 800px;
-    margin: 0 auto;
-}
-.feature-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-lg);
-    padding: var(--spacing-lg);
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--spacing-md);
-    border: 1px solid var(--border-color);
-    transition: transform 0.3s ease;
-}
-.feature-item:hover {
-    transform: translateX(10px);
-}
-.feature-icon {
-    width: 60px;
-    height: 60px;
-    background: var(--primary-color);
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-.feature-icon i {
-    font-size: 1.5rem;
-    color: white;
-}
-.feature-content {
-    flex: 1;
-}
-.feature-content h4 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: var(--spacing-xs);
-}
-.feature-content p {
-    color: var(--text-secondary);
-}
-.feature-status {
-    flex-shrink: 0;
-}
-.status-badge {
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.status-badge.in-progress {
-    background: rgba(241, 196, 15, 0.2);
-    color: #f1c40f;
-}
-.status-badge.planned {
-    background: rgba(52, 152, 219, 0.2);
-    color: var(--secondary-color);
-}
+        .logo:hover {
+            transform: scale(1.05);
+        }
 
-.notify {
-    background: var(--bg-secondary);
-}
-.notify-content {
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-}
-.notify-text h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-md);
-}
-.notify-text p {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-xl);
-}
-.notify-form {
-    margin-bottom: var(--spacing-xl);
-}
-.form-group {
-    display: flex;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
-}
-.form-group input {
-    flex: 1;
-    padding: var(--spacing-md);
-    background: var(--bg-primary);
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    color: var(--text-primary);
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-}
-.form-group input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-}
-.form-group input::placeholder {
-    color: var(--text-muted);
-}
-.form-message {
-    padding: var(--spacing-md);
-    border-radius: var(--radius-lg);
-    font-weight: 500;
-    display: none;
-}
-.form-message.success {
-    background: rgba(46, 204, 113, 0.2);
-    color: var(--success-color);
-    border: 1px solid var(--success-color);
-}
-.form-message.error {
-    background: rgba(231, 76, 60, 0.2);
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-}
-.notify-stats {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-xxl);
-}
-.stat {
-    text-align: center;
-}
-.stat-number {
-    display: block;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    font-family: var(--font-mono);
-}
-.stat-label {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+        .logo i {
+            font-size: 1.8rem;
+        }
 
-/* Footer styles */
-.footer {
-    background: var(--bg-primary);
-    border-top: 1px solid var(--border-color);
-    padding: var(--spacing-xxl) 0 var(--spacing-lg);
-}
-.footer-content {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: var(--spacing-xxl);
-    margin-bottom: var(--spacing-xl);
-}
-.footer-logo {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-bottom: var(--spacing-md);
-}
-.footer-section p {
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-md);
-    line-height: 1.6;
-}
-.social-links {
-    display: flex;
-    gap: var(--spacing-md);
-}
-.social-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px; height: 40px;
-    background: var(--bg-secondary);
-    border-radius: 50%;
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-.social-link:hover {
-    background: var(--primary-color);
-    color: white;
-    transform: translateY(-2px);
-}
-.footer-section h4 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: var(--spacing-md);
-    color: var(--text-primary);
-}
-.footer-section ul {
-    list-style: none;
-}
-.footer-section li {
-    margin-bottom: var(--spacing-xs);
-}
-.footer-section a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-.footer-section a:hover {
-    color: var(--primary-color);
-}
-.footer-bottom {
-    border-top: 1px solid var(--border-color);
-    padding-top: var(--spacing-lg);
-    text-align: center;
-}
-.footer-credits {
-    color: var(--text-muted);
-}
-.developer-credit {
-    margin-top: var(--spacing-xs);
-    font-weight: 500;
-}
-.developer-credit strong {
-    color: var(--primary-color);
-}
+        .search-container-header {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+        }
 
-/* Responsive styles */
-@media(max-width:768px){
-    .hero-content {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-}
-@media(max-width:480px){
-    .hero-title {
-        font-size: 2rem;
-    }
-    .section-header h2 {
-        font-size: 2rem;
-    }
-    .notify-text h2 {
-        font-size: 2rem;
-    }
-    .coding-workspace {
-        max-width: 350px;
-    }
-    .code-editor {
-        min-height: 200px;
-    }
-    .code-content {
-        font-size: 0.8rem;
-        padding: var(--spacing-sm);
-    }
-}
+        .search-bar-header {
+            width: 100%;
+            padding: 0.75rem 3rem 0.75rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            outline: none;
+        }
 
-/* Utility animations */
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(20px);}
-    to {opacity: 1; transform: translateY(0);}
-}
-@keyframes slideInLeft {
-    from {opacity: 0; transform: translateX(-50px);}
-    to {opacity: 1; transform: translateX(0);}
-}
-@keyframes slideInRight {
-    from {opacity: 0; transform: translateX(50px);}
-    to {opacity: 1; transform: translateX(0);}
-}
-.animate-on-scroll {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.6s ease-out;
-}
-.animate-on-scroll.animated {
-    opacity: 1;
-    transform: translateY(0);
-}
-</style>
+        .search-bar-header:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .search-btn-header {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn-header:hover {
+            background: var(--primary-dark);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .search-btn-header i {
+            font-size: 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            background-color: rgba(220, 38, 38, 0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #dc2626 0%, #7c3aed 100%);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Results Section */
+        .results-section {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-header h2 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .results-count {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-weight: 500;
+            background-color: var(--bg-light);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        .donor-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        /* Donor Cards */
+        .donor-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+        }
+
+        .donor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-color);
+        }
+
+        .donor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-light);
+        }
+
+        .donor-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .donor-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .donor-detail i {
+            color: var(--primary-color);
+            width: 16px;
+            font-size: 0.9rem;
+        }
+
+        .donor-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .donor-blood-group {
+            display: inline-flex;
+            align-items: center;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .eligibility-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.75rem;
+        }
+
+        .eligibility-status.eligible {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--success-color);
+        }
+
+        .eligibility-status.not-eligible {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--primary-color);
+        }
+
+        .donor-actions {
+            margin-top: 1rem;
+            text-align: right;
+        }
+
+        .btn-view-profile {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .btn-view-profile:hover {
+            background: #6d28d9;
+            transform: translateY(-1px);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-light);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--border-color);
+        }
+
+        .no-results h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .no-results p {
+            font-size: 1rem;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Search Suggestions */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-radius: 0 0 12px 12px;
+            box-shadow: var(--shadow-hover);
+            margin-top: 2px;
+            z-index: 100;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            border: 1px solid var(--border-color);
+            border-top: none;
+        }
+
+        .search-suggestions.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--bg-light);
+            padding-left: 2rem;
+            color: var(--primary-color);
+        }
+
+        .suggestion-item .suggestion-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.2rem;
+        }
+
+        .suggestion-item .suggestion-desc {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--text-dark);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-hover);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            max-width: 350px;
+            font-size: 0.9rem;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--primary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .search-container-header {
+                order: 3;
+                flex-basis: 100%;
+                max-width: none;
+            }
+
+            .nav-links {
+                order: 2;
+                flex-basis: 100%;
+                justify-content: center;
+            }
+
+            .hero {
+                padding: 2rem 0;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .donor-info {
+                grid-template-columns: 1fr;
+            }
+
+            .donor-actions {
+                text-align: center;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .results-section {
+                padding: 1.5rem;
+            }
+
+            .donor-card {
+                padding: 1rem;
+            }
+
+            .toast {
+                right: 1rem;
+                left: 1rem;
+                max-width: none;
+            }
+        }
+    </style>
 </head>
 <body>
-<!-- Background Elements -->
-<div class="bg-elements">
-    <div class="code-rain"></div>
-    <div class="floating-icons">
-        <i class="fas fa-code"></i>
-        <i class="fas fa-laptop-code"></i>
-        <i class="fas fa-heartbeat"></i>
-        <i class="fas fa-tint"></i>
-        <i class="fas fa-search"></i>
-    </div>
-</div>
-
-<!-- Header -->
-<header class="header">
-    <div class="container">
-        <div class="logo">
-            <i class="fas fa-tint"></i>
-            <span>Look4Blood</span>
-        </div>
-        <nav class="nav">
-            <a href="#about" class="nav-link" data-en="About" data-bn="সম্পর্কে">About</a>
-            <a href="#features" class="nav-link" data-en="Features" data-bn="বৈশিষ্ট্য">Features</a>
-            <a href="#notify" class="nav-link" data-en="Get Notified" data-bn="বিজ্ঞপ্তি পান">Get Notified</a>
-            <button class="language-toggle" id="languageToggle">
-                <i class="fas fa-globe"></i>
-                <span id="currentLang">EN</span>
-            </button>
-        </nav>
-    </div>
-</header>
-
-<!-- Hero Section -->
-<section class="hero">
-    <div class="container">
-        <div class="hero-content">
-            <!-- Left: Text -->
-            <div class="hero-text">
-                <div class="status-badge">
-                    <span class="status-dot"></span>
-                    <span data-en="In Development" data-bn="উন্নয়নাধীন">In Development</span>
-                </div>
-                <h1 class="hero-title">
-                    <span class="gradient-text">Look4Blood</span><br>
-                    <span data-en="Donor Search System" data-bn="রক্তদাতা খোঁজা সিস্টেম">Donor Search System</span>
-                </h1>
-                <p class="hero-subtitle" data-en="Revolutionary blood donor search platform currently under development. Connecting donors with those in need through advanced technology." data-bn="বিপ্লবী রক্তদাতা খোঁজার প্ল্যাটফর্ম বর্তমানে উন্নয়নাধীন। উন্নত প্রযুক্তির মাধ্যমে রক্তদাতাদের সাথে যাদের প্রয়োজন তাদের সংযুক্ত করা।">
-                    Revolutionary blood donor search platform currently under development. 
-                    Connecting donors with those in need through advanced technology.
-                </p>
-                <div class="coming-soon">
-                    <h2 data-en="Coming Soon" data-bn="শীঘ্রই আসছে">Coming Soon</h2>
-                    <div class="countdown">
-                        <div class="countdown-item">
-                            <span id="days">--</span>
-                            <label data-en="Days" data-bn="দিন">Days</label>
-                        </div>
-                        <div class="countdown-item">
-                            <span id="hours">--</span>
-                            <label data-en="Hours" data-bn="ঘন্টা">Hours</label>
-                        </div>
-                        <div class="countdown-item">
-                            <span id="minutes">--</span>
-                            <label data-en="Minutes" data-bn="মিনিট">Minutes</label>
-                        </div>
-                        <div class="countdown-item">
-                            <span id="seconds">--</span>
-                            <label data-en="Seconds" data-bn="সেকেন্ড">Seconds</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="cta-buttons">
-                    <button class="btn btn-primary" onclick="document.getElementById('notify').scrollIntoView()">
-                        <i class="fas fa-bell"></i>
-                        <span data-en="Get Notified" data-bn="Join our mission to save lives">Join our mission to save lives</span>
+    <!-- Header with Search -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-tint"></i>
+                Look4Blood
+            </a>
+            
+            <div class="search-container-header">
+                <form id="searchForm">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="search-bar-header" 
+                        placeholder="Search donors by name, blood group, location..."
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="search-btn-header">
+                        <i class="fas fa-search"></i>
                     </button>
-                    <button class="btn btn-secondary" onclick="document.getElementById('about').scrollIntoView()">
-                        <i class="fas fa-info-circle"></i>
-                        <span data-en="Learn More" data-bn="আরও জানুন">Learn More</span>
-                    </button>
+                </form>
+                <div class="search-suggestions" id="searchSuggestions">
+                    <!-- Suggestions will be dynamically inserted here -->
                 </div>
-            </div>
-            <!-- Right: Coding Animation -->
-            <div class="hero-animation">
-                <div class="coding-workspace">
-                    <div class="monitor">
-                        <div class="screen">
-                            <div class="window-header">
-                                <div class="window-controls">
-                                    <span class="control close"></span>
-                                    <span class="control minimize"></span>
-                                    <span class="control maximize"></span>
-                                </div>
-                                <span class="window-title">look4blood-system.js</span>
-                            </div>
-                            <div class="code-editor">
-                                <div class="line-numbers">
-                                    <span>1</span>
-                                    <span>2</span>
-                                    <span>3</span>
-                                    <span>4</span>
-                                    <span>5</span>
-                                    <span>6</span>
-                                    <span>7</span>
-                                    <span>8</span>
-                                    <span>9</span>
-                                    <span>10</span>
-                                </div>
-                                <div class="code-content">
-                                    <div class="code-line">
-                                        <span class="keyword">class</span> 
-                                        <span class="class-name">DonorSystem</span> 
-                                        <span class="punctuation">{</span>
-                                    </div>
-                                    <div class="code-line indent">
-                                        <span class="keyword">constructor</span><span class="punctuation">() {</span>
-                                    </div>
-                                    <div class="code-line indent2">
-                                        <span class="keyword">this</span><span class="punctuation">.</span><span class="property">donors</span> <span class="operator">=</span> <span class="punctuation">[];</span>
-                                    </div>
-                                    <div class="code-line indent">
-                                        <span class="punctuation">}</span>
-                                    </div>
-                                    <div class="code-line"></div>
-                                    <div class="code-line indent">
-                                        <span class="keyword">async</span> <span class="function">searchDonors</span><span class="punctuation">(</span><span class="parameter">bloodType</span><span class="punctuation">) {</span>
-                                    </div>
-                                    <div class="code-line indent2">
-                                        <span class="keyword">return</span> <span class="keyword">await</span> <span class="keyword">this</span><span class="punctuation">.</span><span class="function">findMatches</span><span class="punctuation">(</span><span class="parameter">bloodType</span><span class="punctuation">);</span>
-                                    </div>
-                                    <div class="code-line indent">
-                                        <span class="punctuation">}</span>
-                                    </div>
-                                    <div class="code-line">
-                                        <span class="punctuation">}</span>
-                                    </div>
-                                    <div class="typing-cursor">|</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Developer Illustration -->
-                    <div class="developer">
-                        <div class="developer-head"></div>
-                        <div class="developer-body"></div>
-                        <div class="developer-arms">
-                            <div class="arm left-arm"></div>
-                            <div class="arm right-arm"></div>
-                        </div>
-                    </div>
-                    <!-- Keyboard -->
-                    <div class="keyboard">
-                        <div class="key-row">
-                            <div class="key"></div>
-                            <div class="key"></div>
-                            <div class="key"></div>
-                            <div class="key"></div>
-                            <div class="key"></div>
-                        </div>
-                        <div class="key-row">
-                            <div class="key"></div>
-                            <div class="key"></div>
-                            <div class="key"></div>
-                            <div class="key"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- About Section -->
-<section id="about" class="about">
-    <div class="container">
-        <div class="section-header">
-            <h2 data-en="About Look4Blood" data-bn="Look4Blood সম্পর্কে">About Look4Blood</h2>
-            <p data-en="Revolutionizing blood donation through technology" data-bn="প্রযুক্তির মাধ্যমে রক্তদানে বিপ্লব">Revolutionizing blood donation through technology</p>
-        </div>
-        <div class="about-grid">
-            <div class="about-card">
-                <div class="card-icon">
-                    <i class="fas fa-search"></i>
-                </div>
-                <h3 data-en="Smart Search" data-bn="স্মার্ট খোঁজ">Find Donor</h3>
-                <p data-en="Advanced algorithms to quickly find compatible blood donors based on location, blood type, and availability." data-bn="অবস্থান, রক্তের গ্রুপ এবং সহজলভ্যতার ভিত্তিতে সামঞ্জস্যপূর্ণ রক্তদাতাদের দ্রুত খুঁজে পেতে উন্নত অ্যালগরিদম।">Advanced algorithms to quickly find compatible blood donors based on location, blood type, and availability.</p>
-            </div>
-            <div class="about-card">
-                <div class="card-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <h3 data-en="Community Network" data-bn="কমিউনিটি নেটওয়ার্ক">Community Network</h3>
-                <p data-en="Building a strong network of verified donors and recipients to ensure reliable blood supply when needed." data-bn="প্রয়োজনের সময় নির্ভরযোগ্য রক্ত সরবরাহ নিশ্চিত করতে যাচাইকৃত দাতা এবং গ্রহীতাদের একটি শক্তিশালী নেটওয়ার্ক তৈরি করা।">Building a strong network of verified donors and recipients to ensure reliable blood supply when needed.</p>
-            </div>
-            <div class="about-card">
-                <div class="card-icon">
-                    <i class="fas fa-mobile-alt"></i>
-                </div>
-                <h3 data-en="Mobile First" data-bn="মোবাইল ফার্স্ট">Mobile First</h3>
-                <p data-en="Responsive design ensuring seamless experience across all devices for emergency situations." data-bn="জরুরি পরিস্থিতির জন্য সব ডিভাইসে নিরবচ্ছিন্ন অভিজ্ঞতা নিশ্চিত করে রেস্পন্সিভ ডিজাইন।">Responsive design ensuring seamless experience across all devices for emergency situations.</p>
-            </div>
-            <div class="about-card">
-                <div class="card-icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h3 data-en="Secure Platform" data-bn="Update Donation feature">Update Donation feature</h3>
-                <p data-en="The Update Donation feature in Look4Blood allows registered donors to easily update their latest blood donation date, helping maintain their status as eligible donors" data-bn="Look4Blood-এর Update Donation ফিচারটি নিবন্ধিত রক্তদাতাদের সর্বশেষ রক্তদানের তারিখ সহজে আপডেট করতে সহায়তা করে, যাতে তারা যোগ্য দাতার স্ট্যাটাস বজায় রাখতে পারেন।।">The Update Donation feature in Look4Blood allows registered donors to easily update their latest blood donation date, helping maintain their status as eligible donors.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Features Section -->
-<section id="features" class="features">
-    <div class="container">
-        <div class="section-header">
-            <h2 data-en="Upcoming Features" data-bn="আসন্ন বৈশিষ্ট্যসমূহ">Upcoming Features</h2>
-            <p data-en="Faster connections. Better care. More lives saved." data-bn="দ্রুত সংযোগ, উন্নত যত্ন, আরও বেশি জীবন বাঁচানো">Faster connections. Better care. More lives saved</p>
-        </div>
-        <div class="features-list">
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-map-marker-alt"></i>
-                </div>
-                <div class="feature-content">
-                    <h4 data-en="Location-Based Search" data-bn="অবস্থান-ভিত্তিক অনুসন্ধান">Location-Based Search</h4>
-                    <p data-en="Find donors in your immediate vicinity for emergency situations" data-bn="জরুরি পরিস্থিতির জন্য আপনার আশেপাশে রক্তদাতা খুঁজুন">Find donors in your immediate vicinity for emergency situations</p>
-                </div>
-                <div class="feature-status">
-                    <span class="status-badge in-progress" data-en="In Progress" data-bn="কাজ চলছে">PLANNED</span>
-                </div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <div class="feature-content">
-                    <h4 data-en="Real-time Notifications" data-bn="রিয়েল-টাইম বিজ্ঞপ্তি">Real-time Notifications</h4>
-                    <p data-en="Instant alerts for urgent blood donation requests in your area" data-bn="আপনার এলাকায় জরুরি রক্তদানের অনুরোধের জন্য তাৎক্ষণিক সতর্কতা">Instant alerts for urgent blood donation requests in your area</p>
-                </div>
-                <div class="feature-status">
-                    <span class="status-badge planned" data-en="Planned" data-bn="পরিকল্পিত">Planned</span>
-                </div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
-                <div class="feature-content">
-                    <h4 data-en="Appointment Scheduling" data-bn="Real-time chart">Real-time chart</h4>
-                    <p data-en="Schedule blood donation appointments with hospitals and blood banks" data-bn="showing active blood donors based on blood group, city, and last donation status.">showing active blood donors based on blood group, city, and last donation status.</p>
-                </div>
-                <div class="feature-status">
-                    <span class="status-badge planned" data-en="Planned" data-bn="পরিকল্পিত">Planned</span>
-                </div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-history"></i>
-                </div>
-                <div class="feature-content">
-                    <h4 data-en="Donation History" data-bn="Donor Profile">Donors Profile</h4>
-                    <p data-en="Track your donation history and eligibility for future donations" data-bn="আপনার দানের ইতিহাস এবং ভবিষ্যত দানের যোগ্যতা ট্র্যাক করুন">Donors can view their rating, badges, and full donation history, including how many days ago they donated and when they can donate again. The profile shows a live countdown, and allows self-editing of personal info like contact, location, and availability.etc... </p>
-                </div>
-                <div class="feature-status">
-                    <span class="status-badge planned" data-en="Planned" data-bn="পরিকল্পিত">Planned</span>
-                </div>
-            </div>
             </div>
             
-               
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#donors">Donors</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
             </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Find Blood Donors</h1>
+            <p>Search our database of registered blood donors to save lives</p>
         </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="results-header">
+                <h2>Search Results</h2>
+                <span class="results-count" id="resultsCount">Enter a search term to find donors</span>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Searching donors...</p>
+            </div>
+            
+            <div id="donorList" class="donor-list">
+                <!-- Donor cards will be dynamically inserted here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Search completed successfully!</span>
     </div>
-</section>
 
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
+    
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+        // Form submission handler
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const searchQuery = document.getElementById('searchInput').value.trim();
+            if (searchQuery) {
+                await searchDonors(searchQuery);
+                // Hide suggestions when searching
+                document.getElementById('searchSuggestions').classList.remove('show');
+            }
+        });
 
-<!-- Footer -->
-<footer class="footer">
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-section">
-                <div class="footer-logo">
-                    <i class="fas fa-tint"></i>
-                    <span>Look4Blood</span>
-                </div>
-                <p>Connecting lives through technology. A revolutionary blood donor search system coming soon.</p>
-                <div class="social-links">
-                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h4>Project</h4>
-                <ul>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#notify">Get Notified</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <ul>
-                    <li><a href="mailto:info@look4blood.com">info@look4blood.com</a></li>
-                    <li><a href="#notify">Join Waiting List</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div class="footer-credits">
-                <p>© 2025 Look4Blood. All rights reserved.</p>
-                <p class="developer-credit">
-                    <i class="fas fa-code"></i>
-                    Developed by <strong>Maruf Mohammadii</strong>
-                </p>
-            </div>
-        </div>
-    </div>
-</footer>
+        // Search input handler for real-time suggestions
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
+            
+            if (query.length < 2) {
+                document.getElementById('searchSuggestions').classList.remove('show');
+                return;
+            }
+            
+            // Set new timeout for debouncing
+            searchTimeout = setTimeout(async () => {
+                await showSearchSuggestions(query);
+            }, 300);
+        });
 
-<script>
-// Language system
-const langBtn = document.getElementById('languageToggle');
-const currentLangSpan = document.getElementById('currentLang');
-let currentLanguage = localStorage.getItem('lang') || 'en';
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container-header')) {
+                document.getElementById('searchSuggestions').classList.remove('show');
+            }
+        });
 
-function updateLanguage() {
-    document.querySelectorAll('[data-en][data-bn]').forEach(el => {
-        const enText = el.getAttribute('data-en');
-        const bnText = el.getAttribute('data-bn');
-        el.textContent = currentLanguage === 'en' ? enText : bnText;
-    });
-    document.querySelectorAll('[data-placeholder-en][data-placeholder-bn]').forEach(el => {
-        const placeholderEn = el.getAttribute('data-placeholder-en');
-        const placeholderBn = el.getAttribute('data-placeholder-bn');
-        el.placeholder = currentLanguage === 'en' ? placeholderEn : placeholderBn;
-    });
-    currentLangSpan.textContent = currentLanguage.toUpperCase();
-}
-updateLanguage();
+        // Show search suggestions
+        async function showSearchSuggestions(query) {
+            try {
+                // Build a simple query for suggestions
+                const { data, error } = await supabase
+                    .from('donors')
+                    .select('name, blood_group, city, division')
+                    .or(`name.ilike.%${query}%,blood_group.ilike.%${query}%,city.ilike.%${query}%,division.ilike.%${query}%`)
+                    .limit(5);
 
-langBtn.addEventListener('click', () => {
-    currentLanguage = currentLanguage === 'en' ? 'bn' : 'en';
-    localStorage.setItem('lang', currentLanguage);
-    updateLanguage();
-});
+                if (error) throw error;
 
-// Countdown timer
-const daysSpan = document.getElementById('days');
-const hoursSpan = document.getElementById('hours');
-const minutesSpan = document.getElementById('minutes');
-const secondsSpan = document.getElementById('seconds');
-
-const targetDate = new Date();
-targetDate.setMonth(targetDate.getMonth() + 3); // 3 months later
-
-function updateCountdown() {
-    const now = new Date();
-    const diff = targetDate - now;
-    if (diff < 0) {
-        daysSpan.textContent = '00';
-        hoursSpan.textContent = '00';
-        minutesSpan.textContent = '00';
-        secondsSpan.textContent = '00';
-        return;
-    }
-    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const m = Math.floor((diff / (1000 * 60)) % 60);
-    const s = Math.floor((diff / 1000) % 60);
-    daysSpan.textContent = String(d).padStart(2, '0');
-    hoursSpan.textContent = String(h).padStart(2, '0');
-    minutesSpan.textContent = String(m).padStart(2, '0');
-    secondsSpan.textContent = String(s).padStart(2, '0');
-}
-setInterval(updateCountdown, 1000);
-updateCountdown();
-
-// Notify form
-const notifyForm = document.getElementById('notifyForm');
-const formMsg = document.getElementById('formMessage');
-const subscriberCount = document.getElementById('subscriberCount');
-
-notifyForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const emailInput = document.getElementById('email');
-    const email = emailInput.value.trim();
-    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
-    if (!emailRegex.test(email)) {
-        showMessage('Please enter a valid email.', 'error');
-        return;
-    }
-    // Simulate loading
-    const btn = notifyForm.querySelector('button[type="submit"]');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${currentLanguage === 'en' ? 'Subscribing...' : 'সাবস্ক্রাইব হচ্ছে...'}`;
-    btn.disabled = true;
-    setTimeout(() => {
-        showMessage(currentLanguage === 'en' ? 'Thank you! You\'ll be notified.' : 'ধন্যবাদ! আপনাকে জানানো হবে।', 'success');
-        emailInput.value = '';
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        // Update subscriber count
-        let count = parseInt(subscriberCount.textContent.replace(/,/g, ''));
-        count++;
-        subscriberCount.textContent = count.toLocaleString();
-    }, 1500);
-});
-function showMessage(msg, type) {
-    formMsg.textContent = msg;
-    formMsg.style.display = 'block';
-    formMsg.className = 'form-message ' + type;
-    setTimeout(() => {
-        formMsg.style.display = 'none';
-    }, 5000);
-}
-
-// Scroll into view for nav links
-document.querySelectorAll('.nav a').forEach(link => {
-    link.addEventListener('click', e => {
-        e.preventDefault();
-        document.querySelector(link.getAttribute('href')).scrollIntoView({behavior: 'smooth'});
-    });
-});
-
-// Animate on scroll
-const observerOptions = {
-    threshold: 0.1
-};
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('animated');
+                const suggestionsContainer = document.getElementById('searchSuggestions');
+                
+                if (data && data.length > 0) {
+                    suggestionsContainer.innerHTML = data.map(donor => `
+                        <div class="suggestion-item" onclick="selectSuggestion('${donor.name}')">
+                            <div class="suggestion-title">${donor.name}</div>
+                            <div class="suggestion-desc">${donor.blood_group} • ${donor.city}, ${donor.division}</div>
+                        </div>
+                    `).join('');
+                    suggestionsContainer.classList.add('show');
+                } else {
+                    suggestionsContainer.classList.remove('show');
+                }
+            } catch (error) {
+                console.error('Error fetching suggestions:', error);
+            }
         }
-    });
-}, observerOptions);
-document.querySelectorAll('.about-card, .feature-item, .notify-text').forEach(el => {
-    el.classList.add('animate-on-scroll');
-    observer.observe(el);
-});
 
-// Animate code lines
-document.querySelectorAll('.code-line').forEach((line, index) => {
-    setTimeout(() => {
-        line.style.opacity = '1';
-        line.style.transform = 'translateX(0)';
-    }, index * 300);
-});
+        // Select a suggestion
+        function selectSuggestion(name) {
+            document.getElementById('searchInput').value = name;
+            document.getElementById('searchSuggestions').classList.remove('show');
+            searchDonors(name);
+        }
 
-// Initialize blinking cursor
-// (Already handled via CSS animation)
+        // Search donors function
+        async function searchDonors(query) {
+            const loading = document.getElementById('loading');
+            const donorList = document.getElementById('donorList');
+            const resultsCount = document.getElementById('resultsCount');
+            
+            // Show loading
+            loading.classList.add('show');
+            donorList.innerHTML = '';
+            resultsCount.textContent = 'Searching...';
 
-/* Optional: Animate header on scroll */
-window.addEventListener('scroll', () => {
-    const header = document.querySelector('.header');
-    if (window.scrollY > 100) {
-        header.style.background = 'rgba(10,14,39,0.98)';
-        header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.3)';
-    } else {
-        header.style.background = 'rgba(10,14,39,0.95)';
-        header.style.boxShadow = 'none';
-    }
-});
+            try {
+                // Build query to search in multiple fields
+                const { data, error } = await supabase
+                    .from('donors')
+                    .select('*')
+                    .or(`name.ilike.%${query}%,phone.ilike.%${query}%,blood_group.ilike.%${query}%,city.ilike.%${query}%,division.ilike.%${query}%,state.ilike.%${query}%,zip.ilike.%${query}%`)
+                    .eq('available', true)
+                    .order('name', { ascending: true });
 
-// Optional: Particles background effect
-function createParticles() {
-    const container = document.createElement('div');
-    container.style.cssText = `
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        pointer-events: none; z-index: -1;
-    `;
-    document.body.appendChild(container);
-    setInterval(() => {
-        const particle = document.createElement('div');
-        particle.style.cssText = `
-            position: absolute;
-            width: 2px; height: 2px;
-            background: rgba(231,76,60,0.3);
-            border-radius: 50%;
-            top: ${Math.random() * window.innerHeight}px;
-            left: ${Math.random() * window.innerWidth}px;
-            opacity: 0;
-            animation: fall 3s linear forwards;
-        `;
-        container.appendChild(particle);
-        setTimeout(() => { particle.remove(); }, 3000);
-    }, 200);
-}
-@keyframes fall {
-    0% { opacity: 0; transform: translateY(0); }
-    50% { opacity: 1; }
-    100% { opacity: 0; transform: translateY(50px); }
-}
-createParticles();
-</script>
+                if (error) {
+                    throw error;
+                }
+
+                // Display results
+                displayDonors(data || []);
+                resultsCount.textContent = `${data.length} donor${data.length !== 1 ? 's' : ''} found for "${query}"`;
+
+                if (data.length > 0) {
+                    showToast(`Found ${data.length} donor${data.length !== 1 ? 's' : ''}`, 'success');
+                } else {
+                    showToast(`No donors found for "${query}"`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error searching donors:', error);
+                donorList.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error</h3>
+                        <p>An error occurred while searching. Please try again.</p>
+                    </div>
+                `;
+                resultsCount.textContent = 'Error';
+                showToast('Error searching donors', 'error');
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        // Display donors function
+        function displayDonors(donors) {
+            const donorList = document.getElementById('donorList');
+            
+            if (donors.length === 0) {
+                donorList.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>No Donors Found</h3>
+                        <p>No donors match your search. Try a different search term.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            donorList.innerHTML = donors.map(donor => {
+                const lastDonation = donor.last_donation ? new Date(donor.last_donation) : null;
+                const today = new Date();
+                const daysSinceDonation = lastDonation ? Math.floor((today - lastDonation) / (1000 * 60 * 60 * 24)) : null;
+                const isEligible = daysSinceDonation === null || daysSinceDonation >= 90;
+
+                return `
+                    <div class="donor-card">
+                        <div class="donor-info">
+                            <div>
+                                <div class="donor-name">
+                                    ${donor.name}
+                                    <span class="donor-blood-group">${donor.blood_group}</span>
+                                </div>
+                                <div class="donor-detail">
+                                    <i class="fas fa-phone"></i>
+                                    <span>${donor.phone || 'Not provided'}</span>
+                                </div>
+                                <div class="donor-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${donor.city || 'Not provided'}, ${donor.division || 'Not provided'}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="donor-detail">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Last Donation: ${lastDonation ? lastDonation.toLocaleDateString() : 'Never'}</span>
+                                </div>
+                                <div class="eligibility-status ${isEligible ? 'eligible' : 'not-eligible'}">
+                                    <i class="fas ${isEligible ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                                    ${isEligible ? 'Eligible to donate' : `Not eligible (${90 - daysSinceDonation} days remaining)`}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="donor-actions">
+                            <a href="profile.html?id=${donor.id}" class="btn-view-profile">
+                                <i class="fas fa-user"></i>
+                                View Profile
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const icon = toast.querySelector('i');
+            
+            // Update icon based on type
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+            }
+            
+            toast.className = `toast ${type}`;
+            toastMessage.textContent = message;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Focus on search input when page loads
+            document.getElementById('searchInput').focus();
+        });
+    </script>
 </body>
 </html>
