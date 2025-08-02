@@ -4,290 +4,174 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Announcements - Look4Blood</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* CSS Variables for consistent theming */
+        :root {
+            --primary-red: #dc2626;
+            --primary-red-light: #ef4444;
+            --primary-red-dark: #b91c1c;
+            --secondary-orange: #f59e0b;
+            --secondary-blue: #3b82f6;
+            --secondary-green: #10b981;
+            --neutral-gray: #6b7280;
+            --bg-light: #f8fafc;
+            --bg-white: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Global Styles */
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
             line-height: 1.6;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
-        }
-
-        .header h1 {
-            font-family: 'Nunito', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            gap: 15px;
-        }
-
-        .back-btn, .add-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .back-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            backdrop-filter: blur(10px);
-        }
-
-        .add-btn {
-            background: #10b981;
-            color: white;
-            display: none;
-        }
-
-        .back-btn:hover, .add-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        .announcements-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .announcement-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255,255,255,0.8);
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideInUp 0.6s ease-out forwards;
-            transition: all 0.3s ease;
-        }
-
-        .announcement-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
-
-        .card-title {
-            font-family: 'Nunito', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 5px;
-        }
-
-        .card-timestamp {
-            font-size: 0.875rem;
-            color: #64748b;
-            white-space: nowrap;
-        }
-
-        .card-content {
-            color: #374151;
-            margin-bottom: 20px;
-            line-height: 1.7;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .reaction-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border: 2px solid #e5e7eb;
-            background: #f9fafb;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .reaction-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .reaction-btn.active {
-            border-color: #3b82f6;
-            background: #dbeafe;
-            color: #3b82f6;
-        }
-
-        .reaction-btn.like.active {
-            border-color: #10b981;
-            background: #d1fae5;
-            color: #10b981;
-        }
-
-        .reaction-btn.dislike.active {
-            border-color: #ef4444;
-            background: #fee2e2;
-            color: #ef4444;
-        }
-
-        .loading {
-            text-align: center;
-            color: white;
-            font-size: 1.1rem;
-            margin: 50px 0;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: white;
-            padding: 50px 20px;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
+        /* Top Bar Styles */
+        .top-bar {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 50%, #8e0000 100%);
+            padding: 1rem 0;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
             top: 0;
-            left: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            letter-spacing: -0.025em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, #ffffff, #f5f5f5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-red);
+            font-size: 1.25rem;
+            animation: pulse 2s infinite;
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            text-decoration: none;
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            font-size: 0.875rem;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.02em;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            animation: fadeIn 0.3s ease;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
         }
 
-        .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 500px;
-            animation: slideInUp 0.3s ease;
+        .nav-btn:hover::before {
+            left: 100%;
         }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
-        .modal-title {
-            font-family: 'Nunito', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1e293b;
+        .nav-btn.active {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
         }
 
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #64748b;
+        .nav-icon {
+            font-size: 1.125rem;
+            transition: transform 0.3s ease;
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        .nav-btn:hover .nav-icon {
+            transform: scale(1.2) rotate(5deg);
         }
 
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #374151;
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+            }
         }
 
-        .form-input, .form-textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
+        @keyframes slideInFromTop {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
-        .form-input:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .submit-btn {
-            background: #10b981;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .submit-btn:hover {
-            background: #059669;
-            transform: translateY(-1px);
-        }
-
-        @keyframes slideInUp {
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
                 transform: translateY(30px);
@@ -298,377 +182,1356 @@
             }
         }
 
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .top-bar {
+            animation: slideInFromTop 0.6s ease-out;
+        }
+
+        .nav-btn {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        /* Loading Spinner */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%);
+            border-radius: 1.5rem;
+            padding: 4rem 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(220, 38, 38, 0.1);
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(220, 38, 38, 0.1) 0%, transparent 70%);
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Priority Badge Styles */
+        .priority-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .priority-1 { 
+            background: linear-gradient(135deg, #fee2e2, #fecaca); 
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        .priority-2 { 
+            background: linear-gradient(135deg, #fef3c7, #fde68a); 
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+        .priority-3 { 
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe); 
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+        }
+        .priority-4 { 
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0); 
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+        .priority-5 { 
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb); 
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Announcement Card Styles */
+        .announcement-card {
+            background: var(--bg-white);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: scaleIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .announcement-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .announcement-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .announcement-card:hover::before {
+            width: 6px;
+        }
+
+        .priority-1.announcement-card::before { background: var(--primary-red); }
+        .priority-2.announcement-card::before { background: var(--secondary-orange); }
+        .priority-3.announcement-card::before { background: var(--secondary-blue); }
+        .priority-4.announcement-card::before { background: var(--secondary-green); }
+        .priority-5.announcement-card::before { background: var(--neutral-gray); }
+
+        .announcement-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .announcement-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .announcement-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .announcement-date {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .announcement-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .action-btn.edit:hover {
+            color: var(--secondary-blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .action-btn.delete:hover {
+            color: var(--primary-red);
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        /* Recent Announcements Grid */
+        .recent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .recent-grid .announcement-card {
+            animation-delay: calc(var(--index) * 0.1s);
+        }
+
+        /* All Announcements List */
+        .announcements-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .announcements-list .announcement-card {
+            animation-delay: calc(var(--index) * 0.05s);
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .section-icon {
+            width: 3rem;
+            height: 3rem;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-light));
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Admin Section */
+        .admin-section {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .add-announcement-btn {
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-light));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-announcement-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .add-announcement-btn:hover::before {
+            left: 100%;
+        }
+
+        .add-announcement-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal {
+            background: var(--bg-white);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-light));
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #d1d5db;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-text {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-subtext {
+            color: #9ca3af;
+        }
+
+        /* Preview Mode Notice */
+        .preview-notice {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1px solid #fde68a;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .preview-notice-title {
+            font-weight: 600;
+            color: #d97706;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-notice-text {
+            color: #92400e;
+            font-size: 0.875rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-buttons {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .nav-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.813rem;
+            }
+
+            .logo {
+                font-size: 1.25rem;
+            }
+
+            .logo-icon {
+                width: 2rem;
+                height: 2rem;
+                font-size: 1rem;
+            }
+
+            .hero-section {
+                padding: 2rem 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .recent-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .section-header {
+                margin-bottom: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .section-icon {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1.25rem;
+            }
+
+            .modal {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Animation delays */
+        .announcement-item:nth-child(1) { --index: 1; }
+        .announcement-item:nth-child(2) { --index: 2; }
+        .announcement-item:nth-child(3) { --index: 3; }
+        .announcement-item:nth-child(4) { --index: 4; }
+        .announcement-item:nth-child(5) { --index: 5; }
+        .announcement-item:nth-child(6) { --index: 6; }
+        .announcement-item:nth-child(7) { --index: 7; }
+        .announcement-item:nth-child(8) { --index: 8; }
+        .announcement-item:nth-child(9) { --index: 9; }
+        .announcement-item:nth-child(10) { --index: 10; }
+
+        .nav-btn:nth-child(1) { animation-delay: 0.1s; }
+        .nav-btn:nth-child(2) { animation-delay: 0.2s; }
+        .nav-btn:nth-child(3) { animation-delay: 0.3s; }
+        .nav-btn:nth-child(4) { animation-delay: 0.4s; }
+        .nav-btn:nth-child(5) { animation-delay: 0.5s; }
+        .nav-btn:nth-child(6) { animation-delay: 0.6s; }
+        .nav-btn:nth-child(7) { animation-delay: 0.7s; }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .controls {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .announcement-card {
-                padding: 20px;
-            }
-
-            .card-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-
-            .card-actions {
-                justify-content: center;
-            }
-
-            .modal-content {
-                padding: 20px;
-                margin: 20px;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📢 Announcements</h1>
-            <p>Stay updated with the latest news and information</p>
-        </div>
-
-        <div class="controls">
-            <a href="index.html" class="back-btn">
-                ← Back to Home
-            </a>
-            <button class="add-btn" id="addAnnouncementBtn">
-                ➕ Add Announcement
-            </button>
-        </div>
-
-        <div class="loading" id="loading">
-            Homepage Redesign In Progress    We' re currently working on updating the Look4Blood homepage with a fresh new look and improved user experience. During this time, some sections may not be fully functional. Thank you for your patience and continued support! 
-        </div>
-
-        <div class="announcements-list" id="announcementsList" style="display: none;">
-        </div>
-
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <h3>📭 No Announcements Yet</h3>
-            <p>Be the first to share some news!</p>
+    <!-- Stylish Animated Top Bar -->
+    <div class="top-bar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">🩸</div>
+                Look4Blood
+            </div>
+            <div class="nav-buttons">
+                <a href="index.html" class="nav-btn">
+                    <span class="nav-icon">🏠</span>
+                    Home
+                </a>
+                <a href="announcements.html" class="nav-btn active">
+                    <span class="nav-icon">📢</span>
+                    Announcements
+                </a>
+                <a href="login.html" class="nav-btn">
+                    <span class="nav-icon">🔐</span>
+                    Login
+                </a>
+                <a href="register.html" class="nav-btn">
+                    <span class="nav-icon">📝</span>
+                    Register
+                </a>
+                <a href="message.html" class="nav-btn">
+                    <span class="nav-icon">💬</span>
+                    Messages
+                </a>
+                <a href="search.html" class="nav-btn">
+                    <span class="nav-icon">🔍</span>
+                    Search
+                </a>
+                <a href="feedback.html" class="nav-btn">
+                    <span class="nav-icon">📝</span>
+                    Feedback
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- Add Announcement Modal -->
-    <div class="modal" id="addModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Add New Announcement</h2>
-                <button class="close-btn" id="closeModal">&times;</button>
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading-overlay hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="hero-title">
+                <i class="fas fa-bullhorn text-red-500 mr-3"></i>
+                Announcements
+            </h1>
+            <p class="hero-subtitle">
+                Stay updated with the latest news, events, and important updates from the Look4Blood community
+            </p>
+        </div>
+
+        <!-- Preview Mode Notice -->
+        <div id="previewNotice" class="preview-notice hidden">
+            <div class="preview-notice-title">
+                <i class="fas fa-info-circle mr-2"></i>
+                Preview Mode
             </div>
+            <div class="preview-notice-text">
+                You are viewing this page in preview mode. Some features may not work without a live database connection.
+            </div>
+        </div>
+
+        <!-- Admin Section -->
+        <div id="adminSection" class="admin-section hidden">
+            <button id="addAnnouncementBtn" class="add-announcement-btn">
+                <i class="fas fa-plus"></i>
+                Add New Announcement
+            </button>
+        </div>
+
+        <!-- Recent Announcements Section -->
+        <div class="mb-12">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <h2 class="section-title">Recent Announcements</h2>
+            </div>
+            <div id="recentAnnouncements" class="recent-grid">
+                <!-- Recent announcements will be loaded here -->
+            </div>
+        </div>
+
+        <!-- All Announcements Section -->
+        <div>
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-list"></i>
+                </div>
+                <h2 class="section-title">All Announcements</h2>
+            </div>
+            <div id="allAnnouncements" class="announcements-list">
+                <!-- All announcements will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Announcement Modal -->
+    <div id="announcementModal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle" class="modal-title">Add New Announcement</h3>
+                <button id="closeModalBtn" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
             <form id="announcementForm">
                 <div class="form-group">
-                    <label class="form-label" for="title">Title</label>
-                    <input type="text" id="title" class="form-input" required>
+                    <label for="announcementTitle" class="form-label">Title *</label>
+                    <input id="announcementTitle" type="text" required 
+                           class="form-input"
+                           placeholder="Enter announcement title">
                 </div>
+                
                 <div class="form-group">
-                    <label class="form-label" for="content">Content</label>
-                    <textarea id="content" class="form-textarea" required></textarea>
+                    <label for="announcementContent" class="form-label">Content *</label>
+                    <textarea id="announcementContent" rows="6" required 
+                              class="form-textarea"
+                              placeholder="Enter announcement content"></textarea>
                 </div>
-                <button type="submit" class="submit-btn">Post Announcement</button>
+                
+                <div class="form-group">
+                    <label for="announcementPriority" class="form-label">Priority Level</label>
+                    <select id="announcementPriority" class="form-select">
+                        <option value="1">🔴 Priority 1 - Critical (Emergency)</option>
+                        <option value="2">🟠 Priority 2 - High (Important)</option>
+                        <option value="3" selected>🔵 Priority 3 - Normal (Standard)</option>
+                        <option value="4">🟢 Priority 4 - Low (Informational)</option>
+                        <option value="5">⚪ Priority 5 - General (Reference)</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="cancelBtn" class="btn btn-secondary">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Announcement
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 
     <script>
-        // Supabase configuration
+        // Initialize Supabase
         const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+        // Global variables
         let currentUser = null;
-        let userReactions = {};
+        let isAdmin = false;
+        let editingAnnouncement = null;
+        let isPreviewMode = false;
 
-        // Initialize the page
-        async function init() {
-            await checkUser();
-            await loadAnnouncements();
+        // Check if we're in preview mode
+        function checkPreviewMode() {
+            // Check if we're running from file:// protocol (local file)
+            if (window.location.protocol === 'file:' || 
+                window.location.hostname === 'localhost' && window.location.port === '') {
+                isPreviewMode = true;
+                document.getElementById('previewNotice').classList.remove('hidden');
+                
+                // Show sample announcements in preview mode
+                showSampleAnnouncements();
+                return true;
+            }
+            return false;
         }
 
-        // Check current user and admin status
-        async function checkUser() {
+        // Show sample announcements for preview mode
+        function showSampleAnnouncements() {
+            const sampleAnnouncements = [
+                {
+                    id: 'sample-1',
+                    title: 'Welcome to Look4Blood!',
+                    content: 'We are excited to launch our new blood donation platform. Join us in saving lives through voluntary blood donation.',
+                    priority: 1,
+                    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: 'sample-2',
+                    title: 'Blood Donation Camp This Weekend',
+                    content: 'Join us for our special blood donation camp this Saturday at City Hospital. All donors will receive a certificate and refreshments.',
+                    priority: 2,
+                    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: 'sample-3',
+                    title: 'New Donation Center Opened',
+                    content: 'We are pleased to announce the opening of our new donation center at Downtown Medical Plaza. Extended hours and more staff available.',
+                    priority: 3,
+                    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: 'sample-4',
+                    title: 'Blood Drive Success',
+                    content: 'Thank you to everyone who participated in last week\'s blood drive. We collected 150 units of blood!',
+                    priority: 4,
+                    created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+                }
+            ];
+
+            // Load recent announcements (top 4)
+            const recentAnnouncements = sampleAnnouncements.slice(0, 4);
+            const recentContainer = document.getElementById('recentAnnouncements');
+            recentContainer.innerHTML = recentAnnouncements.map((announcement, index) => 
+                createAnnouncementCard(announcement, true, index + 1)
+            ).join('');
+
+            // Load all announcements
+            const allContainer = document.getElementById('allAnnouncements');
+            allContainer.innerHTML = sampleAnnouncements.map((announcement, index) => 
+                createAnnouncementItem(announcement, index + 1)
+            ).join('');
+        }
+
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check if we're in preview mode first
+            if (!checkPreviewMode()) {
+                // Only proceed with database operations if not in preview mode
+                await checkAuth();
+                await loadAnnouncements();
+            }
+            
+            setupEventListeners();
+        });
+
+        // Authentication check
+        async function checkAuth() {
             try {
-                const { data: { user } } = await supabase.auth.getUser();
-                currentUser = user;
+                const { data: { user }, error } = await supabase.auth.getUser();
                 
-                if (user) {
-                    // Check if user is admin (you can customize this logic)
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('role')
-                        .eq('id', user.id)
-                        .single();
+                if (!error && user) {
+                    currentUser = user;
+                    // Check if user is admin
+                    isAdmin = await checkIfAdmin(user.id);
                     
-                    if (profile && profile.role === 'admin') {
-                        document.getElementById('addAnnouncementBtn').style.display = 'block';
+                    if (isAdmin) {
+                        document.getElementById('adminSection').classList.remove('hidden');
                     }
                 }
             } catch (error) {
-                console.error('Error checking user:', error);
+                console.log('Authentication check failed:', error);
+                // Continue without authentication
             }
         }
 
-        // Load announcements from Supabase
+        // Check if user is admin
+        async function checkIfAdmin(userId) {
+            try {
+                const { data, error } = await supabase
+                    .rpc('is_admin');
+                
+                if (error) throw error;
+                return data;
+            } catch (error) {
+                console.error('Error checking admin status:', error);
+                return false;
+            }
+        }
+
+        // Load announcements
         async function loadAnnouncements() {
             try {
-                const { data: announcements, error } = await supabase
+                showLoading();
+                
+                const { data, error } = await supabase
                     .from('announcements')
-                    .select(`
-                        *,
-                        profiles:author_id (
-                            full_name
-                        )
-                    `)
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('priority', { ascending: true })
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
-
-                // Load user reactions if logged in
-                if (currentUser) {
-                    await loadUserReactions();
+                if (error) {
+                    console.error('Database error:', error);
+                    // Show error state
+                    showErrorState();
+                    return;
                 }
 
-                displayAnnouncements(announcements);
+                // Load recent announcements (top 4)
+                const recentAnnouncements = data.slice(0, 4);
+                const recentContainer = document.getElementById('recentAnnouncements');
+                
+                if (recentAnnouncements.length === 0) {
+                    recentContainer.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-megaphone"></i>
+                            </div>
+                            <div class="empty-state-text">No recent announcements</div>
+                            <div class="empty-state-subtext">Check back later for updates</div>
+                        </div>
+                    `;
+                } else {
+                    recentContainer.innerHTML = recentAnnouncements.map((announcement, index) => 
+                        createAnnouncementCard(announcement, true, index + 1)
+                    ).join('');
+                }
+
+                // Load all announcements
+                const allContainer = document.getElementById('allAnnouncements');
+                
+                if (data.length === 0) {
+                    allContainer.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-inbox"></i>
+                            </div>
+                            <div class="empty-state-text">No announcements available</div>
+                            <div class="empty-state-subtext">Be the first to know when we post updates</div>
+                        </div>
+                    `;
+                } else {
+                    allContainer.innerHTML = data.map((announcement, index) => 
+                        createAnnouncementItem(announcement, index + 1)
+                    ).join('');
+                }
+
             } catch (error) {
                 console.error('Error loading announcements:', error);
-                document.getElementById('loading').innerHTML = 'Homepage Redesign In Progress    We' re currently working on updating the Look4Blood homepage with a fresh new look and improved user experience. During this time, some sections may not be fully functional. Thank you for your patience and continued support!';
+                showErrorState();
+            } finally {
+                hideLoading();
             }
         }
 
-        // Load user reactions
-        async function loadUserReactions() {
-            try {
-                const { data: reactions, error } = await supabase
-                    .from('announcement_reactions')
-                    .select('announcement_id, reaction')
-                    .eq('user_id', currentUser.id);
-
-                if (error) throw error;
-
-                userReactions = {};
-                reactions.forEach(reaction => {
-                    userReactions[reaction.announcement_id] = reaction.reaction;
-                });
-            } catch (error) {
-                console.error('Error loading user reactions:', error);
-            }
-        }
-
-        // Display announcements
-        function displayAnnouncements(announcements) {
-            const loading = document.getElementById('loading');
-            const list = document.getElementById('announcementsList');
-            const emptyState = document.getElementById('emptyState');
-
-            loading.style.display = 'none';
-
-            if (announcements.length === 0) {
-                emptyState.style.display = 'block';
-                return;
-            }
-
-            list.style.display = 'block';
-            list.innerHTML = '';
-
-            announcements.forEach((announcement, index) => {
-                const card = createAnnouncementCard(announcement, index);
-                list.appendChild(card);
-            });
-        }
-
-        // Create announcement card
-        function createAnnouncementCard(announcement, index) {
-            const card = document.createElement('div');
-            card.className = 'announcement-card';
-            card.style.animationDelay = `${index * 0.1}s`;
-
-            const timeAgo = getTimeAgo(announcement.created_at);
-            const authorName = announcement.profiles?.full_name || 'Admin';
-            const userReaction = userReactions[announcement.id];
-
-            card.innerHTML = `
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">${announcement.title}</div>
-                        <div class="card-timestamp">Posted by ${authorName} • ${timeAgo}</div>
+        // Show error state when database is not available
+        function showErrorState() {
+            const recentContainer = document.getElementById('recentAnnouncements');
+            const allContainer = document.getElementById('allAnnouncements');
+            
+            const errorMessage = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                </div>
-                <div class="card-content">
-                    ${announcement.content.replace(/\n/g, '<br>')}
-                </div>
-                <div class="card-actions">
-                    <button class="reaction-btn like ${userReaction === 'like' ? 'active' : ''}" 
-                            onclick="toggleReaction('${announcement.id}', 'like')">
-                        👍 <span>${announcement.like_count || 0}</span>
-                    </button>
-                    <button class="reaction-btn dislike ${userReaction === 'dislike' ? 'active' : ''}" 
-                            onclick="toggleReaction('${announcement.id}', 'dislike')">
-                        👎 <span>${announcement.dislike_count || 0}</span>
-                    </button>
+                    <div class="empty-state-text">Unable to load announcements</div>
+                    <div class="empty-state-subtext">Please check your internet connection and try again</div>
                 </div>
             `;
-
-            return card;
+            
+            recentContainer.innerHTML = errorMessage;
+            allContainer.innerHTML = errorMessage;
         }
 
-        // Toggle reaction
-        async function toggleReaction(announcementId, reactionType) {
-            if (!currentUser) {
-                alert('Please log in to react to announcements');
+        // Create announcement card for recent section
+        function createAnnouncementCard(announcement, isRecent = false, index = 1) {
+            const daysAgo = getDaysAgo(announcement.created_at);
+            const priorityClass = `priority-${announcement.priority}`;
+            const priorityEmoji = getPriorityEmoji(announcement.priority);
+            
+            return `
+                <div class="announcement-item announcement-card ${priorityClass}" style="--index: ${index}">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="announcement-title">${announcement.title}</h3>
+                        <span class="priority-badge">
+                            ${priorityEmoji} Priority ${announcement.priority}
+                        </span>
+                    </div>
+                    <p class="announcement-content">${announcement.content}</p>
+                    <div class="announcement-meta">
+                        <div class="announcement-date">
+                            <i class="far fa-calendar"></i>
+                            ${daysAgo}
+                        </div>
+                        ${isAdmin ? `
+                            <div class="announcement-actions">
+                                <button onclick="editAnnouncement('${announcement.id}')" 
+                                        class="action-btn edit">
+                                    <i class="fas fa-edit"></i>
+                                    Edit
+                                </button>
+                                <button onclick="deleteAnnouncement('${announcement.id}')" 
+                                        class="action-btn delete">
+                                    <i class="fas fa-trash"></i>
+                                    Delete
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Create announcement item for all section
+        function createAnnouncementItem(announcement, index = 1) {
+            const daysAgo = getDaysAgo(announcement.created_at);
+            const priorityClass = `priority-${announcement.priority}`;
+            const priorityEmoji = getPriorityEmoji(announcement.priority);
+            
+            return `
+                <div class="announcement-item announcement-card ${priorityClass}" style="--index: ${index}">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="announcement-title">${announcement.title}</h3>
+                        <span class="priority-badge">
+                            ${priorityEmoji} Priority ${announcement.priority}
+                        </span>
+                    </div>
+                    <p class="announcement-content">${announcement.content}</p>
+                    <div class="announcement-meta">
+                        <div class="announcement-date">
+                            <i class="far fa-calendar"></i>
+                            ${daysAgo}
+                        </div>
+                        ${isAdmin ? `
+                            <div class="announcement-actions">
+                                <button onclick="editAnnouncement('${announcement.id}')" 
+                                        class="action-btn edit">
+                                    <i class="fas fa-edit"></i>
+                                    Edit
+                                </button>
+                                <button onclick="deleteAnnouncement('${announcement.id}')" 
+                                        class="action-btn delete">
+                                    <i class="fas fa-trash"></i>
+                                    Delete
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Get priority emoji
+        function getPriorityEmoji(priority) {
+            const emojis = {
+                1: '🔴',
+                2: '🟠',
+                3: '🔵',
+                4: '🟢',
+                5: '⚪'
+            };
+            return emojis[priority] || '⚪';
+        }
+
+        // Calculate days ago with better formatting
+        function getDaysAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+            const diffMinutes = Math.floor(diffTime / (1000 * 60));
+            
+            if (diffMinutes < 1) {
+                return 'Just now';
+            } else if (diffMinutes < 60) {
+                return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+            } else if (diffHours < 24) {
+                return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            } else if (diffDays === 0) {
+                return 'Today';
+            } else if (diffDays === 1) {
+                return 'Yesterday';
+            } else if (diffDays < 7) {
+                return `${diffDays} days ago`;
+            } else if (diffDays < 30) {
+                const weeks = Math.floor(diffDays / 7);
+                return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+            } else if (diffDays < 365) {
+                const months = Math.floor(diffDays / 30);
+                return `${months} month${months > 1 ? 's' : ''} ago`;
+            } else {
+                const years = Math.floor(diffDays / 365);
+                return `${years} year${years > 1 ? 's' : ''} ago`;
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Add announcement button
+            const addBtn = document.getElementById('addAnnouncementBtn');
+            if (addBtn) {
+                addBtn.addEventListener('click', () => {
+                    openModal();
+                });
+            }
+
+            // Close modal button
+            const closeBtn = document.getElementById('closeModalBtn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    closeModal();
+                });
+            }
+
+            // Cancel button
+            const cancelBtn = document.getElementById('cancelBtn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    closeModal();
+                });
+            }
+
+            // Form submission
+            const form = document.getElementById('announcementForm');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await saveAnnouncement();
+                });
+            }
+
+            // Close modal when clicking outside
+            const modal = document.getElementById('announcementModal');
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target.id === 'announcementModal') {
+                        closeModal();
+                    }
+                });
+            }
+        }
+
+        // Open modal
+        function openModal(announcement = null) {
+            const modal = document.getElementById('announcementModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const form = document.getElementById('announcementForm');
+            
+            if (announcement) {
+                // Edit mode
+                modalTitle.textContent = 'Edit Announcement';
+                document.getElementById('announcementTitle').value = announcement.title;
+                document.getElementById('announcementContent').value = announcement.content;
+                document.getElementById('announcementPriority').value = announcement.priority;
+                editingAnnouncement = announcement;
+            } else {
+                // Add mode
+                modalTitle.textContent = 'Add New Announcement';
+                form.reset();
+                editingAnnouncement = null;
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('announcementModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+            
+            const form = document.getElementById('announcementForm');
+            if (form) {
+                form.reset();
+            }
+            editingAnnouncement = null;
+        }
+
+        // Save announcement
+        async function saveAnnouncement() {
+            if (isPreviewMode) {
+                showSuccess('This is a preview mode. Announcements cannot be saved.');
+                closeModal();
                 return;
             }
 
             try {
-                const currentReaction = userReactions[announcementId];
+                showLoading();
                 
-                if (currentReaction === reactionType) {
-                    // Remove reaction
-                    await supabase
-                        .from('announcement_reactions')
-                        .delete()
-                        .eq('user_id', currentUser.id)
-                        .eq('announcement_id', announcementId);
-                    
-                    delete userReactions[announcementId];
-                    
-                    // Update count
-                    const countField = reactionType === 'like' ? 'like_count' : 'dislike_count';
-                    await supabase.rpc('decrement_announcement_count', {
-                        announcement_id: announcementId,
-                        count_type: countField
-                    });
-                } else {
-                    // Add or update reaction
-                    if (currentReaction) {
-                        // Update existing reaction
-                        await supabase
-                            .from('announcement_reactions')
-                            .update({ reaction: reactionType })
-                            .eq('user_id', currentUser.id)
-                            .eq('announcement_id', announcementId);
-                        
-                        // Adjust counts
-                        const oldCountField = currentReaction === 'like' ? 'like_count' : 'dislike_count';
-                        const newCountField = reactionType === 'like' ? 'like_count' : 'dislike_count';
-                        
-                        await supabase.rpc('decrement_announcement_count', {
-                            announcement_id: announcementId,
-                            count_type: oldCountField
-                        });
-                        await supabase.rpc('increment_announcement_count', {
-                            announcement_id: announcementId,
-                            count_type: newCountField
-                        });
-                    } else {
-                        // Insert new reaction
-                        await supabase
-                            .from('announcement_reactions')
-                            .insert({
-                                user_id: currentUser.id,
-                                announcement_id: announcementId,
-                                reaction: reactionType
-                            });
-                        
-                        // Increment count
-                        const countField = reactionType === 'like' ? 'like_count' : 'dislike_count';
-                        await supabase.rpc('increment_announcement_count', {
-                            announcement_id: announcementId,
-                            count_type: countField
-                        });
-                    }
-                    
-                    userReactions[announcementId] = reactionType;
+                const title = document.getElementById('announcementTitle').value.trim();
+                const content = document.getElementById('announcementContent').value.trim();
+                const priority = parseInt(document.getElementById('announcementPriority').value);
+                
+                if (!title || !content) {
+                    showError('Please fill in all required fields');
+                    return;
                 }
-
-                // Reload announcements to update UI
+                
+                if (editingAnnouncement) {
+                    // Update existing announcement
+                    const { error } = await supabase
+                        .from('announcements')
+                        .update({
+                            title,
+                            content,
+                            priority,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', editingAnnouncement.id);
+                    
+                    if (error) throw error;
+                    showSuccess('Announcement updated successfully!');
+                } else {
+                    // Create new announcement
+                    const { error } = await supabase
+                        .from('announcements')
+                        .insert({
+                            title,
+                            content,
+                            priority,
+                            created_by: currentUser.id
+                        });
+                    
+                    if (error) throw error;
+                    showSuccess('Announcement created successfully!');
+                }
+                
+                closeModal();
                 await loadAnnouncements();
             } catch (error) {
-                console.error('Error toggling reaction:', error);
-                alert('Error updating reaction. Please try again.');
+                console.error('Error saving announcement:', error);
+                showError('Error saving announcement: ' + error.message);
+            } finally {
+                hideLoading();
             }
         }
 
-        // Get time ago string
-        function getTimeAgo(dateString) {
-            const now = new Date();
-            const date = new Date(dateString);
-            const diff = now - date;
-            
-            const minutes = Math.floor(diff / (1000 * 60));
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            
-            if (minutes < 60) {
-                return `${minutes} minutes ago`;
-            } else if (hours < 24) {
-                return `${hours} hours ago`;
-            } else {
-                return `${days} days ago`;
+        // Edit announcement (global function)
+        window.editAnnouncement = async function(id) {
+            if (isPreviewMode) {
+                showSuccess('This is a preview mode. Announcements cannot be edited.');
+                return;
             }
-        }
 
-        // Modal functionality
-        document.getElementById('addAnnouncementBtn').addEventListener('click', () => {
-            document.getElementById('addModal').style.display = 'block';
-        });
-
-        document.getElementById('closeModal').addEventListener('click', () => {
-            document.getElementById('addModal').style.display = 'none';
-        });
-
-        document.getElementById('addModal').addEventListener('click', (e) => {
-            if (e.target.id === 'addModal') {
-                document.getElementById('addModal').style.display = 'none';
+            try {
+                showLoading();
+                
+                const { data, error } = await supabase
+                    .from('announcements')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+                
+                if (error) throw error;
+                
+                openModal(data);
+            } catch (error) {
+                console.error('Error loading announcement:', error);
+                showError('Error loading announcement: ' + error.message);
+            } finally {
+                hideLoading();
             }
-        });
+        };
 
-        // Form submission
-        document.getElementById('announcementForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
+        // Delete announcement (global function)
+        window.deleteAnnouncement = async function(id) {
+            if (isPreviewMode) {
+                showSuccess('This is a preview mode. Announcements cannot be deleted.');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this announcement? This action cannot be undone.')) {
+                return;
+            }
             
             try {
+                showLoading();
+                
                 const { error } = await supabase
                     .from('announcements')
-                    .insert({
-                        title,
-                        content,
-                        author_id: currentUser.id
-                    });
-
+                    .delete()
+                    .eq('id', id);
+                
                 if (error) throw error;
-
-                document.getElementById('addModal').style.display = 'none';
-                document.getElementById('announcementForm').reset();
+                
+                showSuccess('Announcement deleted successfully!');
                 await loadAnnouncements();
             } catch (error) {
-                console.error('Error adding announcement:', error);
-                alert('Error adding announcement. Please try again.');
+                console.error('Error deleting announcement:', error);
+                showError('Error deleting announcement: ' + error.message);
+            } finally {
+                hideLoading();
             }
-        });
+        };
 
-        // Initialize the page
-        init();
+        // Utility functions
+        function showLoading() {
+            const loading = document.getElementById('loading');
+            if (loading) {
+                loading.classList.remove('hidden');
+            }
+        }
+
+        function hideLoading() {
+            const loading = document.getElementById('loading');
+            if (loading) {
+                loading.classList.add('hidden');
+            }
+        }
+
+        function showSuccess(message) {
+            // Create a toast notification instead of alert
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-pulse';
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function showError(message) {
+            // Create a toast notification instead of alert
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-pulse';
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
     </script>
 </body>
 </html>
