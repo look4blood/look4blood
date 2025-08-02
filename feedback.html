@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Look4Blood</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #e74c3c;
+            --primary-dark: #c0392b;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --border-color: #e0e0e0;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --shadow-hover: 0 15px 40px rgba(0,0,0,0.15);
+            --card-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--bg-white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 5px 15px rgba(231, 76, 60, 0.3));
+        }
+
+        .logo i {
+            font-size: 2.2rem;
+        }
+
+        /* Desktop Navigation */
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(231, 76, 60, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-links a:hover::before {
+            left: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .mobile-nav.show {
+            display: block;
+        }
+
+        .mobile-nav-content {
+            background-color: var(--bg-white);
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            padding: 2rem;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transform: translateX(-100%);
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        .mobile-nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .mobile-nav-header h3 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .mobile-nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mobile-nav-links a:hover {
+            background-color: var(--bg-light);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .mobile-nav-links i {
+            font-size: 1.2rem;
+            width: 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 1rem;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            opacity: 0.9;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Feedback Form Section */
+        .feedback-section {
+            background-color: var(--bg-white);
+            border-radius: 20px;
+            padding: clamp(1.5rem, 4vw, 3rem);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feedback-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+        }
+
+        .form-header h2 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: var(--text-light);
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #fafbfc;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.1);
+            background-color: white;
+            transform: translateY(-2px);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 140px;
+        }
+
+        /* Star Rating */
+        .rating-container {
+            background-color: #fafbfc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .rating-container:hover {
+            border-color: var(--primary-color);
+        }
+
+        .rating-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            color: var(--text-light);
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 0.3rem;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        .star {
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .star:hover,
+        .star.active {
+            color: var(--warning-color);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .star:hover ~ .star {
+            color: #ddd;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 2rem auto 0;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .submit-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Thank You Message */
+        .thank-you-section {
+            display: none;
+            text-align: center;
+            padding: clamp(2rem, 5vw, 4rem);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .thank-you-section.show {
+            display: block;
+        }
+
+        .thank-you-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: moveGrid 30s linear infinite;
+        }
+
+        .thank-you-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .thank-you-icon {
+            font-size: clamp(3rem, 8vw, 5rem);
+            color: white;
+            margin-bottom: 1.5rem;
+            animation: bounceIn 1s ease;
+        }
+
+        .thank-you-section h2 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .thank-you-section p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .redirect-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .redirect-btn {
+            padding: 1rem 2rem;
+            border: 2px solid white;
+            background-color: transparent;
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-width: 160px;
+            justify-content: center;
+        }
+
+        .redirect-btn:hover {
+            background-color: white;
+            color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Feedback Display Section */
+        .feedback-display {
+            background-color: var(--bg-white);
+            border-radius: 20px;
+            padding: clamp(1.5rem, 4vw, 2.5rem);
+            box-shadow: var(--card-shadow);
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .feedback-header h2 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: var(--text-dark);
+        }
+
+        .feedback-filters {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            background-color: white;
+            color: var(--text-dark);
+            border-radius: 25px;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+        }
+
+        .feedback-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .feedback-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: clamp(1rem, 3vw, 2rem);
+            border-radius: 16px;
+            border-left: 5px solid var(--primary-color);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feedback-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feedback-item:hover::before {
+            opacity: 1;
+        }
+
+        .feedback-item:hover {
+            transform: translateX(8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feedback-header-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .feedback-name {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feedback-name i {
+            color: var(--primary-color);
+        }
+
+        .feedback-date {
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            color: var(--text-light);
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        .feedback-rating {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .feedback-rating .star {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            cursor: default;
+        }
+
+        .rating-text {
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .feedback-message {
+            color: var(--text-dark);
+            line-height: 1.7;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, var(--text-dark) 0%, #34495e 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-hover);
+            transform: translateX(500px);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            max-width: 90%;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #219a52 100%);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .toast i {
+            font-size: 1.5rem;
+        }
+
+        /* Help Center Modal */
+        .help-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .help-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .help-content {
+            background-color: var(--bg-white);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        .help-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .help-header h3 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .close-help {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-help:hover {
+            color: var(--primary-color);
+        }
+
+        .help-section {
+            margin-bottom: 2rem;
+        }
+
+        .help-section h4 {
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .help-section h4 i {
+            color: var(--primary-color);
+        }
+
+        .help-item {
+            background-color: var(--bg-light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .help-item:hover {
+            background-color: #e8f4f8;
+            transform: translateX(5px);
+        }
+
+        .help-item h5 {
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .help-item p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .toast {
+                right: 1rem;
+                left: 1rem;
+                min-width: auto;
+            }
+
+            .feedback-filters {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .filter-btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .redirect-options {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .redirect-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .hero {
+                padding: 3rem 0;
+            }
+
+            .container {
+                margin: 2rem auto;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feedback-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .feedback-filters {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-tint"></i>
+                Look4Blood
+            </a>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#services">Services</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-content">
+            <div class="mobile-nav-header">
+                <h3>Look4Blood</h3>
+                <button class="close-btn" onclick="toggleMobileMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="#home"><i class="fas fa-home"></i> Home</a>
+                <a href="#about"><i class="fas fa-info-circle"></i> About</a>
+                <a href="#services"><i class="fas fa-medkit"></i> Services</a>
+                <a href="#contact"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="#feedback"><i class="fas fa-comment"></i> Feedback</a>
+                <a href="#help" onclick="openHelpCenter(event)"><i class="fas fa-question-circle"></i> Help Center</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Your Feedback Matters</h1>
+            <p>Help us save more lives by sharing your experience with Look4Blood</p>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Feedback Form Section -->
+        <section id="feedbackForm" class="feedback-section">
+            <div class="form-header">
+                <h2>Share Your Experience</h2>
+                <p>We'd love to hear your thoughts and suggestions</p>
+            </div>
+            
+            <form id="feedbackFormElement">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" required placeholder="Enter your name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Overall Experience Rating</label>
+                        <div class="rating-container">
+                            <div class="rating-labels">
+                                <span>Poor</span>
+                                <span>Fair</span>
+                                <span>Good</span>
+                                <span>Very Good</span>
+                                <span>Excellent</span>
+                            </div>
+                            <div class="star-rating" id="starRating">
+                                <i class="fas fa-star star" data-rating="1"></i>
+                                <i class="fas fa-star star" data-rating="2"></i>
+                                <i class="fas fa-star star" data-rating="3"></i>
+                                <i class="fas fa-star star" data-rating="4"></i>
+                                <i class="fas fa-star star" data-rating="5"></i>
+                            </div>
+                        </div>
+                        <input type="hidden" id="rating" name="rating" value="0" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="message">Your Feedback</label>
+                        <textarea id="message" name="message" required placeholder="Share your thoughts, suggestions, or concerns..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Submit Feedback
+                </button>
+            </form>
+        </section>
+
+        <!-- Thank You Section -->
+        <section id="thankYouSection" class="thank-you-section">
+            <div class="thank-you-content">
+                <div class="thank-you-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h2>Thank You for Your Feedback!</h2>
+                <p>We truly appreciate you taking the time to share your experience with Look4Blood. Your feedback helps us improve our services and save more lives.</p>
+                <div class="redirect-options">
+                    <a href="#faqs" class="redirect-btn" onclick="showToast('FAQs section coming soon!', 'success')">
+                        <i class="fas fa-question-circle"></i>
+                        Visit FAQs
+                    </a>
+                    <a href="#help" class="redirect-btn" onclick="openHelpCenter(event)">
+                        <i class="fas fa-life-ring"></i>
+                        Help Center
+                    </a>
+                    <button onclick="resetForm()" class="redirect-btn">
+                        <i class="fas fa-redo"></i>
+                        Submit Another Feedback
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feedback Display Section -->
+        <section class="feedback-display">
+            <div class="feedback-header">
+                <h2>Community Feedback</h2>
+                <div class="feedback-filters">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fas fa-list"></i>
+                        All
+                    </button>
+                    <button class="filter-btn" data-filter="5">
+                        <i class="fas fa-star"></i>
+                        5 Stars
+                    </button>
+                    <button class="filter-btn" data-filter="4">
+                        <i class="fas fa-star"></i>
+                        4 Stars
+                    </button>
+                    <button class="filter-btn" data-filter="3">
+                        <i class="fas fa-star"></i>
+                        3 Stars
+                    </button>
+                </div>
+            </div>
+            
+            <div class="loading" id="loadingFeedback">
+                <div class="spinner"></div>
+                <p>Loading feedbacks...</p>
+            </div>
+            <div id="feedbackList" class="feedback-list">
+                <!-- Feedback items will be dynamically inserted here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Help Center Modal -->
+    <div class="help-modal" id="helpModal">
+        <div class="help-content">
+            <div class="help-header">
+                <h3><i class="fas fa-life-ring"></i> Help Center</h3>
+                <button class="close-help" onclick="closeHelpCenter()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="help-section">
+                <h4><i class="fas fa-user"></i> Account & Registration</h4>
+                <div class="help-item">
+                    <h5>How do I create an account?</h5>
+                    <p>Click on the "Sign Up" button on the homepage and fill in your details. You'll receive a confirmation email to activate your account.</p>
+                </div>
+                <div class="help-item">
+                    <h5>I forgot my password</h5>
+                    <p>Click on "Forgot Password" on the login page. Enter your email address and we'll send you a link to reset your password.</p>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h4><i class="fas fa-tint"></i> Blood Donation Process</h4>
+                <div class="help-item">
+                    <h5>How do I find a blood donation center?</h5>
+                    <p>Use our "Find Centers" feature on the homepage. Enter your location and we'll show you the nearest blood donation centers.</p>
+                </div>
+                <div class="help-item">
+                    <h5>What are the eligibility criteria?</h5>
+                    <p>You must be between 18-65 years old, weigh at least 50kg, and be in good health. Check our full eligibility list for more details.</p>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h4><i class="fas fa-calendar-check"></i> Appointments</h4>
+                <div class="help-item">
+                    <h5>How do I book an appointment?</h5>
+                    <p>Select a donation center, choose an available time slot, and confirm your appointment. You'll receive a confirmation email with details.</p>
+                </div>
+                <div class="help-item">
+                    <h5>Can I reschedule my appointment?</h5>
+                    <p>Yes, go to "My Appointments" in your dashboard and click "Reschedule". You can change the date and time up to 24 hours before.</p>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h4><i class="fas fa-phone"></i> Contact Support</h4>
+                <div class="help-item">
+                    <h5>Need more help?</h5>
+                    <p>Our support team is available 24/7. Call us at 1-800-BLOOD or email support@look4blood.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Feedback submitted successfully!</span>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
+    
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'YOUR_SUPABASE_URL';
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const mobileNav = document.getElementById('mobileNav');
+            mobileNav.classList.toggle('show');
+        }
+
+        // Help Center Functions
+        function openHelpCenter(event) {
+            event.preventDefault();
+            document.getElementById('helpModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeHelpCenter() {
+            document.getElementById('helpModal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close help modal when clicking outside
+        document.getElementById('helpModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeHelpCenter();
+            }
+        });
+
+        // Star Rating Functionality
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
+        let currentRating = 0;
+
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                currentRating = index + 1;
+                ratingInput.value = currentRating;
+                updateStars();
+            });
+
+            star.addEventListener('mouseenter', () => {
+                highlightStars(index + 1);
+            });
+        });
+
+        document.getElementById('starRating').addEventListener('mouseleave', () => {
+            updateStars();
+        });
+
+        function updateStars() {
+            stars.forEach((star, index) => {
+                if (index < currentRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function highlightStars(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // Form Submission
+        document.getElementById('feedbackFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                rating: parseInt(document.getElementById('rating').value),
+                message: document.getElementById('message').value,
+                created_at: new Date().toISOString()
+            };
+
+            if (formData.rating === 0) {
+                showToast('Please select a rating', 'error');
+                return;
+            }
+
+            try {
+                // Insert feedback into Supabase
+                const { data, error } = await supabase
+                    .from('feedback')
+                    .insert([formData]);
+
+                if (error) {
+                    throw error;
+                }
+
+                // Show success message
+                document.getElementById('feedbackForm').style.display = 'none';
+                document.getElementById('thankYouSection').classList.add('show');
+                
+                // Refresh feedback list
+                loadFeedbacks();
+
+                // Show toast notification
+                showToast('Feedback submitted successfully!', 'success');
+
+            } catch (error) {
+                console.error('Error submitting feedback:', error);
+                showToast('Error submitting feedback. Please try again.', 'error');
+            }
+        });
+
+        // Load Feedbacks
+        let allFeedbacks = [];
+        let currentFilter = 'all';
+
+        async function loadFeedbacks() {
+            const loadingDiv = document.getElementById('loadingFeedback');
+            const feedbackList = document.getElementById('feedbackList');
+            
+            loadingDiv.classList.add('show');
+            feedbackList.innerHTML = '';
+
+            try {
+                const { data, error } = await supabase
+                    .from('feedback')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    throw error;
+                }
+
+                allFeedbacks = data || [];
+                displayFeedbacks();
+
+            } catch (error) {
+                console.error('Error loading feedbacks:', error);
+                feedbackList.innerHTML = '<p style="text-align: center; color: var(--primary-color);">Error loading feedbacks. Please try again later.</p>';
+            } finally {
+                loadingDiv.classList.remove('show');
+            }
+        }
+
+        // Display Feedbacks with Filter
+        function displayFeedbacks() {
+            const feedbackList = document.getElementById('feedbackList');
+            feedbackList.innerHTML = '';
+
+            let filteredFeedbacks = allFeedbacks;
+            if (currentFilter !== 'all') {
+                filteredFeedbacks = allFeedbacks.filter(f => f.rating === parseInt(currentFilter));
+            }
+
+            if (filteredFeedbacks.length > 0) {
+                filteredFeedbacks.forEach(feedback => {
+                    const feedbackItem = createFeedbackItem(feedback);
+                    feedbackList.appendChild(feedbackItem);
+                });
+            } else {
+                feedbackList.innerHTML = '<p style="text-align: center; color: var(--text-light);">No feedbacks found for this filter.</p>';
+            }
+        }
+
+        // Create Feedback Item
+        function createFeedbackItem(feedback) {
+            const item = document.createElement('div');
+            item.className = 'feedback-item';
+            
+            const date = new Date(feedback.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const ratingTexts = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                const starClass = i <= feedback.rating ? 'active' : '';
+                starsHtml += `<i class="fas fa-star star ${starClass}"></i>`;
+            }
+
+            item.innerHTML = `
+                <div class="feedback-header-item">
+                    <div class="feedback-name">
+                        <i class="fas fa-user-circle"></i>
+                        ${feedback.name}
+                    </div>
+                    <span class="feedback-date">${date}</span>
+                </div>
+                <div class="feedback-rating">
+                    ${starsHtml}
+                    <span class="rating-text">${ratingTexts[feedback.rating]}</span>
+                </div>
+                <div class="feedback-message">${feedback.message}</div>
+            `;
+
+            return item;
+        }
+
+        // Filter Functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                displayFeedbacks();
+            });
+        });
+
+        // Reset Form
+        function resetForm() {
+            document.getElementById('feedbackFormElement').reset();
+            currentRating = 0;
+            updateStars();
+            document.getElementById('feedbackForm').style.display = 'block';
+            document.getElementById('thankYouSection').classList.remove('show');
+        }
+
+        // Toast Notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const icon = toast.querySelector('i');
+            
+            // Update icon based on type
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+            }
+            
+            toast.className = `toast ${type}`;
+            toastMessage.textContent = message;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFeedbacks();
+        });
+
+        // Handle redirect buttons
+        document.querySelectorAll('a[href="#faqs"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                showToast('FAQs section coming soon!', 'success');
+            });
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggleMobileMenu();
+            });
+        });
+    </script>
+</body>
+</html>
