@@ -8,7 +8,53 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Top Bar Styles */
+        * Top Bar Styles */
+        .top-bar {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 50%, #8e0000 100%);
+            padding: 1rem 0;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            letter-spacing: -0.025em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, #ffffff, #f5f5f5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-red);
+            font-size: 1.25rem;
+            animation: pulse 2s infinite;
+            box-shadow: var(--shadow-md);
+        }
+
+         /* Top Bar Styles */
         .top-bar {
             background: linear-gradient(135deg, #c62828 0%, #b71c1c 50%, #8e0000 100%);
             padding: 18px 0;
@@ -19,22 +65,23 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
         }
+        
         .nav-container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 1.5rem;
         }
         .logo {
             color: white;
-            font-size: 26px;
+            font-size: 1.5rem;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 12px;
-            letter-spacing: -0.5px;
+            gap: 0.75rem;
+            letter-spacing: -0.025em;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         .logo-icon {
@@ -50,29 +97,31 @@
             animation: pulse 2s infinite;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        .nav-buttons {
+       .nav-buttons {
             display: flex;
-            gap: 15px;
+            gap: 0.75rem;
             align-items: center;
+            flex-wrap: wrap;
         }
+
         .nav-btn {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 20px;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
             background: rgba(255, 255, 255, 0.08);
             color: white;
             text-decoration: none;
-            border-radius: 30px;
+            border-radius: 2rem;
             border: 1px solid rgba(255, 255, 255, 0.15);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600;
-            font-size: 14px;
+            font-size: 0.875rem;
             backdrop-filter: blur(15px);
             position: relative;
             overflow: hidden;
-            letter-spacing: 0.3px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.02em;
+            box-shadow: var(--shadow-sm);
         }
         .nav-btn::before {
             content: '';
