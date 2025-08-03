@@ -296,6 +296,24 @@
             color: var(--primary-color);
         }
 
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #15803d;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #b45309;
+        }
+
         /* Requests List Section */
         .requests-section {
             background-color: var(--bg-white);
@@ -305,15 +323,21 @@
         }
 
         .filters {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
-            flex-wrap: wrap;
         }
 
         .filter-group {
-            flex: 1;
-            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
         }
 
         .request-card {
@@ -483,7 +507,7 @@
             transform: scale(1.1);
         }
 
-        .donors-list {
+        .donor-response {
             margin-top: 1rem;
             padding: 1rem;
             background-color: var(--bg-light);
@@ -491,11 +515,46 @@
             display: none;
         }
 
-        .donors-list.show {
+        .donor-response.show {
             display: block;
         }
 
-        .donors-list h4 {
+        .donor-response h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .patient-contact {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .patient-contact h5 {
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .patient-contact p {
+            margin-bottom: 0.25rem;
+            color: var(--text-light);
+        }
+
+        .matching-donors {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .matching-donors.show {
+            display: block;
+        }
+
+        .matching-donors h4 {
             margin-bottom: 0.5rem;
             color: var(--text-dark);
         }
@@ -522,9 +581,14 @@
             color: var(--primary-color);
         }
 
-        .btn-donate {
+        .donor-eligibility {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .btn-contact {
             padding: 0.4rem 1rem;
-            background-color: var(--success-color);
+            background-color: var(--secondary-color);
             color: white;
             border: none;
             border-radius: 6px;
@@ -533,8 +597,18 @@
             transition: all 0.3s ease;
         }
 
-        .btn-donate:hover {
-            background-color: #15803d;
+        .btn-contact:hover {
+            background-color: #6d28d9;
+        }
+
+        .requester-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .requester-actions.show {
+            display: flex;
         }
 
         /* Modal */
@@ -686,11 +760,7 @@
             }
 
             .filters {
-                flex-direction: column;
-            }
-
-            .filter-group {
-                width: 100%;
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -864,6 +934,27 @@
                 </div>
 
                 <div class="filter-group">
+                    <label for="filterDivision">Division</label>
+                    <select id="filterDivision">
+                        <option value="">All Divisions</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filterDistrict">District</label>
+                    <select id="filterDistrict" disabled>
+                        <option value="">All Districts</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filterCity">City</label>
+                    <select id="filterCity" disabled>
+                        <option value="">All Cities</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
                     <label for="filterUrgency">Urgency</label>
                     <select id="filterUrgency">
                         <option value="">All Levels</option>
@@ -948,12 +1039,15 @@
         // Global variables
         let selectedUrgency = '';
         let currentRequestId = '';
+        let currentUser = null;
+        let currentDonorProfile = null;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
             loadLocations();
             loadRequests();
             setupEventListeners();
+            checkUserSession();
         });
 
         // Setup event listeners
@@ -977,8 +1071,42 @@
 
             // Filters
             document.getElementById('filterBloodGroup').addEventListener('change', filterRequests);
+            document.getElementById('filterDivision').addEventListener('change', loadFilterDistricts);
+            document.getElementById('filterDistrict').addEventListener('change', loadFilterCities);
+            document.getElementById('filterCity').addEventListener('change', filterRequests);
             document.getElementById('filterUrgency').addEventListener('change', filterRequests);
             document.getElementById('filterStatus').addEventListener('change', filterRequests);
+        }
+
+        // Check user session
+        async function checkUserSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                loadDonorProfile();
+            }
+        }
+
+        // Load donor profile
+        async function loadDonorProfile() {
+            if (!currentUser) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('donors')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') {
+                    console.error('Error loading donor profile:', error);
+                    return;
+                }
+
+                currentDonorProfile = data;
+            } catch (error) {
+                console.error('Error loading donor profile:', error);
+            }
         }
 
         // Load locations
@@ -992,14 +1120,22 @@
                 if (error) throw error;
 
                 const divisionSelect = document.getElementById('division');
+                const filterDivisionSelect = document.getElementById('filterDivision');
+                
                 divisionSelect.innerHTML = '<option value="">Select Division</option>';
+                filterDivisionSelect.innerHTML = '<option value="">All Divisions</option>';
                 
                 const divisions = [...new Set(data.map(item => item.division))];
                 divisions.forEach(division => {
-                    const option = document.createElement('option');
-                    option.value = division;
-                    option.textContent = division;
-                    divisionSelect.appendChild(option);
+                    const option1 = document.createElement('option');
+                    option1.value = division;
+                    option1.textContent = division;
+                    divisionSelect.appendChild(option1);
+                    
+                    const option2 = document.createElement('option');
+                    option2.value = division;
+                    option2.textContent = division;
+                    filterDivisionSelect.appendChild(option2);
                 });
             } catch (error) {
                 console.error('Error loading locations:', error);
@@ -1077,6 +1213,76 @@
             }
         }
 
+        // Load filter districts
+        async function loadFilterDistricts() {
+            const division = document.getElementById('filterDivision').value;
+            const districtSelect = document.getElementById('filterDistrict');
+            const citySelect = document.getElementById('filterCity');
+
+            // Reset dependent dropdowns
+            districtSelect.innerHTML = '<option value="">All Districts</option>';
+            districtSelect.disabled = !division;
+            citySelect.innerHTML = '<option value="">All Cities</option>';
+            citySelect.disabled = true;
+
+            if (!division) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('locations')
+                    .select('district')
+                    .eq('division', division)
+                    .order('district');
+
+                if (error) throw error;
+
+                const districts = [...new Set(data.map(item => item.district))];
+                districts.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district;
+                    option.textContent = district;
+                    districtSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading districts:', error);
+                showToast('Error loading districts', 'error');
+            }
+        }
+
+        // Load filter cities
+        async function loadFilterCities() {
+            const division = document.getElementById('filterDivision').value;
+            const district = document.getElementById('filterDistrict').value;
+            const citySelect = document.getElementById('filterCity');
+
+            // Reset dependent dropdown
+            citySelect.innerHTML = '<option value="">All Cities</option>';
+            citySelect.disabled = !district;
+
+            if (!district) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('locations')
+                    .select('city')
+                    .eq('division', division)
+                    .eq('district', district)
+                    .order('city');
+
+                if (error) throw error;
+
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.city;
+                    option.textContent = item.city;
+                    citySelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading cities:', error);
+                showToast('Error loading cities', 'error');
+            }
+        }
+
         // Handle form submission
         async function handleFormSubmit(e) {
             e.preventDefault();
@@ -1095,7 +1301,8 @@
                 urgency: formData.get('urgency'),
                 additional_notes: formData.get('additionalNotes'),
                 anonymous: formData.get('anonymous') === 'on',
-                status: 'Pending'
+                status: 'Pending',
+                requester_id: currentUser?.id || null
             };
 
             try {
@@ -1162,9 +1369,10 @@
             requestsList.innerHTML = requests.map(request => {
                 const isEmergency = isRequestEmergency(request);
                 const timeLeft = getTimeLeft(request.required_date);
+                const isOwner = currentUser && request.requester_id === currentUser.id;
                 
                 return `
-                    <div class="request-card ${request.urgency.toLowerCase()} ${isEmergency ? 'emergency' : ''}">
+                    <div class="request-card ${request.urgency.toLowerCase()} ${isEmergency ? 'emergency' : ''}" data-request-id="${request.id}">
                         <div class="request-header">
                             <div class="request-info">
                                 <h3>${request.anonymous ? 'Anonymous Patient' : request.patient_name}</h3>
@@ -1198,12 +1406,17 @@
                         
                         <div class="request-actions">
                             <div>
-                                ${request.status === 'Pending' ? `
+                                ${request.status === 'Pending' && currentDonorProfile ? `
                                     <button class="btn btn-primary" onclick="respondToRequest('${request.id}')">
                                         <i class="fas fa-hand-holding-heart"></i>
                                         I Want to Donate
                                     </button>
                                 ` : ''}
+                                
+                                <button class="btn btn-secondary" onclick="showMatchingDonors('${request.id}')">
+                                    <i class="fas fa-users"></i>
+                                    See Matching Donors
+                                </button>
                             </div>
                             <div class="share-buttons">
                                 <button class="share-btn" onclick="openShareModal('${request.id}')" title="Share">
@@ -1212,9 +1425,31 @@
                             </div>
                         </div>
                         
-                        <div class="donors-list" id="donors-${request.id}">
-                            <!-- Donors will be listed here -->
+                        <div class="donor-response" id="response-${request.id}">
+                            <!-- Donor response will be shown here -->
                         </div>
+                        
+                        <div class="matching-donors" id="donors-${request.id}">
+                            <!-- Matching donors will be shown here -->
+                        </div>
+                        
+                        ${isOwner ? `
+                            <div class="requester-actions" id="requester-actions-${request.id}">
+                                ${request.status === 'Pending' || request.status === 'Accepted' ? `
+                                    <button class="btn btn-success" onclick="fulfillRequest('${request.id}')">
+                                        <i class="fas fa-check"></i>
+                                        Mark as Fulfilled
+                                    </button>
+                                ` : ''}
+                                
+                                ${request.status !== 'Fulfilled' && request.status !== 'Canceled' && request.status !== 'Expired' ? `
+                                    <button class="btn btn-warning" onclick="cancelRequest('${request.id}')">
+                                        <i class="fas fa-times"></i>
+                                        Cancel Request
+                                    </button>
+                                ` : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 `;
             }).join('');
@@ -1257,7 +1492,7 @@
         // Update countdown timers
         function updateCountdowns() {
             document.querySelectorAll('.countdown').forEach(countdown => {
-                const requestId = countdown.closest('.request-card').querySelector('[onclick*="respondToRequest"]').getAttribute('onclick').match(/'([^']+)'/)[1];
+                const requestId = countdown.closest('.request-card').dataset.requestId;
                 updateRequestCountdown(requestId);
             });
         }
@@ -1273,7 +1508,7 @@
 
                 if (error) throw error;
 
-                const countdown = document.querySelector(`#donors-${requestId}`).previousElementSibling.querySelector('.countdown');
+                const countdown = document.querySelector(`[data-request-id="${requestId}"] .countdown`);
                 if (countdown) {
                     const timeLeft = getTimeLeft(data.required_date);
                     countdown.innerHTML = `<i class="fas fa-clock"></i> ${timeLeft}`;
@@ -1294,6 +1529,80 @@
 
         // Respond to request
         async function respondToRequest(requestId) {
+            if (!currentDonorProfile) {
+                showToast('Please complete your donor profile first', 'error');
+                return;
+            }
+
+            try {
+                // Get request details
+                const { data: request, error } = await supabase
+                    .from('blood_requests')
+                    .select('*')
+                    .eq('id', requestId)
+                    .single();
+
+                if (error) throw error;
+
+                // Check donor eligibility
+                const lastDonation = currentDonorProfile.last_donation ? new Date(currentDonorProfile.last_donation) : null;
+                const now = new Date();
+                const daysSinceDonation = lastDonation ? Math.floor((now - lastDonation) / (1000 * 60 * 60 * 24)) : null;
+                const isEligible = daysSinceDonation === null || daysSinceDonation >= 90;
+
+                const responseDiv = document.getElementById(`response-${requestId}`);
+                
+                if (isEligible) {
+                    // Show patient contact info
+                    responseDiv.innerHTML = `
+                        <h4>You are eligible to donate!</h4>
+                        <div class="patient-contact">
+                            <h5>Patient Contact Information</h5>
+                            <p><strong>Patient:</strong> ${request.anonymous ? 'Anonymous' : request.patient_name}</p>
+                            <p><strong>Contact:</strong> ${request.contact_number}</p>
+                            <p><strong>Hospital:</strong> ${request.hospital_name}</p>
+                            <p><strong>Location:</strong> ${request.hospital_name}, ${request.city}</p>
+                            <p style="margin-top: 0.5rem;"><strong>Please contact the patient directly using the provided information.</strong></p>
+                        </div>
+                    `;
+                    
+                    // Update request status
+                    await supabase
+                        .from('blood_requests')
+                        .update({ status: 'Accepted' })
+                        .eq('id', requestId);
+                    
+                    showToast('Patient contact information has been shared with you!', 'success');
+                } else {
+                    // Show remind me option
+                    const daysRemaining = 90 - daysSinceDonation;
+                    responseDiv.innerHTML = `
+                        <h4>You are not yet eligible to donate</h4>
+                        <p>Your last donation was ${daysSinceDonation} days ago.</p>
+                        <p>You need to wait ${daysRemaining} more days before you can donate again.</p>
+                        <button class="btn btn-warning" onclick="setReminder('${requestId}')">
+                            <i class="fas fa-bell"></i>
+                            Remind Me Next Time
+                        </button>
+                    `;
+                }
+                
+                responseDiv.classList.add('show');
+                loadRequests();
+            } catch (error) {
+                console.error('Error responding to request:', error);
+                showToast('Error responding to request', 'error');
+            }
+        }
+
+        // Set reminder for next time
+        async function setReminder(requestId) {
+            // In a real implementation, this would set a reminder in the database
+            showToast('We will remind you when you are eligible to donate!', 'success');
+        }
+
+        // Show matching donors
+        async function showMatchingDonors(requestId) {
             try {
                 // Get request details
                 const { data: request, error } = await supabase
@@ -1314,37 +1623,43 @@
 
                 if (donorError) throw donorError;
 
-                // Show donors list
-                const donorsList = document.getElementById(`donors-${requestId}`);
-                donorsList.innerHTML = `
+                const donorsDiv = document.getElementById(`donors-${requestId}`);
+                donorsDiv.innerHTML = `
                     <h4>Matching Donors (${donors.length})</h4>
                     ${donors.length === 0 ? 
                         '<p>No matching donors found in your area.</p>' :
-                        donors.map(donor => `
-                            <div class="donor-item">
-                                <div class="donor-info">
-                                    <i class="fas fa-user"></i>
-                                    <span>${donor.name}</span>
+                        donors.map(donor => {
+                            const lastDonation = donor.last_donation ? new Date(donor.last_donation) : null;
+                            const now = new Date();
+                            const daysSinceDonation = lastDonation ? Math.floor((now - lastDonation) / (1000 * 60 * 60 * 24)) : null;
+                            const isEligible = daysSinceDonation === null || daysSinceDonation >= 90;
+                            
+                            return `
+                                <div class="donor-item">
+                                    <div class="donor-info">
+                                        <i class="fas fa-user"></i>
+                                        <div>
+                                            <span>${donor.name}</span>
+                                            <div class="donor-eligibility">
+                                                ${isEligible ? 
+                                                    'Eligible to donate' : 
+                                                    `Last donation: ${daysSinceDonation} days ago`
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn-contact" onclick="contactDonor('${donor.id}', '${requestId}')">
+                                        Contact
+                                    </button>
                                 </div>
-                                <button class="btn-donate" onclick="contactDonor('${donor.id}', '${request.id}')">
-                                    Contact
-                                </button>
-                            </div>
-                        `).join('')
+                            `;
+                        }).join('')
                     }
                 `;
-                donorsList.classList.add('show');
-
-                // Update request status
-                await supabase
-                    .from('blood_requests')
-                    .update({ status: 'Accepted' })
-                    .eq('id', requestId);
-
-                loadRequests();
+                donorsDiv.classList.add('show');
             } catch (error) {
-                console.error('Error responding to request:', error);
-                showToast('Error responding to request', 'error');
+                console.error('Error showing matching donors:', error);
+                showToast('Error showing matching donors', 'error');
             }
         }
 
@@ -1353,9 +1668,44 @@
             showToast('Donor contact information will be shared with you shortly!', 'success');
         }
 
+        // Fulfill request
+        async function fulfillRequest(requestId) {
+            try {
+                await supabase
+                    .from('blood_requests')
+                    .update({ status: 'Fulfilled' })
+                    .eq('id', requestId);
+                
+                showToast('Request marked as fulfilled!', 'success');
+                loadRequests();
+            } catch (error) {
+                console.error('Error fulfilling request:', error);
+                showToast('Error fulfilling request', 'error');
+            }
+        }
+
+        // Cancel request
+        async function cancelRequest(requestId) {
+            try {
+                await supabase
+                    .from('blood_requests')
+                    .update({ status: 'Canceled' })
+                    .eq('id', requestId);
+                
+                showToast('Request has been canceled!', 'success');
+                loadRequests();
+            } catch (error) {
+                console.error('Error canceling request:', error);
+                showToast('Error canceling request', 'error');
+            }
+        }
+
         // Filter requests
         function filterRequests() {
             const bloodGroup = document.getElementById('filterBloodGroup').value;
+            const division = document.getElementById('filterDivision').value;
+            const district = document.getElementById('filterDistrict').value;
+            const city = document.getElementById('filterCity').value;
             const urgency = document.getElementById('filterUrgency').value;
             const status = document.getElementById('filterStatus').value;
 
@@ -1364,6 +1714,18 @@
                 let show = true;
 
                 if (bloodGroup && !request.querySelector('.request-meta-item span').textContent.includes(bloodGroup)) {
+                    show = false;
+                }
+
+                if (division && !request.querySelector('.request-meta-item:last-child span').textContent.includes(division)) {
+                    show = false;
+                }
+
+                if (district && !request.querySelector('.request-meta-item:last-child span').textContent.includes(district)) {
+                    show = false;
+                }
+
+                if (city && !request.querySelector('.request-meta-item:last-child span').textContent.includes(city)) {
                     show = false;
                 }
 
