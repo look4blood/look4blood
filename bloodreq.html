@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Request - Look4Blood</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #dc2626;
+            --primary-dark: #991b1b;
+            --primary-light: #ef4444;
+            --secondary-color: #7c3aed;
+            --success-color: #16a34a;
+            --warning-color: #d97706;
+            --danger-color: #b91c1c;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f3f4f6;
+            --bg-white: #ffffff;
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--bg-white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            background-color: rgba(220, 38, 38, 0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #dc2626 0%, #7c3aed 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Request Form Section */
+        .request-section {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-light);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: var(--bg-white);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .urgency-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .urgency-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .urgency-option:hover {
+            border-color: var(--primary-color);
+        }
+
+        .urgency-option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(220, 38, 38, 0.1);
+        }
+
+        .urgency-option.normal.selected {
+            border-color: var(--success-color);
+            background-color: rgba(22, 163, 74, 0.1);
+        }
+
+        .urgency-option.urgent.selected {
+            border-color: var(--warning-color);
+            background-color: rgba(217, 119, 6, 0.1);
+        }
+
+        .urgency-option.emergency.selected {
+            border-color: var(--danger-color);
+            background-color: rgba(185, 28, 28, 0.1);
+        }
+
+        .urgency-option i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .urgency-option.normal i {
+            color: var(--success-color);
+        }
+
+        .urgency-option.urgent i {
+            color: var(--warning-color);
+        }
+
+        .urgency-option.emergency i {
+            color: var(--danger-color);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: white;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Requests List Section */
+        .requests-section {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .request-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .request-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .request-card.emergency {
+            border-left: 5px solid var(--danger-color);
+        }
+
+        .request-card.urgent {
+            border-left: 5px solid var(--warning-color);
+        }
+
+        .request-card.normal {
+            border-left: 5px solid var(--success-color);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .request-info h3 {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .request-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .request-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .request-meta-item i {
+            color: var(--primary-color);
+        }
+
+        .urgency-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .urgency-badge.normal {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--success-color);
+        }
+
+        .urgency-badge.urgent {
+            background-color: rgba(217, 119, 6, 0.1);
+            color: var(--warning-color);
+        }
+
+        .urgency-badge.emergency {
+            background-color: rgba(185, 28, 28, 0.1);
+            color: var(--danger-color);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 1rem;
+        }
+
+        .status-badge.pending {
+            background-color: rgba(217, 119, 6, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-badge.accepted {
+            background-color: rgba(124, 58, 237, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .status-badge.inprogress {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .status-badge.fulfilled {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-badge.canceled {
+            background-color: rgba(107, 114, 128, 0.1);
+            color: var(--text-light);
+        }
+
+        .status-badge.expired {
+            background-color: rgba(185, 28, 28, 0.1);
+            color: var(--danger-color);
+        }
+
+        .request-details {
+            margin-bottom: 1.5rem;
+        }
+
+        .request-details p {
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .countdown {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .share-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .share-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .donors-list {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .donors-list.show {
+            display: block;
+        }
+
+        .donors-list h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .donor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .donor-item:last-child {
+            border-bottom: none;
+        }
+
+        .donor-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .donor-info i {
+            color: var(--primary-color);
+        }
+
+        .btn-donate {
+            padding: 0.4rem 1rem;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-donate:hover {
+            background-color: #15803d;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .qr-code img {
+            max-width: 200px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--text-dark);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-hover);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--primary-color);
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 3rem 0;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .request-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .request-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .share-buttons {
+                justify-content: center;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-tint"></i>
+                Look4Blood
+            </a>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#requests">Requests</a>
+                <a href="#donors">Donors</a>
+                <a href="#about">About</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Request Blood</h1>
+            <p>Post your blood request and connect with willing donors in your area</p>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Request Form Section -->
+        <section class="request-section">
+            <div class="section-header">
+                <h2>Submit Blood Request</h2>
+                <p>Fill in the details below to request blood</p>
+            </div>
+            
+            <form id="requestForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="patientName">Patient Name</label>
+                        <input type="text" id="patientName" name="patientName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bloodGroup">Blood Group</label>
+                        <select id="bloodGroup" name="bloodGroup" required>
+                            <option value="">Select Blood Group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="unitsNeeded">Units Needed</label>
+                        <select id="unitsNeeded" name="unitsNeeded" required>
+                            <option value="">Select Units</option>
+                            <option value="1">1 Unit</option>
+                            <option value="2">2 Units</option>
+                            <option value="3">3 Units</option>
+                            <option value="4">4 Units</option>
+                            <option value="5+">5+ Units</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requiredDate">Required Date & Time</label>
+                        <input type="datetime-local" id="requiredDate" name="requiredDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hospitalName">Hospital Name</label>
+                        <input type="text" id="hospitalName" name="hospitalName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="division">Division</label>
+                        <select id="division" name="division" required>
+                            <option value="">Select Division</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="district">District</label>
+                        <select id="district" name="district" required disabled>
+                            <option value="">Select District</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <select id="city" name="city" required disabled>
+                            <option value="">Select City</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactNumber">Contact Number</label>
+                        <input type="tel" id="contactNumber" name="contactNumber" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Urgency Level</label>
+                        <div class="urgency-group">
+                            <div class="urgency-option normal" data-urgency="Normal">
+                                <i class="fas fa-circle"></i>
+                                <span>Normal</span>
+                            </div>
+                            <div class="urgency-option urgent" data-urgency="Urgent">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Urgent</span>
+                            </div>
+                            <div class="urgency-option emergency" data-urgency="Emergency">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Emergency</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="urgency" name="urgency" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="additionalNotes">Additional Notes</label>
+                        <textarea id="additionalNotes" name="additionalNotes" placeholder="Any additional information..."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="anonymous" name="anonymous">
+                            <label for="anonymous">Post as Anonymous</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Submit Request
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Requests List Section -->
+        <section class="requests-section">
+            <div class="section-header">
+                <h2>Blood Requests</h2>
+                <p>Find and respond to blood requests in your area</p>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="filterBloodGroup">Blood Group</label>
+                    <select id="filterBloodGroup">
+                        <option value="">All Blood Groups</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filterUrgency">Urgency</label>
+                    <select id="filterUrgency">
+                        <option value="">All Levels</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Urgent">Urgent</option>
+                        <option value="Emergency">Emergency</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filterStatus">Status</label>
+                    <select id="filterStatus">
+                        <option value="">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Accepted">Accepted</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Fulfilled">Fulfilled</option>
+                        <option value="Canceled">Canceled</option>
+                        <option value="Expired">Expired</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="loading" id="loadingRequests">
+                <div class="spinner"></div>
+                <p>Loading requests...</p>
+            </div>
+
+            <div id="requestsList">
+                <!-- Requests will be dynamically inserted here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Share Modal -->
+    <div class="modal" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share Request</h3>
+                <button class="close-btn" onclick="closeShareModal()">&times;</button>
+            </div>
+            <div class="share-options">
+                <p>Share this blood request to help find donors faster:</p>
+                <div class="share-buttons" style="justify-content: center; margin: 1.5rem 0;">
+                    <button class="share-btn" onclick="shareOnWhatsApp()" title="Share on WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </button>
+                    <button class="share-btn" onclick="shareOnMessenger()" title="Share on Messenger">
+                        <i class="fab fa-facebook-messenger"></i>
+                    </button>
+                    <button class="share-btn" onclick="shareOnFacebook()" title="Share on Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </button>
+                    <button class="share-btn" onclick="copyLink()" title="Copy Link">
+                        <i class="fas fa-link"></i>
+                    </button>
+                </div>
+                <div class="qr-code">
+                    <p>Or scan this QR code:</p>
+                    <img id="qrCodeImage" src="" alt="QR Code">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Request submitted successfully!</span>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Global variables
+        let selectedUrgency = '';
+        let currentRequestId = '';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLocations();
+            loadRequests();
+            setupEventListeners();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Form submission
+            document.getElementById('requestForm').addEventListener('submit', handleFormSubmit);
+
+            // Urgency selection
+            document.querySelectorAll('.urgency-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.urgency-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    document.getElementById('urgency').value = this.dataset.urgency;
+                    selectedUrgency = this.dataset.urgency;
+                });
+            });
+
+            // Location dropdowns
+            document.getElementById('division').addEventListener('change', loadDistricts);
+            document.getElementById('district').addEventListener('change', loadCities);
+
+            // Filters
+            document.getElementById('filterBloodGroup').addEventListener('change', filterRequests);
+            document.getElementById('filterUrgency').addEventListener('change', filterRequests);
+            document.getElementById('filterStatus').addEventListener('change', filterRequests);
+        }
+
+        // Load locations
+        async function loadLocations() {
+            try {
+                const { data, error } = await supabase
+                    .from('locations')
+                    .select('division')
+                    .order('division');
+
+                if (error) throw error;
+
+                const divisionSelect = document.getElementById('division');
+                divisionSelect.innerHTML = '<option value="">Select Division</option>';
+                
+                const divisions = [...new Set(data.map(item => item.division))];
+                divisions.forEach(division => {
+                    const option = document.createElement('option');
+                    option.value = division;
+                    option.textContent = division;
+                    divisionSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading locations:', error);
+                showToast('Error loading locations', 'error');
+            }
+        }
+
+        // Load districts based on selected division
+        async function loadDistricts() {
+            const division = document.getElementById('division').value;
+            const districtSelect = document.getElementById('district');
+            const citySelect = document.getElementById('city');
+
+            // Reset dependent dropdowns
+            districtSelect.innerHTML = '<option value="">Select District</option>';
+            districtSelect.disabled = !division;
+            citySelect.innerHTML = '<option value="">Select City</option>';
+            citySelect.disabled = true;
+
+            if (!division) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('locations')
+                    .select('district')
+                    .eq('division', division)
+                    .order('district');
+
+                if (error) throw error;
+
+                const districts = [...new Set(data.map(item => item.district))];
+                districts.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district;
+                    option.textContent = district;
+                    districtSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading districts:', error);
+                showToast('Error loading districts', 'error');
+            }
+        }
+
+        // Load cities based on selected district
+        async function loadCities() {
+            const division = document.getElementById('division').value;
+            const district = document.getElementById('district').value;
+            const citySelect = document.getElementById('city');
+
+            // Reset dependent dropdown
+            citySelect.innerHTML = '<option value="">Select City</option>';
+            citySelect.disabled = !district;
+
+            if (!district) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('locations')
+                    .select('city')
+                    .eq('division', division)
+                    .eq('district', district)
+                    .order('city');
+
+                if (error) throw error;
+
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.city;
+                    option.textContent = item.city;
+                    citySelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading cities:', error);
+                showToast('Error loading cities', 'error');
+            }
+        }
+
+        // Handle form submission
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const requestData = {
+                patient_name: formData.get('patientName'),
+                blood_group: formData.get('bloodGroup'),
+                units_needed: formData.get('unitsNeeded'),
+                required_date: formData.get('requiredDate'),
+                hospital_name: formData.get('hospitalName'),
+                division: formData.get('division'),
+                district: formData.get('district'),
+                city: formData.get('city'),
+                contact_number: formData.get('contactNumber'),
+                urgency: formData.get('urgency'),
+                additional_notes: formData.get('additionalNotes'),
+                anonymous: formData.get('anonymous') === 'on',
+                status: 'Pending'
+            };
+
+            try {
+                const { data, error } = await supabase
+                    .from('blood_requests')
+                    .insert([requestData])
+                    .select();
+
+                if (error) throw error;
+
+                showToast('Blood request submitted successfully!', 'success');
+                e.target.reset();
+                document.querySelectorAll('.urgency-option').forEach(opt => opt.classList.remove('selected'));
+                loadRequests();
+
+                // Send notifications to matching donors (simulated)
+                notifyDonors(requestData);
+            } catch (error) {
+                console.error('Error submitting request:', error);
+                showToast('Error submitting request', 'error');
+            }
+        }
+
+        // Load requests
+        async function loadRequests() {
+            const loading = document.getElementById('loadingRequests');
+            const requestsList = document.getElementById('requestsList');
+
+            loading.classList.add('show');
+            requestsList.innerHTML = '';
+
+            try {
+                const { data, error } = await supabase
+                    .from('blood_requests')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                displayRequests(data);
+            } catch (error) {
+                console.error('Error loading requests:', error);
+                showToast('Error loading requests', 'error');
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        // Display requests
+        function displayRequests(requests) {
+            const requestsList = document.getElementById('requestsList');
+
+            if (requests.length === 0) {
+                requestsList.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-light);">
+                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h3>No blood requests found</h3>
+                        <p>Be the first to request blood</p>
+                    </div>
+                `;
+                return;
+            }
+
+            requestsList.innerHTML = requests.map(request => {
+                const isEmergency = isRequestEmergency(request);
+                const timeLeft = getTimeLeft(request.required_date);
+                
+                return `
+                    <div class="request-card ${request.urgency.toLowerCase()} ${isEmergency ? 'emergency' : ''}">
+                        <div class="request-header">
+                            <div class="request-info">
+                                <h3>${request.anonymous ? 'Anonymous Patient' : request.patient_name}</h3>
+                                <div class="request-meta">
+                                    <div class="request-meta-item">
+                                        <i class="fas fa-tint"></i>
+                                        <span>${request.blood_group}</span>
+                                    </div>
+                                    <div class="request-meta-item">
+                                        <i class="fas fa-hospital"></i>
+                                        <span>${request.hospital_name}</span>
+                                    </div>
+                                    <div class="request-meta-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>${request.city}, ${request.district}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="urgency-badge ${request.urgency.toLowerCase()}">${request.urgency}</span>
+                                <span class="status-badge ${request.status.toLowerCase()}">${request.status}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="request-details">
+                            <p><strong>Units Needed:</strong> ${request.units_needed}</p>
+                            <p><strong>Contact:</strong> ${request.contact_number}</p>
+                            ${request.additional_notes ? `<p><strong>Notes:</strong> ${request.additional_notes}</p>` : ''}
+                            ${timeLeft ? `<p class="countdown"><i class="fas fa-clock"></i> ${timeLeft}</p>` : ''}
+                        </div>
+                        
+                        <div class="request-actions">
+                            <div>
+                                ${request.status === 'Pending' ? `
+                                    <button class="btn btn-primary" onclick="respondToRequest('${request.id}')">
+                                        <i class="fas fa-hand-holding-heart"></i>
+                                        I Want to Donate
+                                    </button>
+                                ` : ''}
+                            </div>
+                            <div class="share-buttons">
+                                <button class="share-btn" onclick="openShareModal('${request.id}')" title="Share">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="donors-list" id="donors-${request.id}">
+                            <!-- Donors will be listed here -->
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Update countdown timers
+            updateCountdowns();
+        }
+
+        // Check if request is emergency (within 1 hour)
+        function isRequestEmergency(request) {
+            const requiredDate = new Date(request.required_date);
+            const now = new Date();
+            const diffHours = (requiredDate - now) / (1000 * 60 * 60);
+            return diffHours <= 1 && diffHours > 0;
+        }
+
+        // Get time left for request
+        function getTimeLeft(requiredDate) {
+            const required = new Date(requiredDate);
+            const now = new Date();
+            const diff = required - now;
+
+            if (diff <= 0) {
+                return 'Expired';
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            if (days > 0) {
+                return `${days} day${days > 1 ? 's' : ''} ${hours} hour${hours > 1 ? 's' : ''}`;
+            } else if (hours > 0) {
+                return `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minute${minutes > 1 ? 's' : ''}`;
+            } else {
+                return `${minutes} minute${minutes > 1 ? 's' : ''}`;
+            }
+        }
+
+        // Update countdown timers
+        function updateCountdowns() {
+            document.querySelectorAll('.countdown').forEach(countdown => {
+                const requestId = countdown.closest('.request-card').querySelector('[onclick*="respondToRequest"]').getAttribute('onclick').match(/'([^']+)'/)[1];
+                updateRequestCountdown(requestId);
+            });
+        }
+
+        // Update specific request countdown
+        async function updateRequestCountdown(requestId) {
+            try {
+                const { data, error } = await supabase
+                    .from('blood_requests')
+                    .select('required_date, status')
+                    .eq('id', requestId)
+                    .single();
+
+                if (error) throw error;
+
+                const countdown = document.querySelector(`#donors-${requestId}`).previousElementSibling.querySelector('.countdown');
+                if (countdown) {
+                    const timeLeft = getTimeLeft(data.required_date);
+                    countdown.innerHTML = `<i class="fas fa-clock"></i> ${timeLeft}`;
+                    
+                    // Auto-expire requests
+                    if (timeLeft === 'Expired' && data.status !== 'Expired') {
+                        await supabase
+                            .from('blood_requests')
+                            .update({ status: 'Expired' })
+                            .eq('id', requestId);
+                        loadRequests();
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating countdown:', error);
+            }
+        }
+
+        // Respond to request
+        async function respondToRequest(requestId) {
+            try {
+                // Get request details
+                const { data: request, error } = await supabase
+                    .from('blood_requests')
+                    .select('*')
+                    .eq('id', requestId)
+                    .single();
+
+                if (error) throw error;
+
+                // Find matching donors
+                const { data: donors, error: donorError } = await supabase
+                    .from('donors')
+                    .select('*')
+                    .eq('blood_group', request.blood_group)
+                    .eq('division', request.division)
+                    .eq('available', true);
+
+                if (donorError) throw donorError;
+
+                // Show donors list
+                const donorsList = document.getElementById(`donors-${requestId}`);
+                donorsList.innerHTML = `
+                    <h4>Matching Donors (${donors.length})</h4>
+                    ${donors.length === 0 ? 
+                        '<p>No matching donors found in your area.</p>' :
+                        donors.map(donor => `
+                            <div class="donor-item">
+                                <div class="donor-info">
+                                    <i class="fas fa-user"></i>
+                                    <span>${donor.name}</span>
+                                </div>
+                                <button class="btn-donate" onclick="contactDonor('${donor.id}', '${request.id}')">
+                                    Contact
+                                </button>
+                            </div>
+                        `).join('')
+                    }
+                `;
+                donorsList.classList.add('show');
+
+                // Update request status
+                await supabase
+                    .from('blood_requests')
+                    .update({ status: 'Accepted' })
+                    .eq('id', requestId);
+
+                loadRequests();
+            } catch (error) {
+                console.error('Error responding to request:', error);
+                showToast('Error responding to request', 'error');
+            }
+        }
+
+        // Contact donor (simulated)
+        function contactDonor(donorId, requestId) {
+            showToast('Donor contact information will be shared with you shortly!', 'success');
+        }
+
+        // Filter requests
+        function filterRequests() {
+            const bloodGroup = document.getElementById('filterBloodGroup').value;
+            const urgency = document.getElementById('filterUrgency').value;
+            const status = document.getElementById('filterStatus').value;
+
+            const requests = document.querySelectorAll('.request-card');
+            requests.forEach(request => {
+                let show = true;
+
+                if (bloodGroup && !request.querySelector('.request-meta-item span').textContent.includes(bloodGroup)) {
+                    show = false;
+                }
+
+                if (urgency && !request.querySelector('.urgency-badge').classList.contains(urgency.toLowerCase())) {
+                    show = false;
+                }
+
+                if (status && !request.querySelector('.status-badge').classList.contains(status.toLowerCase())) {
+                    show = false;
+                }
+
+                request.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        // Open share modal
+        function openShareModal(requestId) {
+            currentRequestId = requestId;
+            const modal = document.getElementById('shareModal');
+            modal.classList.add('show');
+
+            // Generate QR code
+            const qrCodeImage = document.getElementById('qrCodeImage');
+            const requestUrl = `${window.location.origin}/request.html?id=${requestId}`;
+            new QRCode(qrCodeImage, {
+                text: requestUrl,
+                width: 200,
+                height: 200
+            });
+        }
+
+        // Close share modal
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.remove('show');
+        }
+
+        // Share functions
+        function shareOnWhatsApp() {
+            const text = `Urgent blood request! Please help if you can donate. View details: ${window.location.origin}/request.html?id=${currentRequestId}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function shareOnMessenger() {
+            const text = `Urgent blood request! Please help if you can donate. View details: ${window.location.origin}/request.html?id=${currentRequestId}`;
+            window.open(`https://www.facebook.com/dialog/send?link=${encodeURIComponent(window.location.origin)}&quote=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function shareOnFacebook() {
+            const text = `Urgent blood request! Please help if you can donate.`;
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin)}&quote=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function copyLink() {
+            const link = `${window.location.origin}/request.html?id=${currentRequestId}`;
+            navigator.clipboard.writeText(link).then(() => {
+                showToast('Link copied to clipboard!', 'success');
+            });
+        }
+
+        // Notify donors (simulated)
+        function notifyDonors(request) {
+            // In a real implementation, this would send SMS notifications
+            console.log('Notifying donors about request:', request);
+            
+            // Show notification for demo purposes
+            if (request.urgency === 'Emergency') {
+                showToast('Emergency alert sent to nearby donors!', 'success');
+            }
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const icon = toast.querySelector('i');
+            
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+            }
+            
+            toast.className = `toast ${type}`;
+            toastMessage.textContent = message;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update countdowns every minute
+        setInterval(updateCountdowns, 60000);
+    </script>
+</body>
+</html>
