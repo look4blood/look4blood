@@ -322,11 +322,25 @@
             box-shadow: var(--card-shadow);
         }
 
+        .filter-toggle {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
         .filters {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .filters.show {
+            max-height: 500px;
+            opacity: 1;
         }
 
         .filter-group {
@@ -371,6 +385,8 @@
             justify-content: space-between;
             align-items: start;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .request-info h3 {
@@ -381,9 +397,9 @@
 
         .request-meta {
             display: flex;
+            flex-wrap: wrap;
             gap: 1rem;
             margin-bottom: 1rem;
-            flex-wrap: wrap;
         }
 
         .request-meta-item {
@@ -427,7 +443,6 @@
             font-size: 0.8rem;
             font-weight: 600;
             text-transform: uppercase;
-            margin-left: 1rem;
         }
 
         .status-badge.pending {
@@ -471,10 +486,16 @@
 
         .request-actions {
             display: flex;
+            flex-wrap: wrap;
             gap: 1rem;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
             flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .countdown {
@@ -555,20 +576,32 @@
         }
 
         .matching-donors h4 {
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             color: var(--text-dark);
         }
 
         .donor-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border-color);
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
-        .donor-item:last-child {
-            border-bottom: none;
+        .donor-item:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .donor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .donor-info {
@@ -581,13 +614,67 @@
             color: var(--primary-color);
         }
 
-        .donor-eligibility {
+        .donor-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .donor-blood-group {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
             font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .donor-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .donor-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .donor-detail i {
+            color: var(--primary-color);
+        }
+
+        .donor-eligibility {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .donor-eligibility.eligible {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--success-color);
+        }
+
+        .donor-eligibility.not-eligible {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: var(--primary-color);
+        }
+
+        .donor-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
         }
 
         .btn-contact {
-            padding: 0.4rem 1rem;
+            padding: 0.5rem 1rem;
             background-color: var(--secondary-color);
             color: white;
             border: none;
@@ -595,20 +682,78 @@
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .btn-contact:hover {
             background-color: #6d28d9;
         }
 
+        .btn-call {
+            padding: 0.5rem 1rem;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-call:hover {
+            background-color: #15803d;
+        }
+
+        .btn-view-profile {
+            padding: 0.5rem 1rem;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-view-profile:hover {
+            background-color: white;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
         .requester-actions {
             display: flex;
             gap: 0.5rem;
             margin-top: 1rem;
+            flex-wrap: wrap;
         }
 
         .requester-actions.show {
             display: flex;
+        }
+
+        .highlight-phone {
+            background-color: rgba(220, 38, 38, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            border: 2px dashed var(--primary-color);
+            text-align: center;
+        }
+
+        .highlight-phone .phone-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
         }
 
         /* Modal */
@@ -747,7 +892,7 @@
 
             .request-header {
                 flex-direction: column;
-                gap: 1rem;
+                align-items: flex-start;
             }
 
             .request-actions {
@@ -759,8 +904,25 @@
                 justify-content: center;
             }
 
+            .donor-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .donor-actions {
+                justify-content: center;
+            }
+
             .filters {
                 grid-template-columns: 1fr;
+            }
+
+            .request-card {
+                padding: 1rem;
+            }
+
+            .donor-item {
+                padding: 0.75rem;
             }
         }
     </style>
@@ -917,7 +1079,14 @@
                 <p>Find and respond to blood requests in your area</p>
             </div>
 
-            <div class="filters">
+            <div class="filter-toggle">
+                <button class="btn btn-secondary" id="filterToggleBtn" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i>
+                    Find and respond to blood requests in your area
+                </button>
+            </div>
+
+            <div class="filters" id="filtersSection">
                 <div class="filter-group">
                     <label for="filterBloodGroup">Blood Group</label>
                     <select id="filterBloodGroup">
@@ -1041,6 +1210,7 @@
         let currentRequestId = '';
         let currentUser = null;
         let currentDonorProfile = null;
+        let filtersVisible = false;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
@@ -1076,6 +1246,22 @@
             document.getElementById('filterCity').addEventListener('change', filterRequests);
             document.getElementById('filterUrgency').addEventListener('change', filterRequests);
             document.getElementById('filterStatus').addEventListener('change', filterRequests);
+        }
+
+        // Toggle filters visibility
+        function toggleFilters() {
+            const filtersSection = document.getElementById('filtersSection');
+            const toggleBtn = document.getElementById('filterToggleBtn');
+            
+            filtersVisible = !filtersVisible;
+            
+            if (filtersVisible) {
+                filtersSection.classList.add('show');
+                toggleBtn.innerHTML = '<i class="fas fa-times"></i> Hide Filters';
+            } else {
+                filtersSection.classList.remove('show');
+                toggleBtn.innerHTML = '<i class="fas fa-filter"></i> Find and respond to blood requests in your area';
+            }
         }
 
         // Check user session
@@ -1405,7 +1591,7 @@
                         </div>
                         
                         <div class="request-actions">
-                            <div>
+                            <div class="action-buttons">
                                 ${request.status === 'Pending' && currentDonorProfile ? `
                                     <button class="btn btn-primary" onclick="respondToRequest('${request.id}')">
                                         <i class="fas fa-hand-holding-heart"></i>
@@ -1456,6 +1642,28 @@
 
             // Update countdown timers
             updateCountdowns();
+            
+            // Restore "I Want to Donate" button visibility
+            restoreDonateButtons();
+        }
+
+        // Restore "I Want to Donate" button visibility
+        function restoreDonateButtons() {
+            if (!currentDonorProfile) return;
+            
+            // Check each request to see if donor has already responded
+            document.querySelectorAll('.request-card').forEach(card => {
+                const requestId = card.dataset.requestId;
+                const responseDiv = document.getElementById(`response-${requestId}`);
+                
+                // If response div is not shown, show the donate button
+                if (!responseDiv.classList.contains('show')) {
+                    const donateButton = card.querySelector('.btn-primary');
+                    if (donateButton && donateButton.textContent.includes('I Want to Donate')) {
+                        donateButton.style.display = 'inline-flex';
+                    }
+                }
+            });
         }
 
         // Check if request is emergency (within 1 hour)
@@ -1551,6 +1759,12 @@
                 const isEligible = daysSinceDonation === null || daysSinceDonation >= 90;
 
                 const responseDiv = document.getElementById(`response-${requestId}`);
+                const donateButton = document.querySelector(`[data-request-id="${requestId}"] .btn-primary`);
+                
+                // Hide the donate button after clicking
+                if (donateButton) {
+                    donateButton.style.display = 'none';
+                }
                 
                 if (isEligible) {
                     // Show patient contact info
@@ -1562,7 +1776,14 @@
                             <p><strong>Contact:</strong> ${request.contact_number}</p>
                             <p><strong>Hospital:</strong> ${request.hospital_name}</p>
                             <p><strong>Location:</strong> ${request.hospital_name}, ${request.city}</p>
-                            <p style="margin-top: 0.5rem;"><strong>Please contact the patient directly using the provided information.</strong></p>
+                            <div class="highlight-phone">
+                                <p>Please contact the patient directly using the provided information.</p>
+                                <div class="phone-number">${request.contact_number}</div>
+                                <button class="btn-call" onclick="makeCall('${request.contact_number}')">
+                                    <i class="fas fa-phone"></i>
+                                    Call Now
+                                </button>
+                            </div>
                         </div>
                     `;
                     
@@ -1595,6 +1816,11 @@
             }
         }
 
+        // Make call function
+        function makeCall(phoneNumber) {
+            window.open(`tel:${phoneNumber}`, '_self');
+        }
+
         // Set reminder for next time
         async function setReminder(requestId) {
             // In a real implementation, this would set a reminder in the database
@@ -1613,12 +1839,14 @@
 
                 if (error) throw error;
 
-                // Find matching donors
+                // Find matching donors with exact location match
                 const { data: donors, error: donorError } = await supabase
                     .from('donors')
                     .select('*')
                     .eq('blood_group', request.blood_group)
                     .eq('division', request.division)
+                    .eq('district', request.district)
+                    .eq('city', request.city)
                     .eq('available', true);
 
                 if (donorError) throw donorError;
@@ -1636,21 +1864,46 @@
                             
                             return `
                                 <div class="donor-item">
-                                    <div class="donor-info">
-                                        <i class="fas fa-user"></i>
-                                        <div>
-                                            <span>${donor.name}</span>
-                                            <div class="donor-eligibility">
-                                                ${isEligible ? 
-                                                    'Eligible to donate' : 
-                                                    `Last donation: ${daysSinceDonation} days ago`
-                                                }
+                                    <div class="donor-header">
+                                        <div class="donor-info">
+                                            <i class="fas fa-user"></i>
+                                            <div>
+                                                <span class="donor-name">${donor.name}</span>
+                                                <span class="donor-blood-group">${donor.blood_group}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <button class="btn-contact" onclick="contactDonor('${donor.id}', '${requestId}')">
-                                        Contact
-                                    </button>
+                                    
+                                    <div class="donor-details">
+                                        <div class="donor-detail">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>${donor.city}, ${donor.district}</span>
+                                        </div>
+                                        <div class="donor-detail">
+                                            <i class="fas fa-calendar"></i>
+                                            <span>Last donation: ${lastDonation ? lastDonation.toLocaleDateString() : 'Never'}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="donor-eligibility ${isEligible ? 'eligible' : 'not-eligible'}">
+                                        ${isEligible ? 
+                                            'Eligible to donate' : 
+                                            `Not eligible (${90 - daysSinceDonation} days remaining)`
+                                        }
+                                    </div>
+                                    
+                                    <div class="donor-actions">
+                                        <button class="btn-view-profile" onclick="viewProfile('${donor.id}')">
+                                            <i class="fas fa-user"></i>
+                                            View Profile
+                                        </button>
+                                        ${isEligible ? `
+                                            <button class="btn-call" onclick="makeCall('${donor.phone}')">
+                                                <i class="fas fa-phone"></i>
+                                                Call Now
+                                            </button>
+                                        ` : ''}
+                                    </div>
                                 </div>
                             `;
                         }).join('')
@@ -1663,9 +1916,9 @@
             }
         }
 
-        // Contact donor (simulated)
-        function contactDonor(donorId, requestId) {
-            showToast('Donor contact information will be shared with you shortly!', 'success');
+        // View donor profile
+        function viewProfile(donorId) {
+            window.open(`profile.html?id=${donorId}`, '_blank');
         }
 
         // Fulfill request
@@ -1713,26 +1966,29 @@
             requests.forEach(request => {
                 let show = true;
 
+                // Check blood group filter
                 if (bloodGroup && !request.querySelector('.request-meta-item span').textContent.includes(bloodGroup)) {
                     show = false;
                 }
 
-                if (division && !request.querySelector('.request-meta-item:last-child span').textContent.includes(division)) {
+                // Check location filters
+                const locationText = request.querySelector('.request-meta-item:last-child span').textContent;
+                if (division && !locationText.includes(division)) {
+                    show = false;
+                }
+                if (district && !locationText.includes(district)) {
+                    show = false;
+                }
+                if (city && !locationText.includes(city)) {
                     show = false;
                 }
 
-                if (district && !request.querySelector('.request-meta-item:last-child span').textContent.includes(district)) {
-                    show = false;
-                }
-
-                if (city && !request.querySelector('.request-meta-item:last-child span').textContent.includes(city)) {
-                    show = false;
-                }
-
+                // Check urgency filter
                 if (urgency && !request.querySelector('.urgency-badge').classList.contains(urgency.toLowerCase())) {
                     show = false;
                 }
 
+                // Check status filter
                 if (status && !request.querySelector('.status-badge').classList.contains(status.toLowerCase())) {
                     show = false;
                 }
