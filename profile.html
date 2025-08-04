@@ -3,47 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Donor Profile</title>
+    <title>Blood Donor Profile - Look4Blood</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Cropper.js CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <style>
+        :root {
+            --primary-red: #c62828;
+            --primary-red-dark: #b71c1c;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            color: #334155;
+        }
+
+        /* Loading Spinner */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(198, 40, 40, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-red);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Progress Ring */
         .progress-ring {
             transform: rotate(-90deg);
         }
+
         .progress-ring__circle {
             transition: stroke-dashoffset 0.35s;
             stroke-dasharray: 339.292;
             stroke-dashoffset: 339.292;
         }
+
+        /* Animations */
         @keyframes bounce {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.2); }
         }
+
         .like-animation {
             animation: bounce 0.3s ease-in-out;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Comment Section */
         .comment-section {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
         }
+
         .comment-section.open {
             max-height: 500px;
         }
+
         /* Cropper styles */
         .cropper-container {
             max-height: 400px;
         }
+
         .upload-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
             display: flex;
             justify-content: center;
             align-items: center;
@@ -52,153 +119,400 @@
             border-radius: 50%;
             cursor: pointer;
         }
+
         .profile-photo-container:hover .upload-overlay {
             opacity: 1;
         }
+
         /* Table styles */
         .donation-table {
             width: 100%;
             border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
+
         .donation-table th, .donation-table td {
-            padding: 8px 12px;
+            padding: 12px 16px;
             text-align: left;
             border-bottom: 1px solid #e5e7eb;
         }
+
         .donation-table th {
-            background-color: #f9fafb;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .donation-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Card Styles */
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.1), 0 15px 15px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            border-top: 4px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-red), #e91e63, #9c27b0);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(198, 40, 40, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8fafc;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Input Styles */
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            color: #334155;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-input:hover {
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+
+        .form-input:disabled {
+            background-color: #f8fafc;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Badge Styles */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
             font-weight: 600;
         }
-        .donation-table tr:hover {
-            background-color: #f9fafb;
+
+        .badge-blood {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #b91c1c;
+        }
+
+        .badge-age {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1d4ed8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-info-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body>
     <!-- Loading Spinner -->
-    <div id="loading" class="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
     </div>
 
     <!-- Main Container -->
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
         <!-- Profile Header -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-            <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+        <div class="profile-card mb-8 p-6 md:p-8 fade-in">
+            <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
                 <!-- Profile Photo -->
                 <div class="profile-photo-container relative">
                     <img id="profilePhoto" src="https://bbvyjeljeyofswuijlyg.supabase.co/storage/v1/object/public/avatars//145856997_296fe121-5dfa-43f4-98b5-db50019738a7%20(2).jpg" 
-                         alt="Profile" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
+                         alt="Profile" class="w-40 h-40 rounded-full object-cover border-4 border-white shadow-lg">
                     <div class="upload-overlay">
                         <div class="text-white text-center">
-                            <i class="fas fa-camera text-2xl mb-2"></i>
-                            <p class="text-sm">Change Photo</p>
+                            <i class="fas fa-camera text-3xl mb-2"></i>
+                            <p class="text-sm font-medium">Change Photo</p>
                         </div>
                     </div>
-                    <div class="absolute -bottom-2 -right-2 bg-yellow-400 rounded-full p-2 shadow-lg">
-                        <i class="fas fa-medal text-white"></i>
+                    <div class="absolute -bottom-2 -right-2 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full p-3 shadow-lg">
+                        <i class="fas fa-medal text-white text-xl"></i>
                     </div>
                     <input type="file" id="photoUpload" class="hidden" accept="image/*">
                 </div>
                 
                 <!-- Basic Info -->
                 <div class="flex-1 text-center md:text-left">
-                    <h1 id="userName" class="text-2xl font-bold text-gray-800">Loading...</h1>
-                    <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-2">
-                        <span id="bloodGroup" class="bg-red-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
-                            A+
+                    <h1 id="userName" class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">Loading...</h1>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-3 mb-4">
+                        <span id="bloodGroup" class="badge badge-blood">
+                            <i class="fas fa-tint mr-1"></i> A+
                         </span>
-                        <span id="userAge" class="bg-gray-200 text-gray-700 px-4 py-1 rounded-full text-sm">
-                            27 years
+                        <span id="userAge" class="badge badge-age">
+                            <i class="fas fa-user mr-1"></i> 27 years
                         </span>
                     </div>
+                    <p class="text-gray-600 max-w-2xl">
+                        Dedicated blood donor committed to saving lives through regular donations. 
+                        Every donation can help save up to three lives.
+                    </p>
                 </div>
             </div>
         </div>
 
         <!-- Stats Section -->
-        <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
             <!-- Left Side - Donation Stats -->
-            <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Donation History</h2>
+            <div class="stat-card fade-in" style="animation-delay: 0.1s;">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">
+                        <i class="fas fa-chart-line text-red-500 mr-2"></i>Donation History
+                    </h2>
+                    <button id="donationHistoryBtn" class="btn btn-info">
+                        <i class="fas fa-history"></i> View All
+                    </button>
+                </div>
                 
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Total Donations</span>
-                        <span id="totalDonations" class="text-2xl font-bold text-red-500">12</span>
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                        <span class="text-gray-600 font-medium">
+                            <i class="fas fa-hand-holding-heart text-red-500 mr-2"></i>Total Donations
+                        </span>
+                        <span id="totalDonations" class="text-3xl font-bold text-red-500">12</span>
                     </div>
                     
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Last Donation</span>
-                        <span id="lastDonation" class="text-lg font-semibold text-gray-800">25 days ago</span>
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                        <span class="text-gray-600 font-medium">
+                            <i class="fas fa-calendar-check text-green-500 mr-2"></i>Last Donation
+                        </span>
+                        <span id="lastDonation" class="text-xl font-semibold text-gray-800">25 days ago</span>
                     </div>
                     
                     <!-- Progress Circle -->
-                    <div class="flex flex-col items-center mt-6">
-                        <div class="relative w-40 h-40">
-                            <svg class="progress-ring w-40 h-40">
-                                <circle class="text-gray-200" stroke="currentColor" stroke-width="8" 
-                                        fill="transparent" r="54" cx="80" cy="80"/>
+                    <div class="flex flex-col items-center mt-8">
+                        <div class="relative w-48 h-48">
+                            <svg class="progress-ring w-48 h-48">
+                                <circle class="text-gray-200" stroke="currentColor" stroke-width="10" 
+                                        fill="transparent" r="86" cx="96" cy="96"/>
                                 <circle id="progressCircle" class="progress-ring__circle text-red-500" 
-                                        stroke="currentColor" stroke-width="8" fill="transparent" 
-                                        r="54" cx="80" cy="80"/>
+                                        stroke="currentColor" stroke-width="10" fill="transparent" 
+                                        r="86" cx="96" cy="96"/>
                             </svg>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <span id="progressPercent" class="text-2xl font-bold text-gray-800">25%</span>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span id="progressPercent" class="text-3xl font-bold text-gray-800">25%</span>
+                                <span class="text-sm text-gray-500">Progress</span>
                             </div>
                         </div>
-                        <p id="nextDonationText" class="mt-4 text-center text-gray-600">
-                            This donor will be eligible to donate in <span class="font-semibold text-red-500">65 days</span>
+                        <p id="nextDonationText" class="mt-6 text-center text-gray-600 font-medium">
+                            This donor will be eligible to donate in 
+                            <span class="font-bold text-red-500">65 days</span>
                         </p>
                     </div>
                 </div>
             </div>
-
+            
             <!-- Right Side - Interactions -->
-            <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Community Feedback</h2>
+            <div class="stat-card fade-in" style="animation-delay: 0.2s;">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-users text-blue-500 mr-2"></i>Community Feedback
+                </h2>
                 
-                <div class="flex justify-around mb-6">
-                    <button id="likeBtn" class="flex flex-col items-center space-y-2 transition-transform hover:scale-105">
-                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-thumbs-up text-2xl text-green-600"></i>
+                <div class="flex justify-around mb-8">
+                    <button id="likeBtn" class="flex flex-col items-center space-y-3 transition-transform hover:scale-105">
+                        <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-md">
+                            <i class="fas fa-thumbs-up text-3xl text-green-600"></i>
                         </div>
-                        <span id="likeCount" class="text-2xl font-bold text-green-600">142</span>
+                        <span id="likeCount" class="text-3xl font-bold text-green-600">142</span>
+                        <span class="text-sm text-gray-500">Likes</span>
                     </button>
                     
-                    <button id="dislikeBtn" class="flex flex-col items-center space-y-2 transition-transform hover:scale-105">
-                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-thumbs-down text-2xl text-red-600"></i>
+                    <button id="dislikeBtn" class="flex flex-col items-center space-y-3 transition-transform hover:scale-105">
+                        <div class="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center shadow-md">
+                            <i class="fas fa-thumbs-down text-3xl text-red-600"></i>
                         </div>
-                        <span id="dislikeCount" class="text-2xl font-bold text-red-600">3</span>
+                        <span id="dislikeCount" class="text-3xl font-bold text-red-600">3</span>
+                        <span class="text-sm text-gray-500">Dislikes</span>
                     </button>
                 </div>
-
+                
                 <div class="space-y-3">
-                    <button id="commentBtn" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
-                        <i class="fas fa-comment mr-2"></i>View Comments
+                    <button id="commentBtn" class="btn btn-primary w-full justify-center">
+                        <i class="fas fa-comment"></i> View Comments
                     </button>
                     
-                    <button id="reportBtn" class="w-full bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors">
-                        <i class="fas fa-flag mr-2"></i>Report User
-                    </button>
-                    
-                    <button id="donationHistoryBtn" class="w-full bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors">
-                        <i class="fas fa-history mr-2"></i>Donation History
+                    <button id="reportBtn" class="btn btn-warning w-full justify-center">
+                        <i class="fas fa-flag"></i> Report User
                     </button>
                 </div>
-
+                
                 <!-- Comments Section -->
-                <div id="commentsSection" class="comment-section mt-4">
-                    <div class="border-t pt-4">
-                        <h3 class="font-semibold mb-3">Comments</h3>
-                        <div id="commentsList" class="space-y-3 max-h-60 overflow-y-auto mb-3">
+                <div id="commentsSection" class="comment-section mt-6">
+                    <div class="border-t pt-6">
+                        <h3 class="font-bold text-lg mb-4 flex items-center">
+                            <i class="fas fa-comments text-blue-500 mr-2"></i> Comments
+                        </h3>
+                        <div id="commentsList" class="space-y-4 max-h-60 overflow-y-auto mb-4">
                             <!-- Comments will be loaded here -->
                         </div>
                         <div class="flex space-x-2">
                             <input id="commentInput" type="text" placeholder="Add a comment..." 
-                                   class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <button id="addCommentBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                                   class="form-input flex-1">
+                            <button id="addCommentBtn" class="btn btn-primary">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
                         </div>
@@ -208,74 +522,91 @@
         </div>
 
         <!-- User Info Section -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">User Information</h2>
+        <div class="stat-card mb-8 fade-in" style="animation-delay: 0.3s;">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">
+                <i class="fas fa-user-circle text-purple-500 mr-2"></i> User Information
+            </h2>
             
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="space-y-3">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-4">
                     <div>
-                        <label class="text-sm text-gray-600">Phone Number</label>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">
+                            <i class="fas fa-phone text-blue-500 mr-1"></i> Phone Number
+                        </label>
                         <input id="phoneInput" type="tel" disabled 
-                               class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                               class="form-input">
                     </div>
                     
                     <div>
-                        <label class="text-sm text-gray-600">City</label>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">
+                            <i class="fas fa-map-marker-alt text-red-500 mr-1"></i> City
+                        </label>
                         <input id="cityInput" type="text" disabled 
-                               class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                               class="form-input">
                     </div>
                 </div>
                 
-                <div class="space-y-3">
+                <div class="space-y-4">
                     <div>
-                        <label class="text-sm text-gray-600">Division</label>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">
+                            <i class="fas fa-globe text-green-500 mr-1"></i> Division
+                        </label>
                         <input id="districtInput" type="text" disabled 
-                               class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                               class="form-input">
                     </div>
                     
                     <div>
-                        <label class="text-sm text-gray-600">User ID</label>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">
+                            <i class="fas fa-id-card text-purple-500 mr-1"></i> User ID
+                        </label>
                         <input id="userIdInput" type="text" readonly 
-                               class="w-full px-3 py-2 border rounded-lg bg-gray-100 focus:outline-none">
+                               class="form-input bg-gray-100">
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex justify-center space-x-4">
-            <button id="editBtn" class="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors">
-                <i class="fas fa-edit mr-2"></i>Edit Profile
+        <div class="flex justify-center space-x-4 mb-8 fade-in" style="animation-delay: 0.4s;">
+            <button id="editBtn" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit Profile
             </button>
-            <button id="saveBtn" class="bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-600 transition-colors hidden">
-                <i class="fas fa-save mr-2"></i>Save Changes
+            <button id="saveBtn" class="btn btn-success hidden">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+            <button id="shareBtn" class="btn btn-secondary">
+                <i class="fas fa-share-alt"></i> Share Profile
             </button>
         </div>
     </div>
 
     <!-- Crop Modal -->
-    <div id="cropModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-4 max-w-md w-full mx-4">
-            <h3 class="text-xl font-semibold mb-4">Crop Your Profile Picture</h3>
+    <div id="cropModal" class="modal hidden">
+        <div class="modal-content rounded-2xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold mb-4 flex items-center">
+                <i class="fas fa-crop text-red-500 mr-2"></i> Crop Your Profile Picture
+            </h3>
             <div class="mb-4">
-                <img id="cropImage" class="max-w-full">
+                <img id="cropImage" class="max-w-full rounded-lg">
             </div>
             <div class="flex justify-end space-x-3">
-                <button id="cancelCropBtn" class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                    Cancel
+                <button id="cancelCropBtn" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
                 </button>
-                <button id="applyCropBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                    Apply
+                <button id="applyCropBtn" class="btn btn-primary">
+                    <i class="fas fa-check"></i> Apply
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Donation History Modal -->
-    <div id="donationHistoryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-2xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-semibold">Donation History</h3>
+    <div id="donationHistoryModal" class="modal hidden">
+        <div class="modal-content rounded-2xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold flex items-center">
+                    <i class="fas fa-history text-blue-500 mr-2"></i> Donation History
+                </h3>
                 <button id="closeDonationHistoryBtn" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times text-xl"></i>
                 </button>
@@ -285,32 +616,36 @@
                 <table class="donation-table">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Place</th>
-                            <th>Blood Group</th>
-                            <th>Donation #</th>
+                            <th><i class="fas fa-calendar mr-1"></i> Date</th>
+                            <th><i class="fas fa-map-marker-alt mr-1"></i> Place</th>
+                            <th><i class="fas fa-tint mr-1"></i> Blood Group</th>
+                            <th><i class="fas fa-hashtag mr-1"></i> Donation #</th>
                         </tr>
                     </thead>
                     <tbody id="donationHistoryList">
                         <!-- Donation history will be loaded here -->
                     </tbody>
                 </table>
-                <div id="noDonationHistory" class="text-center py-8 text-gray-500 hidden">
-                    <i class="fas fa-history text-4xl mb-2"></i>
-                    <p>No donation history found</p>
+                <div id="noDonationHistory" class="text-center py-12 text-gray-500 hidden">
+                    <i class="fas fa-history text-5xl mb-4"></i>
+                    <p class="text-lg">No donation history found</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Report Modal -->
-    <div id="reportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
-            <h3 class="text-xl font-semibold mb-4">Report User</h3>
+    <div id="reportModal" class="modal hidden">
+        <div class="modal-content rounded-2xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold mb-4 flex items-center">
+                <i class="fas fa-flag text-yellow-500 mr-2"></i> Report User
+            </h3>
             <form id="reportForm">
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Reason</label>
-                    <select id="reportReason" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i> Reason
+                    </label>
+                    <select id="reportReason" class="form-input">
                         <option value="">Select a reason</option>
                         <option value="inappropriate">Inappropriate behavior</option>
                         <option value="fake">Fake profile</option>
@@ -318,21 +653,29 @@
                         <option value="other">Other</option>
                     </select>
                 </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                    <textarea id="reportDescription" rows="3" 
-                              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-comment-alt text-yellow-500 mr-1"></i> Description
+                    </label>
+                    <textarea id="reportDescription" rows="4" 
+                              class="form-input" placeholder="Please provide details about your report..."></textarea>
                 </div>
                 <div class="flex justify-end space-x-3">
-                    <button type="button" id="cancelReportBtn" class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                        Cancel
+                    <button type="button" id="cancelReportBtn" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
                     </button>
-                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
-                        Submit Report
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-paper-plane"></i> Submit Report
                     </button>
                 </div>
             </form>
         </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="successToast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 flex items-center">
+        <i class="fas fa-check-circle mr-2"></i>
+        <span id="successMessage">Success!</span>
     </div>
 
     <!-- Cropper.js -->
@@ -343,48 +686,63 @@
         const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
+        
         // Global variables
         let currentUser = null;
         let donorData = null;
         let isEditMode = false;
+        let isOwnProfile = false;
         let userInteraction = null;
         let cropper = null;
 
+        // Show success toast
+        function showSuccessToast(message) {
+            const toast = document.getElementById('successToast');
+            document.getElementById('successMessage').textContent = message;
+            toast.classList.remove('translate-y-20');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20');
+            }, 3000);
+        }
+
         // Check authentication on page load
-document.addEventListener('DOMContentLoaded', async () => {
-    // Get donor ID from URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const donorId = urlParams.get('id');
-    
-    console.log('Retrieved donor ID from URL:', donorId); // Debug log
-    
-    if (!donorId) {
-        alert('No donor ID specified. Redirecting to donor list...');
-        window.location.href = 'index.html';
-        return;
-    }
-    
-    await checkAuth();
-    
-    if (currentUser) {
-        // Check if this is the user's own profile
-        isOwnProfile = currentUser.id === donorId;
-        console.log('Is own profile:', isOwnProfile); // Debug log
-    }
-    
-    // Load the donor profile
-    await loadDonorProfile(donorId);
-    await checkUserInteraction();
-    
-    // Setup photo upload only if it's the user's own profile
-    if (isOwnProfile) {
-        setupPhotoUpload();
-    }
-    
-    // Setup donation history
-    setupDonationHistory();
-});
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get donor ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const donorId = urlParams.get('id');
+            
+            console.log('Retrieved donor ID from URL:', donorId); // Debug log
+            
+            if (!donorId) {
+                alert('No donor ID specified. Redirecting to donor list...');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            await checkAuth();
+            
+            if (currentUser) {
+                // Check if this is the user's own profile
+                isOwnProfile = currentUser.id === donorId;
+                console.log('Is own profile:', isOwnProfile); // Debug log
+            }
+            
+            // Load the donor profile
+            await loadDonorProfile(donorId);
+            await checkUserInteraction();
+            
+            // Setup photo upload only if it's the user's own profile
+            if (isOwnProfile) {
+                setupPhotoUpload();
+            }
+            
+            // Setup donation history
+            setupDonationHistory();
+            
+            // Setup share button
+            setupShareButton();
+        });
         
         // Authentication check
         async function checkAuth() {
@@ -399,56 +757,56 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Load donor profile
-async function loadDonorProfile(donorId) {
-    try {
-        console.log('Loading donor profile for ID:', donorId); // Debug log
-        
-        // Load donor data
-        const { data, error } = await supabase
-            .from('donors')
-            .select('*')
-            .eq('id', donorId)
-            .single();
-
-        if (error) {
-            console.error('Supabase error:', error);
-            throw error;
+        async function loadDonorProfile(donorId) {
+            try {
+                console.log('Loading donor profile for ID:', donorId); // Debug log
+                
+                // Load donor data
+                const { data, error } = await supabase
+                    .from('donors')
+                    .select('*')
+                    .eq('id', donorId)
+                    .single();
+                    
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
+                
+                if (!data) {
+                    console.error('No donor data found for ID:', donorId);
+                    throw new Error('Donor not found');
+                }
+                
+                console.log('Donor data loaded:', data); // Debug log
+                
+                donorData = data;
+                updateUI();
+                
+                // Hide edit button if it's not the user's own profile
+                if (!isOwnProfile) {
+                    document.getElementById('editBtn').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading donor data:', error);
+                alert('Error loading profile data: ' + error.message);
+                window.location.href = 'index.html';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
         }
-        
-        if (!data) {
-            console.error('No donor data found for ID:', donorId);
-            throw new Error('Donor not found');
-        }
-        
-        console.log('Donor data loaded:', data); // Debug log
-        
-        donorData = data;
-        updateUI();
-        
-        // Hide edit button if it's not the user's own profile
-        if (!isOwnProfile) {
-            document.getElementById('editBtn').style.display = 'none';
-        }
-    } catch (error) {
-        console.error('Error loading donor data:', error);
-        alert('Error loading profile data: ' + error.message);
-        window.location.href = 'index.html';
-    } finally {
-        document.getElementById('loading').style.display = 'none';
-    }
-}
         
         // Update UI with donor data
         function updateUI() {
             // Profile info
             document.getElementById('userName').textContent = donorData.name;
-            document.getElementById('bloodGroup').textContent = donorData.blood_group;
-            document.getElementById('userAge').textContent = `${donorData.age} years`;
+            document.getElementById('bloodGroup').innerHTML = `<i class="fas fa-tint mr-1"></i> ${donorData.blood_group}`;
+            document.getElementById('userAge').innerHTML = `<i class="fas fa-user mr-1"></i> ${donorData.age} years`;
             
             if (donorData.avatar_url) {
                 document.getElementById('profilePhoto').src = donorData.avatar_url;
             }
-
+            
             // Donation stats
             document.getElementById('totalDonations').textContent = donorData.times_donated || 0;
             
@@ -463,31 +821,31 @@ async function loadDonorProfile(donorId) {
             updateProgressCircle(progressPercent);
             document.getElementById('nextDonationText').innerHTML = 
                 daysRemaining > 0 
-                    ? `This donor will be eligible to donate in <span class="font-semibold text-red-500">${daysRemaining} days</span>`
+                    ? `This donor will be eligible to donate in <span class="font-bold text-red-500">${daysRemaining} days</span>`
                     : 'This donor is eligible to donate now!';
-
+            
             // Interaction counts
             document.getElementById('likeCount').textContent = donorData.thumbs_up || 0;
             document.getElementById('dislikeCount').textContent = donorData.thumbs_down || 0;
-
+            
             // User info
             document.getElementById('phoneInput').value = donorData.phone || '';
             document.getElementById('cityInput').value = donorData.city || '';
             document.getElementById('districtInput').value = donorData.division || '';
             document.getElementById('userIdInput').value = donorData.custom_id || donorData.id.toString().substring(0, 8);
         }
-
+        
         // Update progress circle
         function updateProgressCircle(percent) {
             const circle = document.getElementById('progressCircle');
-            const radius = 54;
+            const radius = 86;
             const circumference = 2 * Math.PI * radius;
             const offset = circumference - (percent / 100) * circumference;
             
             circle.style.strokeDashoffset = offset;
             document.getElementById('progressPercent').textContent = `${percent}%`;
         }
-
+        
         // Setup photo upload
         function setupPhotoUpload() {
             const profilePhoto = document.getElementById('profilePhoto');
@@ -602,7 +960,7 @@ async function loadDonorProfile(donorId) {
                             cropper.destroy();
                             cropper = null;
                             
-                            alert('Profile picture updated successfully!');
+                            showSuccessToast('Profile picture updated successfully!');
                         } catch (error) {
                             console.error('Error uploading profile picture:', error);
                             alert('Error uploading profile picture');
@@ -613,7 +971,29 @@ async function loadDonorProfile(donorId) {
                 }
             });
         }
-
+        
+        // Setup share button
+        function setupShareButton() {
+            document.getElementById('shareBtn').addEventListener('click', () => {
+                if (navigator.share) {
+                    navigator.share({
+                        title: `${donorData.name} - Blood Donor Profile`,
+                        text: `Check out ${donorData.name}'s blood donor profile on Look4Blood`,
+                        url: window.location.href
+                    });
+                } else {
+                    // Fallback for browsers that don't support Web Share API
+                    const dummy = document.createElement('input');
+                    document.body.appendChild(dummy);
+                    dummy.value = window.location.href;
+                    dummy.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(dummy);
+                    showSuccessToast('Profile link copied to clipboard!');
+                }
+            });
+        }
+        
         // Setup donation history
         function setupDonationHistory() {
             const donationHistoryBtn = document.getElementById('donationHistoryBtn');
@@ -643,7 +1023,7 @@ async function loadDonorProfile(donorId) {
                             <tr>
                                 <td>${new Date(donation.donation_date).toLocaleDateString()}</td>
                                 <td>${donation.place || 'N/A'}</td>
-                                <td><span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">${donation.blood_group}</span></td>
+                                <td><span class="badge badge-blood">${donation.blood_group}</span></td>
                                 <td>#${donation.times_donated}</td>
                             </tr>
                         `).join('');
@@ -676,7 +1056,7 @@ async function loadDonorProfile(donorId) {
                 }
             });
         }
-
+        
         // Check if user has already liked/disliked
         async function checkUserInteraction() {
             const { data, error } = await supabase
@@ -685,13 +1065,13 @@ async function loadDonorProfile(donorId) {
                 .eq('user_id', currentUser.id)
                 .eq('target_donor_id', donorData.id)
                 .single();
-
+                
             if (!error && data) {
                 userInteraction = data.interaction_type;
                 updateInteractionButtons();
             }
         }
-
+        
         // Update interaction buttons based on user's interaction
         function updateInteractionButtons() {
             const likeBtn = document.getElementById('likeBtn');
@@ -705,20 +1085,20 @@ async function loadDonorProfile(donorId) {
                 dislikeBtn.classList.add('opacity-50');
             }
         }
-
+        
         // Handle like/dislike
         document.getElementById('likeBtn').addEventListener('click', async () => {
             if (userInteraction) return;
             
             await handleInteraction('like');
         });
-
+        
         document.getElementById('dislikeBtn').addEventListener('click', async () => {
             if (userInteraction) return;
             
             await handleInteraction('dislike');
         });
-
+        
         async function handleInteraction(type) {
             try {
                 // Update donor stats
@@ -727,9 +1107,9 @@ async function loadDonorProfile(donorId) {
                     .from('donors')
                     .update({ [updateField]: (donorData[updateField] || 0) + 1 })
                     .eq('id', donorData.id);
-
+                    
                 if (error) throw error;
-
+                
                 // Record user interaction
                 await supabase
                     .from('user_interactions')
@@ -738,7 +1118,7 @@ async function loadDonorProfile(donorId) {
                         target_donor_id: donorData.id,
                         interaction_type: type
                     });
-
+                
                 // Update UI
                 userInteraction = type;
                 const countElement = type === 'like' ? 'likeCount' : 'dislikeCount';
@@ -756,7 +1136,7 @@ async function loadDonorProfile(donorId) {
                 alert('Error updating interaction');
             }
         }
-
+        
         // Comment functionality
         document.getElementById('commentBtn').addEventListener('click', () => {
             const section = document.getElementById('commentsSection');
@@ -766,7 +1146,7 @@ async function loadDonorProfile(donorId) {
                 loadComments();
             }
         });
-
+        
         async function loadComments() {
             try {
                 const { data, error } = await supabase
@@ -777,35 +1157,46 @@ async function loadDonorProfile(donorId) {
                     `)
                     .eq('target_donor_id', donorData.id)
                     .order('created_at', { ascending: false });
-
+                    
                 if (error) throw error;
-
+                
                 const commentsList = document.getElementById('commentsList');
-                commentsList.innerHTML = data.map(comment => `
-                    <div class="flex space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <img src="${comment.donors?.avatar_url || 'https://picsum.photos/seed/default/40/40.jpg'}" 
-                             alt="User" class="w-10 h-10 rounded-full">
-                        <div class="flex-1">
-                            <p class="font-semibold text-sm">${comment.donors?.name || 'Anonymous'}</p>
-                            <p class="text-gray-700">${comment.content}</p>
-                            <p class="text-xs text-gray-500 mt-1">
-                                ${new Date(comment.created_at).toLocaleDateString()}
-                            </p>
+                
+                if (data && data.length > 0) {
+                    commentsList.innerHTML = data.map(comment => `
+                        <div class="flex space-x-3 p-4 bg-gray-50 rounded-lg">
+                            <img src="${comment.donors?.avatar_url || 'https://picsum.photos/seed/default/40/40.jpg'}" 
+                                 alt="User" class="w-12 h-12 rounded-full object-cover">
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">${comment.donors?.name || 'Anonymous'}</p>
+                                <p class="text-gray-700 mt-1">${comment.content}</p>
+                                <p class="text-xs text-gray-500 mt-2">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    ${new Date(comment.created_at).toLocaleDateString()}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `).join('');
+                } else {
+                    commentsList.innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-comments text-4xl mb-3"></i>
+                            <p>No comments yet. Be the first to comment!</p>
+                        </div>
+                    `;
+                }
             } catch (error) {
                 console.error('Error loading comments:', error);
             }
         }
-
+        
         // Add comment
         document.getElementById('addCommentBtn').addEventListener('click', async () => {
             const input = document.getElementById('commentInput');
             const content = input.value.trim();
             
             if (!content) return;
-
+            
             try {
                 const { error } = await supabase
                     .from('comments')
@@ -814,26 +1205,27 @@ async function loadDonorProfile(donorId) {
                         target_donor_id: donorData.id,
                         content: content
                     });
-
+                    
                 if (error) throw error;
-
+                
                 input.value = '';
                 loadComments();
+                showSuccessToast('Comment added successfully!');
             } catch (error) {
                 console.error('Error adding comment:', error);
                 alert('Error adding comment');
             }
         });
-
+        
         // Report functionality
         document.getElementById('reportBtn').addEventListener('click', () => {
             document.getElementById('reportModal').classList.remove('hidden');
         });
-
+        
         document.getElementById('cancelReportBtn').addEventListener('click', () => {
             document.getElementById('reportModal').classList.add('hidden');
         });
-
+        
         document.getElementById('reportForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -844,7 +1236,7 @@ async function loadDonorProfile(donorId) {
                 alert('Please select a reason');
                 return;
             }
-
+            
             try {
                 const { error } = await supabase
                     .from('reports')
@@ -854,10 +1246,10 @@ async function loadDonorProfile(donorId) {
                         reason: reason,
                         description: description
                     });
-
+                    
                 if (error) throw error;
-
-                alert('Report submitted successfully');
+                
+                showSuccessToast('Report submitted successfully');
                 document.getElementById('reportModal').classList.add('hidden');
                 document.getElementById('reportForm').reset();
             } catch (error) {
@@ -865,7 +1257,7 @@ async function loadDonorProfile(donorId) {
                 alert('Error submitting report');
             }
         });
-
+        
         // Edit/Save functionality
         document.getElementById('editBtn').addEventListener('click', () => {
             isEditMode = true;
@@ -882,7 +1274,7 @@ async function loadDonorProfile(donorId) {
             document.getElementById('cityInput').classList.remove('bg-gray-50');
             document.getElementById('districtInput').classList.remove('bg-gray-50');
         });
-
+        
         document.getElementById('saveBtn').addEventListener('click', async () => {
             try {
                 const updateData = {
@@ -890,14 +1282,14 @@ async function loadDonorProfile(donorId) {
                     city: document.getElementById('cityInput').value,
                     division: document.getElementById('districtInput').value
                 };
-
+                
                 const { error } = await supabase
                     .from('donors')
                     .update(updateData)
                     .eq('id', donorData.id);
-
+                    
                 if (error) throw error;
-
+                
                 // Update local data
                 donorData = { ...donorData, ...updateData };
                 
@@ -916,7 +1308,7 @@ async function loadDonorProfile(donorId) {
                 document.getElementById('cityInput').classList.add('bg-gray-50');
                 document.getElementById('districtInput').classList.add('bg-gray-50');
                 
-                alert('Profile updated successfully');
+                showSuccessToast('Profile updated successfully');
             } catch (error) {
                 console.error('Error updating profile:', error);
                 alert('Error updating profile');
