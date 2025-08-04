@@ -6,142 +6,736 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    .container { display: flex; min-height: 100vh; }
-
-    .sidebar {
-      background: #c62828;
-      color: white;
-      padding: 1rem;
-      width: 220px;
-      transition: transform 0.3s ease-in-out;
+    :root {
+      --primary-red: #c62828;
+      --primary-red-dark: #b71c1c;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
-    .sidebar h2 { text-align: center; }
-    .sidebar ul { list-style: none; padding-left: 0; }
-    .sidebar ul li { margin: 10px 0; }
-    .sidebar ul li a { color: white; text-decoration: none; display: block; padding: 0.5rem; border-radius: 4px; }
-    .sidebar ul li a:hover { background: #a91e1e; }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      color: #334155;
+      min-height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+      color: white;
+      padding: 1.5rem;
+      width: 260px;
+      transition: transform 0.3s ease-in-out;
+      box-shadow: var(--shadow-lg);
+      position: fixed;
+      height: 100vh;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-logo {
+      width: 40px;
+      height: 40px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-red);
+      font-size: 20px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+      }
+    }
+
+    .sidebar h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .sidebar ul li {
+      margin: 8px 0;
+    }
+
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .sidebar ul li a:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(5px);
+    }
+
+    .sidebar ul li a.active {
+      background: rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+    }
+
+    .sidebar ul li a i {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    /* Toggle Button */
     .toggle-btn {
       display: none;
-      background: transparent;
-      color: black;
+      background: var(--primary-red);
+      color: white;
       border: none;
-      padding: 0.5rem 1rem;
+      padding: 0.75rem;
       cursor: pointer;
-      font-size: 20px;
+      font-size: 18px;
       position: fixed;
-      top: 0px;
-      left: 0px;
-      z-index: 1000;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      border-radius: 8px;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
     }
 
-    .main { flex: 1; padding: 1rem; }
-    .cards { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .toggle-btn:hover {
+      background: var(--primary-red-dark);
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      padding: 2rem;
+      margin-left: 260px;
+      transition: margin-left 0.3s ease-in-out;
+    }
+
+    .main-header {
+      margin-bottom: 2rem;
+    }
+
+    .main-header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .main-header p {
+      color: #64748b;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    /* Dashboard Cards */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
     .card {
       background: white;
-      padding: 1rem;
-      border-radius: 10px;
-      flex: 1 1 250px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .card h3 {
-      font-size: 20px;
-      margin-bottom: 10px;
-      color: #555;
-    }
-    .card p {
-      font-size: 28px;
-      font-weight: bold;
-      color: #c62828;
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+      border-top: 4px solid transparent;
+      position: relative;
+      overflow: hidden;
     }
 
-    .stats { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-red), #e91e63, #9c27b0);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #64748b;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+    }
+
+    .card-icon.total {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+
+    .card-icon.eligible {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .card-icon.recent {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .card p {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0;
+      background: linear-gradient(135deg, #1e293b, #334155);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Chart Filter Toggle */
+    .chart-filter-toggle {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+
+    .filter-toggle-btn {
+      background: white;
+      color: var(--primary-red);
+      border: 2px solid var(--primary-red);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-toggle-btn:hover {
+      background: var(--primary-red);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Advanced Filter Section */
+    .filter-section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 2rem;
+      border-top: 4px solid transparent;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .filter-section.hidden {
+      display: none;
+    }
+
+    .filter-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-red), #e91e63, #9c27b0);
+    }
+
+    .filter-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-header h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 0;
+    }
+
+    .filter-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-label {
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.875rem;
+      letter-spacing: 0.3px;
+    }
+
+    .filter-select {
+      padding: 0.75rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      color: #334155;
+      background: white;
+      transition: all 0.3s ease;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 12px center;
+      background-repeat: no-repeat;
+      background-size: 16px;
+      cursor: pointer;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--primary-red);
+      box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .filter-select:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+
+    .filter-select:disabled {
+      background-color: #f1f5f9;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      justify-content: flex-end;
+    }
+
+    .filter-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-btn-primary {
+      background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .filter-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .filter-btn-secondary {
+      background: #f8fafc;
+      color: #64748b;
+      border: 2px solid #e2e8f0;
+    }
+
+    .filter-btn-secondary:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    /* Stats Section */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.5rem;
+    }
+
     .chart-container {
       background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      flex: 1;
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
     }
 
-    canvas { width: 100% !important; height: auto !important; }
+    .chart-container:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
 
-    /* ✨ New Stylish Cards for List Items */
-    ul { list-style: none; padding-left: 0; margin-top: 1rem; }
+    .chart-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
 
+    .chart-header h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 0;
+    }
+
+    .chart-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+    }
+
+    .chart-icon.blood {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .chart-icon.city {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    canvas {
+      max-height: 300px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Stat List */
     .stat-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 10px;
-      margin-top: 1rem;
     }
 
     .stat-item {
-      background: #f9f9f9;
-      padding: 10px 15px;
-      border-left: 5px solid #c62828;
+      background: #f8fafc;
+      padding: 12px 15px;
+      border-left: 4px solid;
       border-radius: 8px;
       font-weight: 500;
-      color: #444;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      transition: transform 0.2s ease, background 0.3s;
+      color: #334155;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .stat-item:hover {
       transform: scale(1.03);
-      background: #ffeaea;
+      background: #f1f5f9;
+    }
+
+    .stat-item i {
+      font-size: 16px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 768px) {
       .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100vh;
         transform: translateX(-100%);
-        z-index: 999;
       }
-      .sidebar.open { transform: translateX(0); }
-      .toggle-btn { display: block; }
-      .container { flex-direction: column; }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .toggle-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .main {
+        margin-left: 0;
+        padding: 1rem;
+        padding-top: 80px;
+      }
+      
+      .cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats {
+        grid-template-columns: 1fr;
+      }
+      
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .filter-actions {
+        justify-content: stretch;
+      }
+      
+      .filter-btn {
+        flex: 1;
+        justify-content: center;
+      }
+      
+      .stat-list {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
     }
+
+    /* Loading Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card, .chart-container {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .chart-container:nth-child(1) { animation-delay: 0.4s; }
+    .chart-container:nth-child(2) { animation-delay: 0.5s; }
   </style>
 </head>
 <body>
-<button class="toggle-btn" onclick="toggleSidebar()">☰ Menu</button>
+<button class="toggle-btn" onclick="toggleSidebar()">
+  <i class="fas fa-bars"></i>
+</button>
 <div class="container">
   <div class="sidebar" id="sidebar">
-    <h2>Look4Blood</h2>
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <i class="fas fa-tint"></i>
+      </div>
+      <h2>Look4Blood</h2>
+    </div>
     <ul>
-      <li><a href="dashboard.html">📊 Dashboard</a></li>
-      <li><a href="index.html">🔍 Find Donor</a></li>
-      <li><a href="registerform.html">➕ Register Donor</a></li>
-      <li><a href="update_donation.html">🔄 Update Donation</a></li>
-      <li><a href="topdonors.html">🏆 Top Donors</a></li>
-      <li><a href="getid.html">🆔 Get ID Card</a></li>
-      <li><a href="about.html">ℹ️ About</a></li>
-      <li><a href="login.html">🔒 Login</a></li>
-      <li><a href="bloodreq.html">🔒 Blood Request</a></li>
+      <li><a href="dashboard.html" class="active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+      <li><a href="index.html"><i class="fas fa-search"></i> Find Donor</a></li>
+      <li><a href="registerform.html"><i class="fas fa-user-plus"></i> Register Donor</a></li>
+      <li><a href="update_donation.html"><i class="fas fa-sync-alt"></i> Update Donation</a></li>
+      <li><a href="topdonors.html"><i class="fas fa-trophy"></i> Top Donors</a></li>
+      <li><a href="getid.html"><i class="fas fa-id-card"></i> Get ID Card</a></li>
+      <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+      <li><a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+      <li><a href="bloodreq.html"><i class="fas fa-hand-holding-medical"></i> Blood Request</a></li>
     </ul>
   </div>
   <div class="main">
-    <h1>Dashboard</h1>
-    <div class="cards">
-      <div class="card"><h3>Total Donors</h3><p id="total">--</p></div>
-      <div class="card"><h3>Eligible Donors</h3><p id="eligible">--</p></div>
-      <div class="card"><h3>Recent Donations</h3><p id="recent">--</p></div>
+    <div class="main-header">
+      <h1>Dashboard</h1>
+      <p>Monitor blood donation statistics and donor information</p>
     </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <h3>Total Donors</h3>
+          <div class="card-icon total">
+            <i class="fas fa-users"></i>
+          </div>
+        </div>
+        <p id="total">--</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Eligible Donors</h3>
+          <div class="card-icon eligible">
+            <i class="fas fa-user-check"></i>
+          </div>
+        </div>
+        <p id="eligible">--</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Recent Donations</h3>
+          <div class="card-icon recent">
+            <i class="fas fa-history"></i>
+          </div>
+        </div>
+        <p id="recent">--</p>
+      </div>
+    </div>
+
+    <!-- Chart Filter Toggle -->
+    <div class="chart-filter-toggle">
+      <button class="filter-toggle-btn" onclick="toggleChartFilters()">
+        <i class="fas fa-filter" id="filterToggleIcon"></i>
+        <span id="filterToggleText">Show Filters</span>
+      </button>
+    </div>
+
+    <!-- Advanced Filter Section -->
+    <div class="filter-section hidden" id="chartFilterSection">
+      <div class="filter-header">
+        <div class="filter-icon">
+          <i class="fas fa-filter"></i>
+        </div>
+        <h3>Chart Filters</h3>
+      </div>
+      <form id="filterForm">
+        <div class="filter-grid">
+          <div class="filter-group">
+            <label class="filter-label">Division</label>
+            <select id="divisionFilter" class="filter-select">
+              <option value="">All Divisions</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">District</label>
+            <select id="districtFilter" class="filter-select" disabled>
+              <option value="">All Districts</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">City</label>
+            <select id="cityFilter" class="filter-select" disabled>
+              <option value="">All Cities</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Blood Group</label>
+            <select id="bloodGroupFilter" class="filter-select">
+              <option value="">All Blood Groups</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option>
+              <option>O+</option><option>O-</option>
+            </select>
+          </div>
+        </div>
+        <div class="filter-actions">
+          <button type="button" class="filter-btn filter-btn-secondary" onclick="resetFilters()">
+            <i class="fas fa-undo"></i> Reset
+          </button>
+          <button type="submit" class="filter-btn filter-btn-primary">
+            <i class="fas fa-search"></i> Apply Filters
+          </button>
+        </div>
+      </form>
+    </div>
+
     <div class="stats">
       <div class="chart-container">
-        <h3>🩸 Blood Group-wise Donors</h3>
+        <div class="chart-header">
+          <div class="chart-icon blood">
+            <i class="fas fa-tint"></i>
+          </div>
+          <h3>Blood Group-wise Donors</h3>
+        </div>
         <canvas id="bloodChart"></canvas>
-        <ul id="bloodList"></ul>
+        <ul id="bloodList" class="stat-list"></ul>
       </div>
       <div class="chart-container">
-        <h3>🏙️ City-wise Donors</h3>
+        <div class="chart-header">
+          <div class="chart-icon city">
+            <i class="fas fa-city"></i>
+          </div>
+          <h3>City-wise Donors</h3>
+        </div>
         <canvas id="cityChart"></canvas>
-        <ul id="cityList"></ul>
+        <ul id="cityList" class="stat-list"></ul>
       </div>
     </div>
   </div>
@@ -154,92 +748,371 @@ const supabaseClient = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'
 );
 
+// Store all locations for filtering
+let allLocations = [];
+let allDonors = [];
+
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   sidebar.classList.toggle('open');
 }
 
-(async () => {
-  const { data } = await supabaseClient.from('donors').select('*');
-  const total = data.length;
-  document.getElementById('total').textContent = total;
+// Toggle chart filters
+function toggleChartFilters() {
+  const filterSection = document.getElementById('chartFilterSection');
+  const toggleIcon = document.getElementById('filterToggleIcon');
+  const toggleText = document.getElementById('filterToggleText');
+  
+  filterSection.classList.toggle('hidden');
+  
+  if (filterSection.classList.contains('hidden')) {
+    toggleIcon.className = 'fas fa-filter';
+    toggleText.textContent = 'Show Filters';
+  } else {
+    toggleIcon.className = 'fas fa-times';
+    toggleText.textContent = 'Hide Filters';
+  }
+}
 
-  const eligible = data.filter(d => {
-    const days = (new Date() - new Date(d.last_donation)) / (1000 * 60 * 60 * 24);
-    return days >= 90;
-  }).length;
-  document.getElementById('eligible').textContent = eligible;
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', function(event) {
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.querySelector('.toggle-btn');
+  
+  if (window.innerWidth <= 768 && 
+      !sidebar.contains(event.target) && 
+      !toggleBtn.contains(event.target) && 
+      sidebar.classList.contains('open')) {
+    sidebar.classList.remove('open');
+  }
+});
 
-  const recent = data.filter(d => {
-    const days = (new Date() - new Date(d.last_donation)) / (1000 * 60 * 60 * 24);
-    return days <= 7;
-  }).length;
-  document.getElementById('recent').textContent = recent;
+// Load locations from Supabase
+async function loadLocations() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('locations')
+      .select('*')
+      .order('division, district, city');
+    
+    if (error) {
+      console.error('Error loading locations:', error);
+      return;
+    }
+    
+    allLocations = data;
+    
+    // Populate division dropdown
+    const uniqueDivisions = [...new Set(data.map(loc => loc.division))];
+    const divisionSelect = document.getElementById('divisionFilter');
+    
+    divisionSelect.innerHTML = '<option value="">All Divisions</option>';
+    uniqueDivisions.forEach(division => {
+      divisionSelect.innerHTML += `<option value="${division}">${division}</option>`;
+    });
+    
+  } catch (error) {
+    console.error('Error in loadLocations:', error);
+  }
+}
 
+// Load districts based on selected division
+function loadDistricts(selectedDivision) {
+  const districts = [...new Set(allLocations
+    .filter(loc => loc.division === selectedDivision)
+    .map(loc => loc.district))];
+  
+  const districtSelect = document.getElementById('districtFilter');
+  
+  districtSelect.innerHTML = '<option value="">All Districts</option>';
+  districtSelect.disabled = false;
+  
+  districts.forEach(district => {
+    districtSelect.innerHTML += `<option value="${district}">${district}</option>`;
+  });
+  
+  // Reset city dropdown
+  const citySelect = document.getElementById('cityFilter');
+  citySelect.innerHTML = '<option value="">All Cities</option>';
+  citySelect.disabled = true;
+}
+
+// Load cities based on selected district
+function loadCities(selectedDistrict) {
+  const cities = [...new Set(allLocations
+    .filter(loc => loc.district === selectedDistrict)
+    .map(loc => loc.city))];
+  
+  const citySelect = document.getElementById('cityFilter');
+  
+  citySelect.innerHTML = '<option value="">All Cities</option>';
+  citySelect.disabled = false;
+  
+  cities.forEach(city => {
+    citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+  });
+}
+
+// Event listeners for filter dropdowns
+document.getElementById('divisionFilter').addEventListener('change', function(e) {
+  const selectedDivision = e.target.value;
+  
+  if (selectedDivision) {
+    loadDistricts(selectedDivision);
+  } else {
+    // Reset both district and city dropdowns
+    document.getElementById('districtFilter').innerHTML = '<option value="">All Districts</option>';
+    document.getElementById('districtFilter').disabled = true;
+    document.getElementById('cityFilter').innerHTML = '<option value="">All Cities</option>';
+    document.getElementById('cityFilter').disabled = true;
+  }
+});
+
+document.getElementById('districtFilter').addEventListener('change', function(e) {
+  const selectedDistrict = e.target.value;
+  
+  if (selectedDistrict) {
+    loadCities(selectedDistrict);
+  } else {
+    // Reset city dropdown
+    document.getElementById('cityFilter').innerHTML = '<option value="">All Cities</option>';
+    document.getElementById('cityFilter').disabled = true;
+  }
+});
+
+// Reset all filters
+function resetFilters() {
+  document.getElementById('filterForm').reset();
+  document.getElementById('districtFilter').disabled = true;
+  document.getElementById('cityFilter').disabled = true;
+  document.getElementById('districtFilter').innerHTML = '<option value="">All Districts</option>';
+  document.getElementById('cityFilter').innerHTML = '<option value="">All Cities</option>';
+  
+  // Reload chart data without filters
+  loadChartData();
+}
+
+// Apply filters and reload chart data
+document.getElementById('filterForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  loadChartData();
+});
+
+// Get division by district (helper function)
+function getDivisionByDistrict(district) {
+  const location = allLocations.find(loc => loc.district === district);
+  return location ? location.division : null;
+}
+
+// Load overall stats for cards (without filters)
+async function loadOverallStats() {
+  try {
+    const { data: donors, error } = await supabaseClient.from('donors').select('*');
+    
+    if (error) {
+      console.error('Error fetching donors:', error);
+      return;
+    }
+    
+    allDonors = donors;
+    
+    const total = donors.length;
+    document.getElementById('total').textContent = total;
+    
+    const eligible = donors.filter(d => {
+      const days = (new Date() - new Date(d.last_donation)) / (1000 * 60 * 60 * 24);
+      return days >= 90;
+    }).length;
+    document.getElementById('eligible').textContent = eligible;
+    
+    const recent = donors.filter(d => {
+      const days = (new Date() - new Date(d.last_donation)) / (1000 * 60 * 60 * 24);
+      return days <= 7;
+    }).length;
+    document.getElementById('recent').textContent = recent;
+    
+  } catch (error) {
+    console.error('Error in loadOverallStats:', error);
+  }
+}
+
+// Load chart data with filters
+async function loadChartData() {
+  try {
+    const division = document.getElementById('divisionFilter').value;
+    const district = document.getElementById('districtFilter').value;
+    const city = document.getElementById('cityFilter').value;
+    const bloodGroup = document.getElementById('bloodGroupFilter').value;
+    
+    // Build query
+    let query = supabaseClient.from('donors').select('*');
+    
+    // Apply location filters
+    if (division) {
+      const districtsInDivision = [...new Set(allLocations
+        .filter(loc => loc.division === division)
+        .map(loc => loc.district))];
+      
+      if (district) {
+        // If both division and district are selected
+        query = query.in('state', [district]);
+        
+        if (city) {
+          query = query.eq('city', city);
+        }
+      } else {
+        // Only division selected - get all districts in that division
+        query = query.in('state', districtsInDivision);
+      }
+    } else if (district) {
+      // Only district selected
+      query = query.eq('state', district);
+      
+      if (city) {
+        query = query.eq('city', city);
+      }
+    } else if (city) {
+      // Only city selected
+      query = query.eq('city', city);
+    }
+    
+    // Apply blood group filter
+    if (bloodGroup) {
+      query = query.eq('blood_group', bloodGroup);
+    }
+    
+    const { data: donors, error } = await query;
+    
+    if (error) {
+      console.error('Error fetching filtered donors:', error);
+      return;
+    }
+    
+    updateCharts(donors);
+    
+  } catch (error) {
+    console.error('Error in loadChartData:', error);
+  }
+}
+
+// Update charts
+function updateCharts(donors) {
   const bloodCounts = {}, cityCounts = {};
-  data.forEach(d => {
+  donors.forEach(d => {
     const b = d.blood_group || 'Unknown';
     const c = d.city || 'Unknown';
     bloodCounts[b] = (bloodCounts[b] || 0) + 1;
     cityCounts[c] = (cityCounts[c] || 0) + 1;
   });
-
+  
+  // Blood Group Chart
+  const bloodColors = ['#e53935','#8e24aa','#3949ab','#039be5','#00897b','#7cb342','#fdd835','#fb8c00'];
+  
+  // Destroy existing chart if it exists
+  const existingBloodChart = Chart.getChart('bloodChart');
+  if (existingBloodChart) {
+    existingBloodChart.destroy();
+  }
+  
   new Chart(document.getElementById('bloodChart'), {
     type: 'doughnut',
     data: {
       labels: Object.keys(bloodCounts),
       datasets: [{
         data: Object.values(bloodCounts),
-        backgroundColor: ['#e53935','#8e24aa','#3949ab','#039be5','#00897b','#7cb342','#fdd835','#fb8c00'],
+        backgroundColor: bloodColors,
         borderColor: '#fff',
         borderWidth: 2
       }]
     },
-    options: { responsive: true }
+    options: { 
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 15,
+            font: {
+              size: 12
+            }
+          }
+        }
+      }
+    }
   });
-
+  
+  // City Chart
+  const cityLabels = Object.keys(cityCounts);
+  const cityColors = cityLabels.map((_, i) => `hsl(${i * 37 % 360}, 75%, 60%)`);
+  
+  // Destroy existing chart if it exists
+  const existingCityChart = Chart.getChart('cityChart');
+  if (existingCityChart) {
+    existingCityChart.destroy();
+  }
+  
   new Chart(document.getElementById('cityChart'), {
     type: 'doughnut',
     data: {
-      labels: Object.keys(cityCounts),
+      labels: cityLabels,
       datasets: [{
         data: Object.values(cityCounts),
-        backgroundColor: Object.keys(cityCounts).map((_, i) => `hsl(${i * 37 % 360}, 75%, 60%)`),
+        backgroundColor: cityColors,
         borderColor: '#fff',
         borderWidth: 2
       }]
     },
-    options: { responsive: true }
+    options: { 
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 15,
+            font: {
+              size: 12
+            }
+          }
+        }
+      }
+    }
   });
+  
+  // Update Blood Group List
+  const bloodList = document.getElementById('bloodList');
+  bloodList.innerHTML = '';
+  Object.entries(bloodCounts).forEach(([k, v], i) => {
+    const div = document.createElement('div');
+    div.className = 'stat-item';
+    div.style.borderLeftColor = bloodColors[i % bloodColors.length];
+    div.innerHTML = `<i class="fas fa-tint" style="color: ${bloodColors[i % bloodColors.length]}"></i> ${k}: ${v} donors`;
+    bloodList.appendChild(div);
+  });
+  
+  // Update City List
+  const cityList = document.getElementById('cityList');
+  cityList.innerHTML = '';
+  Object.entries(cityCounts).forEach(([k, v], i) => {
+    const div = document.createElement('div');
+    div.className = 'stat-item';
+    div.style.borderLeftColor = cityColors[i % cityColors.length];
+    div.innerHTML = `<i class="fas fa-map-marker-alt" style="color: ${cityColors[i % cityColors.length]}"></i> ${k}: ${v} donors`;
+    cityList.appendChild(div);
+  });
+}
 
-  // Colors used in the bloodChart (must match order of dataset)
-const bloodColors = ['#e53935', '#8e24aa', '#3949ab', '#039be5', '#00897b', '#7cb342', '#fdd835', '#fb8c00'];
-
-// Render Blood Group Chart and Cards
-const bloodList = document.getElementById('bloodList');
-bloodList.classList.add('stat-list');
-Object.entries(bloodCounts).forEach(([k, v], i) => {
-  const div = document.createElement('div');
-  div.className = 'stat-item';
-  div.textContent = `${k}: ${v} donors`;
-  div.style.borderLeftColor = bloodColors[i % bloodColors.length]; // Match chart color
-  bloodList.appendChild(div);
-});
-
-// Generate City Colors (same as in chart)
-const cityLabels = Object.keys(cityCounts);
-const cityColors = cityLabels.map((_, i) => `hsl(${i * 37 % 360}, 75%, 60%)`);
-
-// Render City Chart and Cards
-const cityList = document.getElementById('cityList');
-cityList.classList.add('stat-list');
-Object.entries(cityCounts).forEach(([k, v], i) => {
-  const div = document.createElement('div');
-  div.className = 'stat-item';
-  div.textContent = `${k}: ${v} donors`;
-  div.style.borderLeftColor = cityColors[i % cityColors.length]; // Match chart color
-  cityList.appendChild(div);
-});
+// Initialize dashboard
+(async () => {
+  // Load locations first
+  await loadLocations();
+  
+  // Load overall stats for cards
+  await loadOverallStats();
+  
+  // Load initial chart data
+  await loadChartData();
 })();
 </script>
 </body>
