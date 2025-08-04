@@ -18,18 +18,15 @@
             --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-
         * {
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             min-height: 100vh;
             color: #334155;
         }
-
         /* Loading Spinner */
         .loading-overlay {
             position: fixed;
@@ -44,7 +41,6 @@
             z-index: 9999;
             backdrop-filter: blur(4px);
         }
-
         .spinner {
             width: 50px;
             height: 50px;
@@ -53,57 +49,46 @@
             border-top-color: var(--primary-red);
             animation: spin 1s ease-in-out infinite;
         }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
         /* Progress Ring */
         .progress-ring {
             transform: rotate(-90deg);
         }
-
         .progress-ring__circle {
             transition: stroke-dashoffset 0.35s;
             stroke-dasharray: 339.292;
             stroke-dashoffset: 339.292;
         }
-
         /* Animations */
         @keyframes bounce {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.2); }
         }
-
         .like-animation {
             animation: bounce 0.3s ease-in-out;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .fade-in {
             animation: fadeIn 0.5s ease-out forwards;
         }
-
         /* Comment Section */
         .comment-section {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
         }
-
         .comment-section.open {
             max-height: 500px;
         }
-
         /* Cropper styles */
         .cropper-container {
             max-height: 400px;
         }
-
         .upload-overlay {
             position: absolute;
             top: 0;
@@ -119,11 +104,9 @@
             border-radius: 50%;
             cursor: pointer;
         }
-
         .profile-photo-container:hover .upload-overlay {
             opacity: 1;
         }
-
         /* Table styles */
         .donation-table {
             width: 100%;
@@ -132,13 +115,11 @@
             overflow: hidden;
             box-shadow: var(--shadow-sm);
         }
-
         .donation-table th, .donation-table td {
             padding: 12px 16px;
             text-align: left;
             border-bottom: 1px solid #e5e7eb;
         }
-
         .donation-table th {
             background: linear-gradient(135deg, #f8fafc, #f1f5f9);
             font-weight: 600;
@@ -147,11 +128,9 @@
             font-size: 0.75rem;
             letter-spacing: 0.05em;
         }
-
         .donation-table tr:hover {
             background-color: #f8fafc;
         }
-
         /* Card Styles */
         .profile-card {
             background: white;
@@ -160,12 +139,10 @@
             overflow: hidden;
             transition: all 0.3s ease;
         }
-
         .profile-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.1), 0 15px 15px -5px rgba(0, 0, 0, 0.04);
         }
-
         .stat-card {
             background: white;
             border-radius: 16px;
@@ -176,7 +153,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .stat-card::before {
             content: '';
             position: absolute;
@@ -186,12 +162,10 @@
             height: 4px;
             background: linear-gradient(90deg, var(--primary-red), #e91e63, #9c27b0);
         }
-
         .stat-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
         }
-
         /* Button Styles */
         .btn {
             padding: 0.75rem 1.5rem;
@@ -205,73 +179,60 @@
             border: none;
             font-size: 0.875rem;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
             color: white;
             box-shadow: var(--shadow-md);
         }
-
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 20px 25px -5px rgba(198, 40, 40, 0.4);
         }
-
         .btn-secondary {
             background: #f8fafc;
             color: #64748b;
             border: 2px solid #e2e8f0;
         }
-
         .btn-secondary:hover {
             background: #f1f5f9;
             border-color: #cbd5e1;
         }
-
         .btn-success {
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             box-shadow: var(--shadow-md);
         }
-
         .btn-success:hover {
             transform: translateY(-2px);
             box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.4);
         }
-
         .btn-info {
             background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
             box-shadow: var(--shadow-md);
         }
-
         .btn-info:hover {
             transform: translateY(-2px);
             box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.4);
         }
-
         .btn-warning {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
             box-shadow: var(--shadow-md);
         }
-
         .btn-warning:hover {
             transform: translateY(-2px);
             box-shadow: 0 20px 25px -5px rgba(245, 158, 11, 0.4);
         }
-
         .btn-danger {
             background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
             box-shadow: var(--shadow-md);
         }
-
         .btn-danger:hover {
             transform: translateY(-2px);
             box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.4);
         }
-
         /* Input Styles */
         .form-input {
             width: 100%;
@@ -284,25 +245,21 @@
             background: white;
             transition: all 0.3s ease;
         }
-
         .form-input:focus {
             outline: none;
             border-color: var(--primary-red);
             box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
             transform: translateY(-1px);
         }
-
         .form-input:hover {
             border-color: #cbd5e1;
             transform: translateY(-1px);
         }
-
         .form-input:disabled {
             background-color: #f8fafc;
             color: #94a3b8;
             cursor: not-allowed;
         }
-
         /* Modal Styles */
         .modal {
             position: fixed;
@@ -317,7 +274,6 @@
             z-index: 1000;
             backdrop-filter: blur(4px);
         }
-
         .modal-content {
             background: white;
             border-radius: 16px;
@@ -327,7 +283,6 @@
             overflow-y: auto;
             animation: fadeIn 0.3s ease-out;
         }
-
         /* Badge Styles */
         .badge {
             display: inline-flex;
@@ -337,17 +292,75 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
-
         .badge-blood {
             background: linear-gradient(135deg, #fee2e2, #fecaca);
             color: #b91c1c;
         }
-
         .badge-age {
             background: linear-gradient(135deg, #dbeafe, #bfdbfe);
             color: #1d4ed8;
         }
-
+        /* Donation Badge Styles */
+        .donation-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        .badge-bronze {
+            background: linear-gradient(135deg, #cd7f32, #b87333);
+        }
+        .badge-silver {
+            background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
+        }
+        .badge-gold {
+            background: linear-gradient(135deg, #ffd700, #ffcc00);
+        }
+        .badge-platinum {
+            background: linear-gradient(135deg, #e5e4e2, #d3d3d3);
+        }
+        .badge-diamond {
+            background: linear-gradient(135deg, #b9f2ff, #87ceeb);
+        }
+        .badge-red-diamond {
+            background: linear-gradient(135deg, #ff6b6b, #ff4757);
+        }
+        /* Star Rating Styles */
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .star {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .star:hover,
+        .star.active {
+            color: #ffc107;
+        }
+        .rating-info {
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+        .rating-count {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .rating-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -374,7 +387,6 @@
     <div id="loading" class="loading-overlay">
         <div class="spinner"></div>
     </div>
-
     <!-- Main Container -->
     <div class="container mx-auto px-4 py-8 max-w-6xl">
         <!-- Profile Header -->
@@ -390,7 +402,8 @@
                             <p class="text-sm font-medium">Change Photo</p>
                         </div>
                     </div>
-                    <div class="absolute -bottom-2 -right-2 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full p-3 shadow-lg">
+                    <!-- Donation Badge -->
+                    <div id="donationBadge" class="donation-badge badge-bronze">
                         <i class="fas fa-medal text-white text-xl"></i>
                     </div>
                     <input type="file" id="photoUpload" class="hidden" accept="image/*">
@@ -414,7 +427,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Stats Section -->
         <div class="grid md:grid-cols-2 gap-6 mb-8">
             <!-- Left Side - Donation Stats -->
@@ -472,25 +484,21 @@
                     <i class="fas fa-users text-blue-500 mr-2"></i>Community Feedback
                 </h2>
                 
-                <div class="flex justify-around mb-8">
-                    <button id="likeBtn" class="flex flex-col items-center space-y-3 transition-transform hover:scale-105">
-                        <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-md">
-                            <i class="fas fa-thumbs-up text-3xl text-green-600"></i>
-                        </div>
-                        <span id="likeCount" class="text-3xl font-bold text-green-600">142</span>
-                        <span class="text-sm text-gray-500">Likes</span>
-                    </button>
-                    
-                    <button id="dislikeBtn" class="flex flex-col items-center space-y-3 transition-transform hover:scale-105">
-                        <div class="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center shadow-md">
-                            <i class="fas fa-thumbs-down text-3xl text-red-600"></i>
-                        </div>
-                        <span id="dislikeCount" class="text-3xl font-bold text-red-600">3</span>
-                        <span class="text-sm text-gray-500">Dislikes</span>
-                    </button>
+                <!-- Star Rating -->
+                <div class="star-rating" id="starRating">
+                    <i class="fas fa-star star" data-rating="1"></i>
+                    <i class="fas fa-star star" data-rating="2"></i>
+                    <i class="fas fa-star star" data-rating="3"></i>
+                    <i class="fas fa-star star" data-rating="4"></i>
+                    <i class="fas fa-star star" data-rating="5"></i>
                 </div>
                 
-                <div class="space-y-3">
+                <div class="rating-info">
+                    <div id="averageRating" class="rating-count">0.0</div>
+                    <div id="ratingCount" class="rating-text">0 ratings</div>
+                </div>
+                
+                <div class="space-y-3 mt-6">
                     <button id="commentBtn" class="btn btn-primary w-full justify-center">
                         <i class="fas fa-comment"></i> View Comments
                     </button>
@@ -520,7 +528,6 @@
                 </div>
             </div>
         </div>
-
         <!-- User Info Section -->
         <div class="stat-card mb-8 fade-in" style="animation-delay: 0.3s;">
             <h2 class="text-xl font-bold text-gray-800 mb-6">
@@ -565,7 +572,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Action Buttons -->
         <div class="flex justify-center space-x-4 mb-8 fade-in" style="animation-delay: 0.4s;">
             <button id="editBtn" class="btn btn-primary">
@@ -579,7 +585,6 @@
             </button>
         </div>
     </div>
-
     <!-- Crop Modal -->
     <div id="cropModal" class="modal hidden">
         <div class="modal-content rounded-2xl p-6 max-w-md w-full mx-4">
@@ -599,7 +604,6 @@
             </div>
         </div>
     </div>
-
     <!-- Donation History Modal -->
     <div id="donationHistoryModal" class="modal hidden">
         <div class="modal-content rounded-2xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -633,7 +637,6 @@
             </div>
         </div>
     </div>
-
     <!-- Report Modal -->
     <div id="reportModal" class="modal hidden">
         <div class="modal-content rounded-2xl p-6 max-w-md w-full mx-4">
@@ -671,13 +674,11 @@
             </form>
         </div>
     </div>
-
     <!-- Success Toast -->
     <div id="successToast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 flex items-center">
         <i class="fas fa-check-circle mr-2"></i>
         <span id="successMessage">Success!</span>
     </div>
-
     <!-- Cropper.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     
@@ -694,7 +695,8 @@
         let isOwnProfile = false;
         let userInteraction = null;
         let cropper = null;
-
+        let userRating = null;
+        
         // Show success toast
         function showSuccessToast(message) {
             const toast = document.getElementById('successToast');
@@ -705,7 +707,149 @@
                 toast.classList.add('translate-y-20');
             }, 3000);
         }
-
+        
+        // Update donation badge based on donation count
+        function updateDonationBadge(donationCount) {
+            const badge = document.getElementById('donationBadge');
+            const badgeIcon = badge.querySelector('i');
+            
+            // Remove all existing badge classes
+            badge.classList.remove('badge-bronze', 'badge-silver', 'badge-gold', 'badge-platinum', 'badge-diamond', 'badge-red-diamond');
+            
+            // Reset icon
+            badgeIcon.className = 'fas text-white text-xl';
+            
+            if (donationCount >= 1 && donationCount <= 3) {
+                badge.classList.add('badge-bronze');
+                badgeIcon.classList.add('fa-medal');
+            } else if (donationCount >= 4 && donationCount <= 15) {
+                badge.classList.add('badge-silver');
+                badgeIcon.classList.add('fa-award');
+            } else if (donationCount >= 16 && donationCount <= 20) {
+                badge.classList.add('badge-gold');
+                badgeIcon.classList.add('fa-trophy');
+            } else if (donationCount >= 21 && donationCount <= 30) {
+                badge.classList.add('badge-platinum');
+                badgeIcon.classList.add('fa-gem');
+            } else if (donationCount >= 31 && donationCount <= 39) {
+                badge.classList.add('badge-diamond');
+                badgeIcon.classList.add('fa-gem');
+            } else if (donationCount >= 40) {
+                badge.classList.add('badge-red-diamond');
+                badgeIcon.classList.add('fa-crown');
+            }
+        }
+        
+        // Setup star rating
+        function setupStarRating() {
+            const stars = document.querySelectorAll('.star');
+            
+            stars.forEach(star => {
+                star.addEventListener('mouseover', () => {
+                    const rating = parseInt(star.getAttribute('data-rating'));
+                    highlightStars(rating);
+                });
+                
+                star.addEventListener('click', async () => {
+                    if (userRating) return; // User has already rated
+                    
+                    const rating = parseInt(star.getAttribute('data-rating'));
+                    await submitRating(rating);
+                });
+            });
+            
+            document.getElementById('starRating').addEventListener('mouseleave', () => {
+                if (userRating) {
+                    highlightStars(userRating);
+                } else {
+                    highlightStars(0);
+                }
+            });
+        }
+        
+        // Highlight stars based on rating
+        function highlightStars(rating) {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+        
+        // Submit rating
+        async function submitRating(rating) {
+            try {
+                // Record user rating
+                const { error } = await supabase
+                    .from('user_ratings')
+                    .insert({
+                        user_id: currentUser.id,
+                        target_donor_id: donorData.id,
+                        rating: rating
+                    });
+                
+                if (error) throw error;
+                
+                userRating = rating;
+                highlightStars(rating);
+                
+                // Update average rating display
+                await loadAverageRating();
+                
+                showSuccessToast('Thank you for your rating!');
+            } catch (error) {
+                console.error('Error submitting rating:', error);
+                alert('Error submitting rating');
+            }
+        }
+        
+        // Check if user has already rated
+        async function checkUserRating() {
+            const { data, error } = await supabase
+                .from('user_ratings')
+                .select('rating')
+                .eq('user_id', currentUser.id)
+                .eq('target_donor_id', donorData.id)
+                .single();
+                
+            if (!error && data) {
+                userRating = data.rating;
+                highlightStars(userRating);
+            }
+        }
+        
+        // Load average rating
+        async function loadAverageRating() {
+            try {
+                // Get all ratings for this donor
+                const { data, error } = await supabase
+                    .from('user_ratings')
+                    .select('rating')
+                    .eq('target_donor_id', donorData.id);
+                
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    // Calculate average
+                    const sum = data.reduce((acc, curr) => acc + curr.rating, 0);
+                    const average = sum / data.length;
+                    
+                    // Update UI
+                    document.getElementById('averageRating').textContent = average.toFixed(1);
+                    document.getElementById('ratingCount').textContent = `${data.length} ratings`;
+                } else {
+                    // No ratings yet
+                    document.getElementById('averageRating').textContent = '0.0';
+                    document.getElementById('ratingCount').textContent = '0 ratings';
+                }
+            } catch (error) {
+                console.error('Error loading average rating:', error);
+            }
+        }
+        
         // Check authentication on page load
         document.addEventListener('DOMContentLoaded', async () => {
             // Get donor ID from URL parameters
@@ -730,7 +874,15 @@
             
             // Load the donor profile
             await loadDonorProfile(donorId);
-            await checkUserInteraction();
+            
+            // Setup star rating
+            setupStarRating();
+            
+            // Check if user has already rated
+            await checkUserRating();
+            
+            // Load average rating
+            await loadAverageRating();
             
             // Setup photo upload only if it's the user's own profile
             if (isOwnProfile) {
@@ -755,7 +907,7 @@
             
             currentUser = user;
         }
-
+        
         // Load donor profile
         async function loadDonorProfile(donorId) {
             try {
@@ -807,6 +959,9 @@
                 document.getElementById('profilePhoto').src = donorData.avatar_url;
             }
             
+            // Update donation badge
+            updateDonationBadge(donorData.times_donated || 0);
+            
             // Donation stats
             document.getElementById('totalDonations').textContent = donorData.times_donated || 0;
             
@@ -823,10 +978,6 @@
                 daysRemaining > 0 
                     ? `This donor will be eligible to donate in <span class="font-bold text-red-500">${daysRemaining} days</span>`
                     : 'This donor is eligible to donate now!';
-            
-            // Interaction counts
-            document.getElementById('likeCount').textContent = donorData.thumbs_up || 0;
-            document.getElementById('dislikeCount').textContent = donorData.thumbs_down || 0;
             
             // User info
             document.getElementById('phoneInput').value = donorData.phone || '';
@@ -1055,86 +1206,6 @@
                     donationHistoryModal.classList.add('hidden');
                 }
             });
-        }
-        
-        // Check if user has already liked/disliked
-        async function checkUserInteraction() {
-            const { data, error } = await supabase
-                .from('user_interactions')
-                .select('interaction_type')
-                .eq('user_id', currentUser.id)
-                .eq('target_donor_id', donorData.id)
-                .single();
-                
-            if (!error && data) {
-                userInteraction = data.interaction_type;
-                updateInteractionButtons();
-            }
-        }
-        
-        // Update interaction buttons based on user's interaction
-        function updateInteractionButtons() {
-            const likeBtn = document.getElementById('likeBtn');
-            const dislikeBtn = document.getElementById('dislikeBtn');
-            
-            if (userInteraction === 'like') {
-                likeBtn.classList.add('opacity-50');
-                dislikeBtn.classList.add('opacity-50');
-            } else if (userInteraction === 'dislike') {
-                likeBtn.classList.add('opacity-50');
-                dislikeBtn.classList.add('opacity-50');
-            }
-        }
-        
-        // Handle like/dislike
-        document.getElementById('likeBtn').addEventListener('click', async () => {
-            if (userInteraction) return;
-            
-            await handleInteraction('like');
-        });
-        
-        document.getElementById('dislikeBtn').addEventListener('click', async () => {
-            if (userInteraction) return;
-            
-            await handleInteraction('dislike');
-        });
-        
-        async function handleInteraction(type) {
-            try {
-                // Update donor stats
-                const updateField = type === 'like' ? 'thumbs_up' : 'thumbs_down';
-                const { error } = await supabase
-                    .from('donors')
-                    .update({ [updateField]: (donorData[updateField] || 0) + 1 })
-                    .eq('id', donorData.id);
-                    
-                if (error) throw error;
-                
-                // Record user interaction
-                await supabase
-                    .from('user_interactions')
-                    .insert({
-                        user_id: currentUser.id,
-                        target_donor_id: donorData.id,
-                        interaction_type: type
-                    });
-                
-                // Update UI
-                userInteraction = type;
-                const countElement = type === 'like' ? 'likeCount' : 'dislikeCount';
-                const btn = type === 'like' ? document.getElementById('likeBtn') : document.getElementById('dislikeBtn');
-                
-                document.getElementById(countElement).textContent = 
-                    (donorData[type === 'like' ? 'thumbs_up' : 'thumbs_down'] || 0) + 1;
-                
-                btn.classList.add('like-animation');
-                updateInteractionButtons();
-                
-                setTimeout(() => btn.classList.remove('like-animation'), 300);
-            } catch (error) {
-                console.error('Error handling interaction:', error);
-                alert('Error updating interaction');
-            }
         }
         
         // Comment functionality
