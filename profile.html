@@ -738,7 +738,7 @@
             document.getElementById('successMessage').textContent = message;
             toast.classList.remove('translate-y-20');
             
-            setTimeout(() => {
+            setTimeout(function() {
                 toast.classList.add('translate-y-20');
             }, 3000);
         }
@@ -780,15 +780,15 @@
             const stars = document.querySelectorAll('.star');
             const giveRatingBtn = document.getElementById('giveRatingBtn');
             
-            stars.forEach(star => {
-                star.addEventListener('mouseover', () => {
+            stars.forEach(function(star) {
+                star.addEventListener('mouseover', function() {
                     if (userRating) return; // User has already rated
                     
                     const rating = parseInt(star.getAttribute('data-rating'));
                     highlightStars(rating);
                 });
                 
-                star.addEventListener('click', () => {
+                star.addEventListener('click', function() {
                     if (userRating) return; // User has already rated
                     
                     const rating = parseInt(star.getAttribute('data-rating'));
@@ -798,7 +798,7 @@
                 });
             });
             
-            document.getElementById('starRating').addEventListener('mouseleave', () => {
+            document.getElementById('starRating').addEventListener('mouseleave', function() {
                 if (userRating) {
                     highlightStars(userRating);
                 } else {
@@ -807,7 +807,7 @@
             });
             
             // Give rating button click
-            giveRatingBtn.addEventListener('click', async () => {
+            giveRatingBtn.addEventListener('click', async function() {
                 if (selectedRating === 0) return;
                 
                 await submitRating(selectedRating);
@@ -818,7 +818,7 @@
         // Highlight stars based on rating
         function highlightStars(rating) {
             const stars = document.querySelectorAll('.star');
-            stars.forEach((star, index) => {
+            stars.forEach(function(star, index) {
                 if (index < rating) {
                     star.classList.add('active');
                 } else {
@@ -883,18 +883,20 @@
                 
                 if (data && data.length > 0) {
                     // Calculate average
-                    const sum = data.reduce((acc, curr) => acc + curr.rating, 0);
+                    const sum = data.reduce(function(acc, curr) {
+                        return acc + curr.rating;
+                    }, 0);
                     const average = sum / data.length;
                     
                     // Update UI
                     document.getElementById('averageRating').textContent = average.toFixed(1);
-                    document.getElementById('ratingCount').textContent = `${data.length} ratings`;
-                    document.getElementById('totalStarCount').textContent = `Total stars: ${sum}`;
+                    document.getElementById('ratingCount').textContent = data.length + ' ratings';
+                    document.getElementById('totalStarCount').textContent = 'Total stars: ' + sum;
                 } else {
                     // No ratings yet
                     document.getElementById('averageRating').textContent = '0.0';
                     document.getElementById('ratingCount').textContent = '0 ratings';
-                    document.getElementById('totalStarCount').textContent = 'Total stars: 0`;
+                    document.getElementById('totalStarCount').textContent = 'Total stars: 0';
                 }
             } catch (error) {
                 console.error('Error loading average rating:', error);
@@ -902,7 +904,7 @@
         }
         
         // Check authentication on page load
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', async function() {
             // Get donor ID from URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const donorId = urlParams.get('id');
@@ -1003,8 +1005,8 @@
         function updateUI() {
             // Profile info
             document.getElementById('userName').textContent = donorData.name;
-            document.getElementById('bloodGroup').innerHTML = `<i class="fas fa-tint mr-1"></i> ${donorData.blood_group}`;
-            document.getElementById('userAge').innerHTML = `<i class="fas fa-user mr-1"></i> ${donorData.age} years`;
+            document.getElementById('bloodGroup').innerHTML = '<i class="fas fa-tint mr-1"></i> ' + donorData.blood_group;
+            document.getElementById('userAge').innerHTML = '<i class="fas fa-user mr-1"></i> ' + donorData.age + ' years';
             
             if (donorData.avatar_url) {
                 document.getElementById('profilePhoto').src = donorData.avatar_url;
@@ -1018,17 +1020,20 @@
             
             const lastDonationDate = new Date(donorData.last_donation);
             const daysSinceLastDonation = Math.floor((new Date() - lastDonationDate) / (1000 * 60 * 60 * 24));
-            document.getElementById('lastDonation').textContent = `${daysSinceLastDonation} days ago`;
+            document.getElementById('lastDonation').textContent = daysSinceLastDonation + ' days ago';
             
             // Calculate progress
             const daysRemaining = Math.max(0, 90 - daysSinceLastDonation);
             const progressPercent = Math.min(100, Math.floor((daysSinceLastDonation / 90) * 100));
             
             updateProgressCircle(progressPercent);
-            document.getElementById('nextDonationText').innerHTML = 
-                daysRemaining > 0 
-                    ? `This donor will be eligible to donate in <span class="font-bold text-red-500">${daysRemaining} days</span>`
-                    : 'This donor is eligible to donate now!';
+            
+            if (daysRemaining > 0) {
+                document.getElementById('nextDonationText').innerHTML = 
+                    'This donor will be eligible to donate in <span class="font-bold text-red-500">' + daysRemaining + ' days</span>';
+            } else {
+                document.getElementById('nextDonationText').textContent = 'This donor is eligible to donate now!';
+            }
             
             // User info
             document.getElementById('phoneInput').value = donorData.phone || '';
@@ -1045,7 +1050,7 @@
             const offset = circumference - (percent / 100) * circumference;
             
             circle.style.strokeDashoffset = offset;
-            document.getElementById('progressPercent').textContent = `${percent}%`;
+            document.getElementById('progressPercent').textContent = percent + '%';
         }
         
         // Setup photo upload
@@ -1055,26 +1060,26 @@
             const uploadOverlay = document.querySelector('.upload-overlay');
             
             // Click on overlay or photo to trigger file input
-            uploadOverlay.addEventListener('click', () => {
+            uploadOverlay.addEventListener('click', function() {
                 photoUpload.click();
             });
             
-            profilePhoto.addEventListener('click', () => {
+            profilePhoto.addEventListener('click', function() {
                 photoUpload.click();
             });
             
             // Handle file selection
-            photoUpload.addEventListener('change', (e) => {
+            photoUpload.addEventListener('change', function(e) {
                 if (e.target.files && e.target.files[0]) {
                     const reader = new FileReader();
                     
-                    reader.onload = (event) => {
+                    reader.onload = function(event) {
                         // Show crop modal
                         document.getElementById('cropImage').src = event.target.result;
                         document.getElementById('cropModal').classList.remove('hidden');
                         
                         // Initialize cropper
-                        setTimeout(() => {
+                        setTimeout(function() {
                             if (cropper) {
                                 cropper.destroy();
                             }
@@ -1095,7 +1100,7 @@
             });
             
             // Cancel crop
-            document.getElementById('cancelCropBtn').addEventListener('click', () => {
+            document.getElementById('cancelCropBtn').addEventListener('click', function() {
                 document.getElementById('cropModal').classList.add('hidden');
                 if (cropper) {
                     cropper.destroy();
@@ -1104,7 +1109,7 @@
             });
             
             // Apply crop
-            document.getElementById('applyCropBtn').addEventListener('click', async () => {
+            document.getElementById('applyCropBtn').addEventListener('click', async function() {
                 if (cropper) {
                     // Get cropped canvas
                     const canvas = cropper.getCroppedCanvas({
@@ -1120,13 +1125,13 @@
                     });
                     
                     // Convert to blob
-                    canvas.toBlob(async (blob) => {
+                    canvas.toBlob(async function(blob) {
                         try {
                             // Show loading
                             document.getElementById('loading').style.display = 'flex';
                             
                             // Generate unique filename
-                            const fileName = `profile-${currentUser.id}-${Date.now()}.jpg`;
+                            const fileName = 'profile-' + currentUser.id + '-' + Date.now() + '.jpg';
                             
                             // Upload to Supabase Storage
                             const { data, error } = await supabase.storage
@@ -1176,11 +1181,11 @@
         
         // Setup share button
         function setupShareButton() {
-            document.getElementById('shareBtn').addEventListener('click', () => {
+            document.getElementById('shareBtn').addEventListener('click', function() {
                 if (navigator.share) {
                     navigator.share({
-                        title: `${donorData.name} - Blood Donor Profile`,
-                        text: `Check out ${donorData.name}'s blood donor profile on Look4Blood`,
+                        title: donorData.name + ' - Blood Donor Profile',
+                        text: 'Check out ' + donorData.name + "'s blood donor profile on Look4Blood",
                         url: window.location.href
                     });
                 } else {
@@ -1202,7 +1207,7 @@
             const donationHistoryModal = document.getElementById('donationHistoryModal');
             const closeDonationHistoryBtn = document.getElementById('closeDonationHistoryBtn');
             
-            donationHistoryBtn.addEventListener('click', async () => {
+            donationHistoryBtn.addEventListener('click', async function() {
                 // Show loading
                 document.getElementById('loading').style.display = 'flex';
                 
@@ -1221,14 +1226,14 @@
                     const noDonationHistory = document.getElementById('noDonationHistory');
                     
                     if (data && data.length > 0) {
-                        donationHistoryList.innerHTML = data.map(donation => `
-                            <tr>
-                                <td>${new Date(donation.donation_date).toLocaleDateString()}</td>
-                                <td>${donation.place || 'N/A'}</td>
-                                <td><span class="badge badge-blood">${donation.blood_group}</span></td>
-                                <td>#${donation.times_donated}</td>
-                            </tr>
-                        `).join('');
+                        donationHistoryList.innerHTML = data.map(function(donation) {
+                            return '<tr>' +
+                                '<td>' + new Date(donation.donation_date).toLocaleDateString() + '</td>' +
+                                '<td>' + (donation.place || 'N/A') + '</td>' +
+                                '<td><span class="badge badge-blood">' + donation.blood_group + '</span></td>' +
+                                '<td>#' + donation.times_donated + '</td>' +
+                            '</tr>';
+                        }).join('');
                         donationHistoryList.classList.remove('hidden');
                         noDonationHistory.classList.add('hidden');
                     } else {
@@ -1247,12 +1252,12 @@
                 }
             });
             
-            closeDonationHistoryBtn.addEventListener('click', () => {
+            closeDonationHistoryBtn.addEventListener('click', function() {
                 donationHistoryModal.classList.add('hidden');
             });
             
             // Close modal when clicking outside
-            donationHistoryModal.addEventListener('click', (e) => {
+            donationHistoryModal.addEventListener('click', function(e) {
                 if (e.target === donationHistoryModal) {
                     donationHistoryModal.classList.add('hidden');
                 }
@@ -1260,7 +1265,7 @@
         }
         
         // Comment functionality
-        document.getElementById('commentBtn').addEventListener('click', () => {
+        document.getElementById('commentBtn').addEventListener('click', function() {
             const section = document.getElementById('commentsSection');
             section.classList.toggle('open');
             
@@ -1285,27 +1290,26 @@
                 const commentsList = document.getElementById('commentsList');
                 
                 if (data && data.length > 0) {
-                    commentsList.innerHTML = data.map(comment => `
-                        <div class="flex space-x-3 p-4 bg-gray-50 rounded-lg">
-                            <img src="${comment.donors?.avatar_url || 'https://picsum.photos/seed/default/40/40.jpg'}" 
-                                 alt="User" class="w-12 h-12 rounded-full object-cover">
-                            <div class="flex-1">
-                                <p class="font-semibold text-gray-800">${comment.donors?.name || 'Anonymous'}</p>
-                                <p class="text-gray-700 mt-1">${comment.content}</p>
-                                <p class="text-xs text-gray-500 mt-2">
-                                    <i class="fas fa-clock mr-1"></i>
-                                    ${new Date(comment.created_at).toLocaleDateString()}
-                                </p>
-                            </div>
-                        </div>
-                    `).join('');
+                    commentsList.innerHTML = data.map(function(comment) {
+                        return '<div class="flex space-x-3 p-4 bg-gray-50 rounded-lg">' +
+                            '<img src="' + (comment.donors?.avatar_url || 'https://picsum.photos/seed/default/40/40.jpg') + '" ' +
+                                 'alt="User" class="w-12 h-12 rounded-full object-cover">' +
+                            '<div class="flex-1">' +
+                                '<p class="font-semibold text-gray-800">' + (comment.donors?.name || 'Anonymous') + '</p>' +
+                                '<p class="text-gray-700 mt-1">' + comment.content + '</p>' +
+                                '<p class="text-xs text-gray-500 mt-2">' +
+                                    '<i class="fas fa-clock mr-1"></i>' +
+                                    new Date(comment.created_at).toLocaleDateString() +
+                                '</p>' +
+                            '</div>' +
+                        '</div>';
+                    }).join('');
                 } else {
-                    commentsList.innerHTML = `
-                        <div class="text-center py-8 text-gray-500">
-                            <i class="fas fa-comments text-4xl mb-3"></i>
-                            <p>No comments yet. Be the first to comment!</p>
-                        </div>
-                    `;
+                    commentsList.innerHTML = 
+                        '<div class="text-center py-8 text-gray-500">' +
+                            '<i class="fas fa-comments text-4xl mb-3"></i>' +
+                            '<p>No comments yet. Be the first to comment!</p>' +
+                        '</div>';
                 }
             } catch (error) {
                 console.error('Error loading comments:', error);
@@ -1313,7 +1317,7 @@
         }
         
         // Add comment
-        document.getElementById('addCommentBtn').addEventListener('click', async () => {
+        document.getElementById('addCommentBtn').addEventListener('click', async function() {
             const input = document.getElementById('commentInput');
             const content = input.value.trim();
             
@@ -1340,15 +1344,15 @@
         });
         
         // Report functionality
-        document.getElementById('reportBtn').addEventListener('click', () => {
+        document.getElementById('reportBtn').addEventListener('click', function() {
             document.getElementById('reportModal').classList.remove('hidden');
         });
         
-        document.getElementById('cancelReportBtn').addEventListener('click', () => {
+        document.getElementById('cancelReportBtn').addEventListener('click', function() {
             document.getElementById('reportModal').classList.add('hidden');
         });
         
-        document.getElementById('reportForm').addEventListener('submit', async (e) => {
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const reason = document.getElementById('reportReason').value;
@@ -1381,7 +1385,7 @@
         });
         
         // Edit/Save functionality
-        document.getElementById('editBtn').addEventListener('click', () => {
+        document.getElementById('editBtn').addEventListener('click', function() {
             isEditMode = true;
             document.getElementById('editBtn').classList.add('hidden');
             document.getElementById('saveBtn').classList.remove('hidden');
@@ -1397,7 +1401,7 @@
             document.getElementById('districtInput').classList.remove('bg-gray-50');
         });
         
-        document.getElementById('saveBtn').addEventListener('click', async () => {
+        document.getElementById('saveBtn').addEventListener('click', async function() {
             try {
                 const updateData = {
                     phone: document.getElementById('phoneInput').value,
