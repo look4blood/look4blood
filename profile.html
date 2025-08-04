@@ -361,6 +361,29 @@
             color: #666;
             font-size: 0.9rem;
         }
+        .total-star-count {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        .rating-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .btn-give-rating {
+            display: none;
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        .btn-give-rating:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(255, 193, 7, 0.4);
+        }
+        .btn-give-rating.show {
+            display: inline-flex;
+        }
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -378,6 +401,10 @@
             
             .user-info-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .star {
+                font-size: 1.8rem;
             }
         }
     </style>
@@ -493,9 +520,16 @@
                     <i class="fas fa-star star" data-rating="5"></i>
                 </div>
                 
+                <div class="rating-actions">
+                    <button id="giveRatingBtn" class="btn btn-give-rating">
+                        <i class="fas fa-star mr-2"></i> Give Rating
+                    </button>
+                </div>
+                
                 <div class="rating-info">
                     <div id="averageRating" class="rating-count">0.0</div>
                     <div id="ratingCount" class="rating-text">0 ratings</div>
+                    <div id="totalStarCount" class="total-star-count">Total stars: 0</div>
                 </div>
                 
                 <div class="space-y-3 mt-6">
@@ -696,6 +730,7 @@
         let userInteraction = null;
         let cropper = null;
         let userRating = null;
+        let selectedRating = 0;
         
         // Show success toast
         function showSuccessToast(message) {
@@ -743,18 +778,23 @@
         // Setup star rating
         function setupStarRating() {
             const stars = document.querySelectorAll('.star');
+            const giveRatingBtn = document.getElementById('giveRatingBtn');
             
             stars.forEach(star => {
                 star.addEventListener('mouseover', () => {
+                    if (userRating) return; // User has already rated
+                    
                     const rating = parseInt(star.getAttribute('data-rating'));
                     highlightStars(rating);
                 });
                 
-                star.addEventListener('click', async () => {
+                star.addEventListener('click', () => {
                     if (userRating) return; // User has already rated
                     
                     const rating = parseInt(star.getAttribute('data-rating'));
-                    await submitRating(rating);
+                    selectedRating = rating;
+                    highlightStars(rating);
+                    giveRatingBtn.classList.add('show');
                 });
             });
             
@@ -762,8 +802,16 @@
                 if (userRating) {
                     highlightStars(userRating);
                 } else {
-                    highlightStars(0);
+                    highlightStars(selectedRating);
                 }
+            });
+            
+            // Give rating button click
+            giveRatingBtn.addEventListener('click', async () => {
+                if (selectedRating === 0) return;
+                
+                await submitRating(selectedRating);
+                giveRatingBtn.classList.remove('show');
             });
         }
         
@@ -794,6 +842,7 @@
                 if (error) throw error;
                 
                 userRating = rating;
+                selectedRating = 0;
                 highlightStars(rating);
                 
                 // Update average rating display
@@ -821,7 +870,7 @@
             }
         }
         
-        // Load average rating
+        // Load average rating and total star count
         async function loadAverageRating() {
             try {
                 // Get all ratings for this donor
@@ -840,10 +889,12 @@
                     // Update UI
                     document.getElementById('averageRating').textContent = average.toFixed(1);
                     document.getElementById('ratingCount').textContent = `${data.length} ratings`;
+                    document.getElementById('totalStarCount').textContent = `Total stars: ${sum}`;
                 } else {
                     // No ratings yet
                     document.getElementById('averageRating').textContent = '0.0';
                     document.getElementById('ratingCount').textContent = '0 ratings';
+                    document.getElementById('totalStarCount').textContent = 'Total stars: 0`;
                 }
             } catch (error) {
                 console.error('Error loading average rating:', error);
