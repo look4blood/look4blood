@@ -7,11 +7,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * Top Bar Styles */
+        :root {
+            --primary-red: #c62828;
+            --primary-red-dark: #b71c1c;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Top Bar Styles */
         .top-bar {
             background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 50%, #8e0000 100%);
-            padding: 1rem 0;
+            padding: 0.8rem 0;
             box-shadow: var(--shadow-lg);
             position: sticky;
             top: 0;
@@ -19,7 +28,6 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         .nav-container {
             max-width: 1280px;
             margin: 0 auto;
@@ -28,7 +36,6 @@
             align-items: center;
             padding: 0 1.5rem;
         }
-
         .logo {
             color: white;
             font-size: 1.5rem;
@@ -39,7 +46,6 @@
             letter-spacing: -0.025em;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-
         .logo-icon {
             width: 2.5rem;
             height: 2.5rem;
@@ -53,57 +59,13 @@
             animation: pulse 2s infinite;
             box-shadow: var(--shadow-md);
         }
-
-         /* Top Bar Styles */
-        .top-bar {
-            background: linear-gradient(135deg, #c62828 0%, #b71c1c 50%, #8e0000 100%);
-            padding: 18px 0;
-            box-shadow: 0 8px 32px rgba(198, 40, 40, 0.4), 0 2px 8px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
         
-        .nav-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 1.5rem;
-        }
-        .logo {
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            letter-spacing: -0.025em;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #ffffff, #f5f5f5);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #c62828;
-            font-size: 20px;
-            animation: pulse 2s infinite;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-       .nav-buttons {
+        /* Desktop Navigation */
+        .nav-buttons {
             display: flex;
             gap: 0.75rem;
             align-items: center;
-            flex-wrap: wrap;
         }
-
         .nav-btn {
             display: flex;
             align-items: center;
@@ -186,6 +148,86 @@
         .nav-btn.feedback:hover .nav-icon {
             transform: scale(1.2) rotate(15deg);
         }
+        
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .mobile-menu-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .mobile-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 0 0 1rem 1rem;
+            box-shadow: var(--shadow-lg);
+            padding: 1rem;
+            display: none;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 100;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .mobile-menu.active {
+            display: flex;
+        }
+        
+        .mobile-menu .nav-btn {
+            width: 100%;
+            justify-content: flex-start;
+            color: #333;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 0.75rem 1rem;
+        }
+        
+        .mobile-menu .nav-btn:hover {
+            background: #e9ecef;
+            border-color: #dee2e6;
+        }
+        
+        .mobile-menu .nav-btn .nav-icon {
+            width: 24px;
+            text-align: center;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         @keyframes pulse {
             0%, 100% {
                 transform: scale(1);
@@ -230,28 +272,38 @@
                 opacity: 1;
             }
         }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
-            .nav-container {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
             .nav-buttons {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
+                display: none;
             }
             
-            .nav-btn {
-                padding: 8px 12px;
-                font-size: 14px;
+            .mobile-nav {
+                display: flex;
+            }
+            
+            .nav-container {
+                justify-content: space-between;
             }
             
             .logo {
-                font-size: 20px;
+                font-size: 1.2rem;
+            }
+            
+            .logo-icon {
+                width: 1.8rem;
+                height: 1.8rem;
+                font-size: 1rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
             }
         }
+        
         /* Professional UI/UX Design System */
         * {
             box-sizing: border-box;
@@ -264,34 +316,37 @@
             line-height: 1.6;
             color: #334155;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         .main-content {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 30px 15px;
+            flex: 1;
         }
         /* Hero Section */
         .hero-section {
             text-align: center;
-            margin-bottom: 50px;
-            padding: 40px 20px;
+            margin-bottom: 30px;
+            padding: 30px 15px;
             background: linear-gradient(135deg, rgba(198, 40, 40, 0.05) 0%, rgba(183, 28, 28, 0.02) 100%);
-            border-radius: 24px;
+            border-radius: 16px;
             border: 1px solid rgba(198, 40, 40, 0.08);
         }
         .hero-title {
             font-family: 'Poppins', sans-serif;
-            font-size: clamp(28px, 5vw, 48px);
+            font-size: clamp(24px, 5vw, 40px);
             font-weight: 700;
             color: #1e293b;
-            margin: 0 0 16px 0;
+            margin: 0 0 12px 0;
             letter-spacing: -0.5px;
             line-height: 1.2;
         }
         .hero-subtitle {
             font-size: 14px;
             color: #64748b;
-            margin: 0 0 32px 0;
+            margin: 0 0 20px 0;
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
@@ -300,12 +355,12 @@
         /* Search Form Container */
         .search-container {
             background: white;
-            border-radius: 20px;
-            padding: 40px;
+            border-radius: 16px;
+            padding: 25px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(226, 232, 240, 0.8);
             max-width: 800px;
-            margin: 0 auto 40px auto;
+            margin: 0 auto 30px auto;
             position: relative;
             overflow: hidden;
         }
@@ -320,26 +375,26 @@
         }
         .form-header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 20px;
         }
         .form-title {
             font-family: 'Poppins', sans-serif;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 600;
             color: #1e293b;
-            margin: 0 0 8px 0;
+            margin: 0 0 6px 0;
         }
         .form-subtitle {
             color: #64748b;
-            font-size: 15px;
+            font-size: 14px;
             margin: 0;
         }
         /* Form Grid */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
+            gap: 16px;
+            margin-bottom: 20px;
         }
         .form-group {
             position: relative;
@@ -348,23 +403,23 @@
             display: block;
             font-weight: 600;
             color: #374151;
-            margin-bottom: 8px;
-            font-size: 14px;
+            margin-bottom: 6px;
+            font-size: 13px;
             letter-spacing: 0.3px;
         }
         .form-select {
             width: 100%;
-            padding: 16px 20px;
+            padding: 12px 16px;
             border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 15px;
+            border-radius: 8px;
+            font-size: 14px;
             font-family: inherit;
             color: #334155;
             background: white;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             appearance: none;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 16px center;
+            background-position: right 12px center;
             background-repeat: no-repeat;
             background-size: 16px;
             cursor: pointer;
@@ -387,12 +442,12 @@
         /* Search Button */
         .search-button {
             width: 100%;
-            padding: 18px 32px;
+            padding: 14px 24px;
             background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 15px;
             font-weight: 600;
             font-family: inherit;
             cursor: pointer;
@@ -430,9 +485,9 @@
         .result-summary {
             background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
             border: 1px solid #bbf7d0;
-            border-radius: 12px;
-            padding: 20px 24px;
-            margin-bottom: 24px;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
             font-weight: 600;
             color: #065f46;
             display: flex;
@@ -443,7 +498,7 @@
         /* Desktop Table Styles */
         .table-container {
             background: white;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(226, 232, 240, 0.8);
@@ -461,12 +516,12 @@
             font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 20px 16px;
+            padding: 16px 12px;
             text-align: left;
             border: none;
         }
         .desktop-table td {
-            padding: 16px;
+            padding: 12px;
             border-bottom: 1px solid #f1f5f9;
             color: #334155;
             font-weight: 500;
@@ -481,20 +536,59 @@
         .desktop-table tbody tr:last-child td {
             border-bottom: none;
         }
+        .call-btn {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .call-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.4);
+        }
+        
+        /* Eligibility Status Styles */
+        .eligibility-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .eligibility-eligible {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .eligibility-not-eligible {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
         /* Mobile Card Styles */
         .mobile-cards {
             display: none;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 16px;
+            padding: 0 12px;
         }
         .donor-card {
             background: white;
             border: 1px solid #e5e7eb;
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-            margin-bottom: 16px;
-            padding: 24px;
+            margin-bottom: 12px;
+            padding: 16px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -515,13 +609,13 @@
             flex: 1;
         }
         .card-left {
-            margin-right: 24px;
+            margin-right: 16px;
         }
         .donor-name {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             font-family: 'Poppins', sans-serif;
             letter-spacing: -0.2px;
         }
@@ -529,17 +623,17 @@
             display: inline-block;
             background: linear-gradient(135deg, #c62828, #b71c1c);
             color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 12px;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             letter-spacing: 0.3px;
             box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
         }
         .phone-number {
             color: #374151;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -550,9 +644,9 @@
             font-size: 14px;
         }
         .card-info-item {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #6b7280;
-            font-size: 14px;
+            font-size: 13px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -560,7 +654,7 @@
         .card-info-label {
             font-weight: 600;
             color: #374151;
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
@@ -568,6 +662,13 @@
             font-weight: 500;
             color: #1f2937;
         }
+        .mobile-call-btn {
+            width: 100%;
+            margin-top: 12px;
+            justify-content: center;
+            padding: 10px 16px;
+        }
+        
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -588,6 +689,7 @@
                 transform: translateY(0);
             }
         }
+        
         /* Responsive Design - Mobile First */
         @media (max-width: 768px) {
             .table-container {
@@ -601,38 +703,38 @@
             .donor-card {
                 flex-direction: column;
                 align-items: stretch;
-                padding: 20px;
-                margin-bottom: 20px;
+                padding: 16px;
+                margin-bottom: 16px;
             }
             .card-left {
                 margin-right: 0;
-                margin-bottom: 20px;
+                margin-bottom: 16px;
                 border-bottom: 1px solid #f3f4f6;
-                padding-bottom: 16px;
+                padding-bottom: 12px;
             }
             .card-right {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 12px;
+                gap: 10px;
             }
             .card-info-item {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 4px;
-                padding: 8px;
+                padding: 6px;
                 background: #f8fafc;
-                border-radius: 8px;
+                border-radius: 6px;
             }
             .donor-name {
-                font-size: 20px;
-                margin-bottom: 8px;
+                font-size: 18px;
+                margin-bottom: 6px;
             }
             .blood-group {
-                font-size: 16px;
-                padding: 8px 16px;
+                font-size: 14px;
+                padding: 6px 12px;
             }
             .phone-number {
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: 700;
             }
         }
@@ -645,35 +747,37 @@
                 display: none !important;
             }
         }
+        
         /* Error/No Results */
         .no-results {
             background: linear-gradient(135deg, #fef2f2 0%, #fef2f2 100%);
             border: 1px solid #fecaca;
-            border-radius: 12px;
-            padding: 40px 24px;
+            border-radius: 8px;
+            padding: 30px 20px;
             text-align: center;
             color: #dc2626;
             font-weight: 600;
-            font-size: 16px;
-            margin: 24px 0;
+            font-size: 15px;
+            margin: 20px 0;
         }
+        
         /* Action Buttons */
         .action-buttons {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             justify-content: center;
-            margin-top: 48px;
+            margin-top: 30px;
             flex-wrap: wrap;
         }
         .action-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 16px 24px;
+            padding: 12px 20px;
             text-decoration: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             letter-spacing: 0.3px;
             position: relative;
@@ -689,6 +793,11 @@
             color: white;
             box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.4);
         }
+        .action-btn.emergency {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4);
+        }
         .action-btn:hover {
             transform: translateY(-2px);
         }
@@ -698,23 +807,73 @@
         .action-btn.secondary:hover {
             box-shadow: 0 20px 25px -5px rgba(5, 150, 105, 0.4);
         }
-        /* Blood Group Statistics */
+        .action-btn.emergency:hover {
+            box-shadow: 0 20px 25px -5px rgba(220, 38, 38, 0.4);
+        }
+        
+        /* Emergency Section */
+        .emergency-section {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px auto;
+            max-width: 800px;
+            text-align: center;
+            border: 1px solid #fecaca;
+            box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.1);
+        }
+        .emergency-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #b91c1c;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .emergency-description {
+            color: #7f1d1d;
+            font-size: 14px;
+            margin: 0 0 20px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Blood Group Statistics - Redesigned */
         .blood-stats-container {
             max-width: 1200px;
-            margin: 0 auto 40px auto;
+            margin: 0 auto 30px auto;
             background: white;
             border-radius: 16px;
-            padding: 32px;
+            padding: 25px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(226, 232, 240, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+        .blood-stats-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c62828, #e91e63, #9c27b0);
         }
         .blood-stats-title {
             font-family: 'Poppins', sans-serif;
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 700;
             color: #1e293b;
-            margin: 0 0 24px 0;
+            margin: 0 0 20px 0;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         .blood-stats-grid {
             display: grid;
@@ -725,11 +884,16 @@
             background: linear-gradient(135deg, #ffffff 0%, #fef7f7 100%);
             border: 2px solid #fee2e2;
             border-radius: 16px;
-            padding: 24px 16px;
+            padding: 20px 15px;
             text-align: center;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
         }
         
         .blood-stat-item::before {
@@ -742,56 +906,179 @@
             background: linear-gradient(90deg, #dc2626, #ef4444);
         }
         .blood-stat-item:hover {
-            transform: translateY(-4px);
+            transform: translateY(-6px);
             box-shadow: 0 15px 35px rgba(220, 38, 38, 0.2);
             border-color: #dc2626;
             background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
         }
         .blood-type {
-            display: block;
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
             color: #c62828;
             margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
         }
         .blood-count {
-            display: block;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 800;
             color: #1e293b;
+            position: relative;
+            z-index: 1;
         }
+        .blood-icon {
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            font-size: 60px;
+            color: rgba(220, 38, 38, 0.07);
+            z-index: 0;
+        }
+        .blood-label {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Footer - Enhanced */
+        .footer {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 40px 15px 20px;
+            text-align: center;
+            margin-top: auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c62828, #e91e63, #9c27b0);
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .footer-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffffff, #f5f5f5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-red);
+            font-size: 20px;
+        }
+        .footer-logo-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .footer-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .footer-section {
+            text-align: left;
+        }
+        .footer-section h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .footer-section li {
+            margin-bottom: 10px;
+        }
+        .footer-section a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-section a:hover {
+            color: white;
+        }
+        .footer-section a i {
+            font-size: 12px;
+            width: 16px;
+            text-align: center;
+        }
+        .footer-copyright {
+            font-size: 13px;
+            color: #cbd5e1;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-content {
-                padding: 20px 16px;
+                padding: 20px 12px;
             }
             .search-container {
-                padding: 24px 20px;
-                margin: 0 16px 24px 16px;
+                padding: 20px 15px;
+                margin: 0 12px 20px 12px;
             }
             .form-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
+                gap: 16px;
             }
             .hero-section {
-                padding: 24px 16px;
+                padding: 20px 15px;
             }
             .blood-stats-container {
-                margin: 0 16px 24px 16px;
-                padding: 20px;
+                margin: 0 12px 20px 12px;
+                padding: 20px 15px;
             }
             .blood-stats-grid {
                 grid-template-columns: repeat(4, 1fr);
-                gap: 12px;
+                gap: 10px;
             }
             .blood-stat-item {
-                padding: 16px 8px;
+                padding: 15px 10px;
             }
             .blood-type {
-                font-size: 16px;
+                font-size: 18px;
             }
             .blood-count {
-                font-size: 20px;
+                font-size: 22px;
             }
             .action-buttons {
                 flex-direction: column;
@@ -799,20 +1086,47 @@
             }
             .action-btn {
                 width: 100%;
-                max-width: 300px;
+                max-width: 280px;
                 justify-content: center;
             }
             .table-container {
-                margin: 0 -16px;
+                margin: 0 -12px;
                 border-radius: 0;
             }
             table {
                 font-size: 12px;
             }
             th, td {
-                padding: 12px 8px;
+                padding: 10px 8px;
+            }
+            .emergency-section {
+                margin: 20px 12px;
+                padding: 20px 15px;
+            }
+            .emergency-title {
+                font-size: 18px;
+            }
+            .emergency-description {
+                font-size: 13px;
+            }
+            .footer {
+                padding: 30px 15px 15px;
+            }
+            .footer-logo-text {
+                font-size: 20px;
+            }
+            .footer-sections {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .footer-section {
+                text-align: center;
+            }
+            .footer-section h3 {
+                justify-content: center;
             }
         }
+        
         /* Loading Animation */
         @keyframes fadeInUp {
             from {
@@ -837,55 +1151,102 @@
     <div class="top-bar">
         <div class="nav-container">
             <div class="logo">
-                <div class="logo-icon">🩸</div>
+                <div class="logo-icon">
+                    <i class="fas fa-tint"></i>
+                </div>
                 Look4Blood
             </div>
+            
+            <!-- Desktop Navigation -->
             <div class="nav-buttons">
                 <a href="userprofile.html" class="nav-btn profile">
-                    <span class="nav-icon">👤</span>
+                    <span class="nav-icon"><i class="fas fa-user"></i></span>
                     Profile
                 </a>
                 <a href="anouse.html" class="nav-btn announcement">
-                    <span class="nav-icon">📢</span>
+                    <span class="nav-icon"><i class="fas fa-bullhorn"></i></span>
                     Announcements
                 </a>
                 <a href="userlogin.html" class="nav-btn login">
-                    <span class="nav-icon">🔐</span>
+                    <span class="nav-icon"><i class="fas fa-sign-in-alt"></i></span>
                     Login
                 </a>
                 <a href="registerform.html" class="nav-btn register">
-                    <span class="nav-icon">📝</span>
+                    <span class="nav-icon"><i class="fas fa-user-plus"></i></span>
                     Register
                 </a>
                 <a href="message.html" class="nav-btn message">
-                    <span class="nav-icon">💬</span>
+                    <span class="nav-icon"><i class="fas fa-envelope"></i></span>
                     Messages
                 </a>
                 <a href="search.html" class="nav-btn search">
-                    <span class="nav-icon">🔍</span>
+                    <span class="nav-icon"><i class="fas fa-search"></i></span>
                     Search
                 </a>
                 <a href="feedback.html" class="nav-btn feedback">
-                    <span class="nav-icon">📝</span>
+                    <span class="nav-icon"><i class="fas fa-comment-alt"></i></span>
+                    Feedback
+                </a>
+            </div>
+            
+            <!-- Mobile Navigation -->
+            <div class="mobile-nav">
+                <a href="userprofile.html" class="nav-btn profile">
+                    <span class="nav-icon"><i class="fas fa-user"></i></span>
+                </a>
+                <a href="search.html" class="nav-btn search">
+                    <span class="nav-icon"><i class="fas fa-search"></i></span>
+                </a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div class="mobile-menu" id="mobileMenu">
+                <a href="anouse.html" class="nav-btn announcement">
+                    <span class="nav-icon"><i class="fas fa-bullhorn"></i></span>
+                    Announcements
+                </a>
+                <a href="userlogin.html" class="nav-btn login">
+                    <span class="nav-icon"><i class="fas fa-sign-in-alt"></i></span>
+                    Login
+                </a>
+                <a href="registerform.html" class="nav-btn register">
+                    <span class="nav-icon"><i class="fas fa-user-plus"></i></span>
+                    Register
+                </a>
+                <a href="message.html" class="nav-btn message">
+                    <span class="nav-icon"><i class="fas fa-envelope"></i></span>
+                    Messages
+                </a>
+                <a href="feedback.html" class="nav-btn feedback">
+                    <span class="nav-icon"><i class="fas fa-comment-alt"></i></span>
                     Feedback
                 </a>
             </div>
         </div>
     </div>
+    
     <!-- Professional Main Content -->
     <div class="main-content">
-        <!-- Blood Group Stats -->
+        <!-- Blood Group Stats - Redesigned -->
         <div class="blood-stats-container" id="bloodStats">
-            <h3 class="blood-stats-title">📊 Eligible Donors by Blood Group</h3>
+            <h3 class="blood-stats-title">
+                <i class="fas fa-chart-bar"></i>
+                Eligible Donors by Blood Group
+            </h3>
             <div class="blood-stats-grid" id="bloodStatsGrid">
                 <!-- Blood stats will be populated by JavaScript -->
             </div>
         </div>
+        
         <!-- Hero Section -->
         <div class="hero-section">
             <h1 class="hero-title">Find Life-Saving Blood Donors</h1>
-            <p class="hero-subtitle">Connect with verified donors in your area and help save lives through our Plartfrom</p>
+            <p class="hero-subtitle">Connect with verified donors in your area and help save lives through our Platform</p>
         </div>
+        
         <!-- Search Form -->
         <div class="search-container">
             <div class="form-header">
@@ -931,30 +1292,137 @@
                     </div>
                 </div>
                 <button type="submit" class="search-button">
-                    🔍 Search Donors
+                    <i class="fas fa-search"></i> Search Donors
                 </button>
             </form>
         </div>
+        
         <!-- Results Section -->
         <div class="results-container">
             <div class="result-summary" id="resultCount"></div>
             <div id="results"></div>
         </div>
+        
         <!-- Action Buttons -->
         <div class="action-buttons">
             <a href="registerform.html" class="action-btn primary">
-                ➕ Register as a Donor
+                <i class="fas fa-plus"></i> Register as a Donor
             </a>
             <a href="dashboard.html" class="action-btn secondary">
-                📊 Go to Dashboard
+                <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+            </a>
+        </div>
+        
+        <!-- Emergency Blood Request Section -->
+        <div class="emergency-section">
+            <h2 class="emergency-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Emergency Blood Request
+            </h2>
+            <p class="emergency-description">
+                Need blood urgently? Submit an emergency blood request and we'll help you find donors immediately.
+            </p>
+            <a href="bloodreq.html" class="action-btn emergency">
+                <i class="fas fa-ambulance"></i> Send Blood Request
             </a>
         </div>
     </div>
+    
+    <!-- Enhanced Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="footer-logo-icon">
+                    <i class="fas fa-tint"></i>
+                </div>
+                <div class="footer-logo-text">Look4Blood</div>
+            </div>
+            
+            <div class="footer-sections">
+                <div class="footer-section">
+                    <h3><i class="fas fa-link"></i> Quick Links</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Home</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> About Us</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Services</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Blood Banks</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Events</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3><i class="fas fa-life-ring"></i> Support</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Help Center</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> FAQ</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Contact Us</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Privacy Policy</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Terms of Service</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3><i class="fas fa-address-book"></i> Contact</h3>
+                    <ul>
+                        <li><a href="tel:+1234567890"><i class="fas fa-phone"></i> +1 (234) 567-890</a></li>
+                        <li><a href="mailto:info@look4blood.com"><i class="fas fa-envelope"></i> info@look4blood.com</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> 123 Health St, Medical City</a></li>
+                        <li><a href="#"><i class="fas fa-clock"></i> Mon-Fri: 9AM-6PM</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3><i class="fas fa-info-circle"></i> About Us</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Our Mission</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Our Team</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Partners</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Careers</a></li>
+                        <li><a href="#"><i class="fas fa-angle-right"></i> Blog</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-copyright">
+                © 2025 Look4Blood. All rights reserved.
+            </div>
+        </div>
+    </footer>
+    
     <script type="module">
         import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
         const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
         const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('active');
+            
+            // Change icon based on menu state
+            const icon = this.querySelector('i');
+            if (mobileMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            
+            if (!mobileMenu.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                mobileMenu.classList.remove('active');
+                const icon = mobileMenuBtn.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
         
         // Store all locations for later use
         let allLocations = [];
@@ -981,25 +1449,25 @@
             const statsGrid = document.getElementById('bloodStatsGrid');
             statsGrid.innerHTML = bloodGroups.map(group => `
                 <div class="blood-stat-item">
-                    <div style="font-size: 40px; margin-bottom: 12px; filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.3));">🩸</div>
-                    <span class="blood-type">${group}</span>
-                    <span class="blood-count">${stats[group]}</span>
-                    <div style="font-size: 11px; color: #6b7280; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Eligible</div>
+                    <i class="fas fa-tint blood-icon"></i>
+                    <div class="blood-type">${group}</div>
+                    <div class="blood-count">${stats[group]}</div>
+                    <div class="blood-label">Eligible</div>
                 </div>
             `).join('');
         }
         
         // View profile function
-window.viewProfile = function(donorId) {
-    console.log('Viewing profile for donor ID:', donorId); // Debug log
-    if (donorId) {
-        // Redirect to profile page with donor ID
-        window.location.href = `profile.html?id=${encodeURIComponent(donorId)}`;
-    } else {
-        console.error('No donor ID provided');
-        alert('Error: Donor ID not found');
-    }
-}
+        window.viewProfile = function(donorId) {
+            console.log('Viewing profile for donor ID:', donorId); // Debug log
+            if (donorId) {
+                // Redirect to profile page with donor ID
+                window.location.href = `profile.html?id=${encodeURIComponent(donorId)}`;
+            } else {
+                console.error('No donor ID provided');
+                alert('Error: Donor ID not found');
+            }
+        }
         
         // Load divisions, districts, and cities from Supabase
         async function loadDivisions() {
@@ -1160,16 +1628,13 @@ window.viewProfile = function(donorId) {
             
             // Generate Desktop Table
             let table = `<div class="table-container"><table class="desktop-table"><tr>`;
-            const headers = ["Name", "Age", "Gender", "Blood Group", "Phone", "City", "Eligibility Status", "Times Donated", "Profile"];
+            const headers = ["Name", "Age", "Gender", "Blood Group", "Phone", "City", "Eligibility Status", "Times Donated", "Profile", "Call"];
             headers.forEach(h => table += `<th>${h}</th>`);
             table += "</tr>";
             
             filtered.forEach(d => {
                 const days = daysSince(d.last_donation);
                 const isEligible = days >= 90;
-                const eligibilityText = isEligible 
-                    ? `✅ Eligible (${days} days ago)` 
-                    : `⏳ Not eligible yet (${days} days ago)`;
                 
                 table += "<tr>";
                 table += `<td>${d.name}</td>`;
@@ -1178,9 +1643,15 @@ window.viewProfile = function(donorId) {
                 table += `<td>${d.blood_group}</td>`;
                 table += `<td>${d.phone}</td>`;
                 table += `<td>${d.city || "-"}</td>`;
-                table += `<td>${eligibilityText}</td>`;
+                table += `<td>
+                    <div class="eligibility-status ${isEligible ? 'eligibility-eligible' : 'eligibility-not-eligible'}">
+                        <i class="fas ${isEligible ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                        ${isEligible ? 'Eligible' : 'Not Eligible'} (${days} days)
+                    </div>
+                </td>`;
                 table += `<td>${d.times_donated || "0"}</td>`;
-                table += `<td><button onclick="viewProfile('${d.id}')" style="background: linear-gradient(135deg, #059669, #047857); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">View Profile</button></td>`;
+                table += `<td><button onclick="viewProfile('${d.id}')" style="background: linear-gradient(135deg, #059669, #047857); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; font-size: 13px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'"><i class="fas fa-user"></i> View Profile</button></td>`;
+                table += `<td><a href="tel:${d.phone}" class="call-btn"><i class="fas fa-phone"></i> Call Now</a></td>`;
                 table += "</tr>";
             });
             
@@ -1192,22 +1663,22 @@ window.viewProfile = function(donorId) {
             filtered.forEach((d, index) => {
                 const days = daysSince(d.last_donation);
                 const isEligible = days >= 90;
-                const eligibilityText = isEligible 
-                    ? `✅ Eligible` 
-                    : `⏳ Not eligible yet`;
                 const daysText = `${days} days ago`;
                 
                 cards += `
                     <div class="donor-card" style="animation-delay: ${index * 0.1}s">
-                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                             <div class="card-left">
                                 <div class="donor-name">${d.name}</div>
                                 <div class="blood-group">${d.blood_group}</div>
                                 <div class="phone-number">${d.phone}</div>
                             </div>
                             <div class="profile-section" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-                                <button onclick="viewProfile('${d.id}')" style="background: linear-gradient(135deg, #059669, #047857); color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; font-size: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">👤 View Profile</button>
-                                <div style="font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 6px; ${isEligible ? 'background: #dcfce7; color: #166534;' : 'background: #fef2f2; color: #dc2626;'}">${isEligible ? '✅ ELIGIBLE' : '❌ NOT ELIGIBLE'}</div>
+                                <button onclick="viewProfile('${d.id}')" style="background: linear-gradient(135deg, #059669, #047857); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; font-size: 13px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'"><i class="fas fa-user"></i> View Profile</button>
+                                <div class="eligibility-status ${isEligible ? 'eligibility-eligible' : 'eligibility-not-eligible'}" style="font-size: 12px; padding: 4px 8px; border-radius: 4px;">
+                                    <i class="fas ${isEligible ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                                    ${isEligible ? 'ELIGIBLE' : 'NOT ELIGIBLE'}
+                                </div>
                             </div>
                         </div>
                         <div class="card-right">
@@ -1228,6 +1699,9 @@ window.viewProfile = function(donorId) {
                                 <span class="card-info-value">${d.age || "-"}</span>
                             </div>
                         </div>
+                        <a href="tel:${d.phone}" class="call-btn mobile-call-btn">
+                            <i class="fas fa-phone"></i> Call Now
+                        </a>
                     </div>
                 `;
             });
