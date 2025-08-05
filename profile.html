@@ -556,7 +556,7 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-2">
-                            <i class="fas fa-globe text-green-500 mr-1"></i> District
+                            <i class="fas fa-map-marked-alt text-green-500 mr-1"></i> District
                         </label>
                         <input id="districtInput" type="text" readonly 
                                class="form-input">
@@ -564,7 +564,7 @@
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-2">
-                            <i class="fas fa-map-marked-alt text-purple-500 mr-1"></i> Division
+                            <i class="fas fa-globe text-purple-500 mr-1"></i> Division
                         </label>
                         <input id="divisionInput" type="text" readonly 
                                class="form-input">
@@ -1098,12 +1098,21 @@
                 updateProgressCircle(0);
             }
             
-            // User info
-            document.getElementById('phoneInput').value = donorData.phone || 'Not provided';
-            document.getElementById('cityInput').value = donorData.city || 'Not provided';
-            document.getElementById('districtInput').value = donorData.state || 'Not provided';
-            document.getElementById('divisionInput').value = donorData.division || 'Not provided';
-            document.getElementById('userIdInput').value = donorData.custom_id || donorData.id.toString().substring(0, 8);
+            // User info - Check if elements exist before setting values
+            const phoneInput = document.getElementById('phoneInput');
+            if (phoneInput) phoneInput.value = donorData.phone || 'Not provided';
+            
+            const cityInput = document.getElementById('cityInput');
+            if (cityInput) cityInput.value = donorData.city || 'Not provided';
+            
+            const districtInput = document.getElementById('districtInput');
+            if (districtInput) districtInput.value = donorData.state || 'Not provided';
+            
+            const divisionInput = document.getElementById('divisionInput');
+            if (divisionInput) divisionInput.value = donorData.division || 'Not provided';
+            
+            const userIdInput = document.getElementById('userIdInput');
+            if (userIdInput) userIdInput.value = donorData.custom_id || donorData.id.toString().substring(0, 8);
         }
         
         // Update progress circle
