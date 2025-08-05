@@ -1147,7 +1147,7 @@
                 try {
                     // Fetch donation history
                     const { data, error } = await supabase
-                        .from('donations')
+                        .from('donation_updates')
                         .select('*')
                         .eq('donor_id', donorData.id)
                         .order('donation_date', { ascending: false });
@@ -1167,7 +1167,7 @@
                                 '<td>' + new Date(donation.donation_date).toLocaleDateString() + '</td>' +
                                 '<td>' + (donation.place || 'N/A') + '</td>' +
                                 '<td><span class="badge badge-blood">' + donation.blood_group + '</span></td>' +
-                                '<td>#' + donation.donation_number + '</td>' +
+                                '<td>#' + donation.times_donated + '</td>' +
                             '</tr>';
                         }).join('');
                         donationHistoryList.classList.remove('hidden');
