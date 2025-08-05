@@ -1134,7 +1134,7 @@
             document.getElementById('progressPercent').textContent = percent + '%';
         }
         
-       // Setup donation history
+      // Setup donation history
 function setupDonationHistory() {
     const donationHistoryBtn = document.getElementById('donationHistoryBtn');
     const donationHistoryModal = document.getElementById('donationHistoryModal');
@@ -1148,13 +1148,39 @@ function setupDonationHistory() {
             // First, let's check if we have the donor data
             console.log("Donor data:", donorData);
             console.log("Donor ID:", donorData.id);
+            console.log("Donor user_id:", donorData.user_id);
             
-            // Fetch donation history using the correct table and field names
-            console.log("Fetching donation history...");
+            // We need to use the user_id field from donorData to query donation_updates
+            // If donorData doesn't have user_id, we need to get it from the donors table
+            let userId = donorData.user_id;
+            
+            if (!userId) {
+                console.log("No user_id in donorData, fetching from donors table");
+                const { data: donor, error: donorError } = await supabase
+                    .from('donors')
+                    .select('user_id')
+                    .eq('id', donorData.id)
+                    .single();
+                
+                if (donorError) {
+                    console.error('Error fetching user_id:', donorError);
+                    throw donorError;
+                }
+                
+                userId = donor.user_id;
+                console.log("Retrieved user_id:", userId);
+            }
+            
+            if (!userId) {
+                throw new Error("No user_id found for this donor");
+            }
+            
+            // Fetch donation history using the user_id
+            console.log("Fetching donation history with user_id:", userId);
             const { data, error } = await supabase
                 .from('donation_updates')
                 .select('*')
-                .eq('user_id', donorData.id)
+                .eq('user_id', userId)
                 .order('donation_date', { ascending: false });
             
             console.log("Query result:", { data, error });
