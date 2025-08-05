@@ -808,130 +808,95 @@
         }
         
         // Submit rating
-async function submitRating(rating) {
-    if (!currentUser || !donorData) {
-        console.log("Missing current user or donor data");
-        alert('Please log in to rate this donor');
-        return;
-    }
-    
-    try {
-        // Record user rating
-        const { error } = await supabase
-            .from('user_ratings')
-            .insert({
-                user_id: currentUser.id,
-                target_donor_id: donorData.id,
-                rating: rating
-            });
-        
-        if (error) {
-            console.error('Error submitting rating:', error);
-            throw error;
+        async function submitRating(rating) {
+            try {
+                // Record user rating
+                const { error } = await supabase
+                    .from('user_ratings')
+                    .insert({
+                        user_id: currentUser.id,
+                        target_donor_id: donorData.id,
+                        rating: rating
+                    });
+                
+                if (error) throw error;
+                
+                userRating = rating;
+                selectedRating = 0;
+                highlightStars(rating);
+                
+                // Update average rating display
+                await loadAverageRating();
+                
+                showSuccessToast('Thank you for your rating!');
+            } catch (error) {
+                console.error('Error submitting rating:', error);
+                alert('Error submitting rating');
+            }
         }
-        
-        userRating = rating;
-        selectedRating = 0;
-        highlightStars(rating);
-        
-        // Update average rating display
-        await loadAverageRating();
-        
-        showSuccessToast('Thank you for your rating!');
-    } catch (error) {
-        console.error('Error submitting rating:', error);
-        alert('Error submitting rating: ' + error.message);
-    }
-}
         
         // Check if user has already rated
-async function checkUserRating() {
-    if (!currentUser || !donorData) {
-        console.log("Missing current user or donor data");
-        return;
-    }
-    
-    try {
-        const { data, error } = await supabase
-            .from('user_ratings')
-            .select('rating')
-            .eq('user_id', currentUser.id)
-            .eq('target_donor_id', donorData.id)
-            .single();
+        async function checkUserRating() {
+            if (!currentUser) return;
             
-        if (error) {
-            if (error.code === 'PGRST116') {
-                // No rows found - user hasn't rated yet
-                console.log("User hasn't rated this donor yet");
-                return;
+            const { data, error } = await supabase
+                .from('user_ratings')
+                .select('rating')
+                .eq('user_id', currentUser.id)
+                .eq('target_donor_id', donorData.id)
+                .single();
+                
+            if (!error && data) {
+                userRating = data.rating;
+                highlightStars(userRating);
             }
-            console.error('Error checking user rating:', error);
-            return;
         }
         
-        if (data) {
-            userRating = data.rating;
-            highlightStars(userRating);
-            console.log("User has already rated with:", userRating);
-        }
-    } catch (error) {
-        console.error('Exception in checkUserRating:', error);
-    }
-}
-        
-       // Load average rating and total star count
-async function loadAverageRating() {
-    if (!donorData) {
-        console.log("Missing donor data");
-        return;
-    }
-    
-    try {
-        // Get all ratings for this donor
-        const { data, error } = await supabase
-            .from('user_ratings')
-            .select('rating')
-            .eq('target_donor_id', donorData.id);
-        
-        if (error) {
-            console.error('Error loading ratings:', error);
-            return;
-        }
-        
-        if (data && data.length > 0) {
-            // Calculate average
-            const sum = data.reduce(function(acc, curr) {
-                return acc + curr.rating;
-            }, 0);
-            const average = sum / data.length;
-            
-            // Update UI
-            document.getElementById('averageRating').textContent = average.toFixed(1);
-            document.getElementById('ratingCount').textContent = data.length + ' ratings';
-            document.getElementById('totalStarCount').textContent = 'Total stars: ' + sum;
-            
-            // Highlight stars for average rating
-            if (!currentUser || !userRating) {
-                const stars = document.querySelectorAll('.star');
-                const fullStars = Math.floor(average);
-                stars.forEach(function(star, index) {
-                    if (index < fullStars) {
-                        star.classList.add('active');
-                    } else {
-                        star.classList.remove('active');
+        // Load average rating and total star count
+        async function loadAverageRating() {
+            try {
+                // Get all ratings for this donor
+                const { data, error } = await supabase
+                    .from('user_ratings')
+                    .select('rating')
+                    .eq('target_donor_id', donorData.id);
+                
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    // Calculate average
+                    const sum = data.reduce(function(acc, curr) {
+                        return acc + curr.rating;
+                    }, 0);
+                    const average = sum / data.length;
+                    
+                    // Update UI
+                    document.getElementById('averageRating').textContent = average.toFixed(1);
+                    document.getElementById('ratingCount').textContent = data.length + ' ratings';
+                    document.getElementById('totalStarCount').textContent = 'Total stars: ' + sum;
+                    
+                    // Highlight stars for average rating
+                    if (!currentUser || !userRating) {
+                        const stars = document.querySelectorAll('.star');
+                        const fullStars = Math.floor(average);
+                        stars.forEach(function(star, index) {
+                            if (index < fullStars) {
+                                star.classList.add('active');
+                            } else {
+                                star.classList.remove('active');
+                            }
+                        });
                     }
-                });
+                } else {
+                    // No ratings yet
+                    document.getElementById('averageRating').textContent = '0.0';
+                    document.getElementById('ratingCount').textContent = '0 ratings';
+                    document.getElementById('totalStarCount').textContent = 'Total stars: 0';
+                }
+            } catch (error) {
+                console.error('Error loading average rating:', error);
             }
-        } else {
-            // No ratings yet
-            document.getElementById('averageRating').textContent = '0.0';
-            document.getElementById('ratingCount').textContent = '0 ratings';
-            document.getElementById('totalStarCount').textContent = 'Total stars: 0';
         }
-    } catch (error) {
-        console.error('Error loading average rating:', error);
-    }
-}
         
         // Check authentication
         async function checkAuth() {
