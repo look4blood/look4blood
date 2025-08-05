@@ -252,105 +252,113 @@
             color: #1d4ed8;
         }
         /* Donation Badge Styles */
-        .donation-badge {
-            position: absolute;
-            bottom: -5px;
-            right: -5px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-        }
-        .badge-bronze {
-            background: linear-gradient(135deg, #cd7f32, #b87333);
-        }
-        .badge-silver {
-            background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
-        }
-        .badge-gold {
-            background: linear-gradient(135deg, #ffd700, #ffcc00);
-        }
-        .badge-platinum {
-            background: linear-gradient(135deg, #e5e4e2, #d3d3d3);
-        }
-        .badge-diamond {
-            background: linear-gradient(135deg, #b9f2ff, #87ceeb);
-        }
-        .badge-red-diamond {
-            background: linear-gradient(135deg, #ff6b6b, #ff4757);
-        }
-        /* Star Rating Styles */
-        .star-rating {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-        .star {
-            font-size: 2rem;
-            color: #ddd;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .star:hover,
-        .star.active {
-            color: #ffc107;
-        }
-        .rating-info {
-            text-align: center;
-            margin-top: 0.5rem;
-        }
-        .rating-count {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-        .rating-text {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        .total-star-count {
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 0.25rem;
-        }
-        .rating-actions {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-        .btn-give-rating {
-            display: none;
-            background: linear-gradient(135deg, #ffc107, #ff9800);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-        .btn-give-rating:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(255, 193, 7, 0.4);
-        }
-        .btn-give-rating.show {
-            display: inline-flex;
-        }
-        /* Next Badge Styles */
-        .next-badge {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 1rem;
-            padding: 0.75rem;
-            background: #f8fafc;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-        .next-badge-text {
-            font-size: 0.875rem;
-            color: #64748b;
-            margin-left: 0.5rem;
-        }
+.donation-badge {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    border: 3px solid white;
+    transition: all 0.3s ease;
+}
+
+.donation-badge:hover {
+    transform: scale(1.1);
+}
+
+.badge-bronze {
+    background: linear-gradient(135deg, #CD7F32, #8B4513);
+    box-shadow: 0 6px 12px rgba(205, 127, 50, 0.4);
+}
+
+.badge-silver {
+    background: linear-gradient(135deg, #C0C0C0, #808080);
+    box-shadow: 0 6px 12px rgba(192, 192, 192, 0.4);
+}
+
+.badge-gold {
+    background: linear-gradient(135deg, #FFD700, #B8860B);
+    box-shadow: 0 6px 12px rgba(255, 215, 0, 0.4);
+}
+
+.badge-platinum {
+    background: linear-gradient(135deg, #E5E4E2, #B0C4DE);
+    box-shadow: 0 6px 12px rgba(176, 196, 222, 0.4);
+}
+
+.badge-diamond {
+    background: linear-gradient(135deg, #B9F2FF, #87CEEB);
+    box-shadow: 0 6px 12px rgba(135, 206, 235, 0.4);
+}
+
+.badge-red-diamond {
+    background: linear-gradient(135deg, #FF6B6B, #E0115F);
+    box-shadow: 0 6px 12px rgba(224, 17, 95, 0.4);
+}
+
+/* Add a pulsing animation for the highest badge */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(224, 17, 95, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(224, 17, 95, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(224, 17, 95, 0);
+    }
+}
+
+.badge-red-diamond {
+    animation: pulse 2s infinite;
+}
+
+/* Next Badge Styles */
+.next-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.next-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+}
+
+.next-badge-text {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-left: 0.5rem;
+    font-weight: 500;
+}
+
+/* Badge Info Container */
+#badgeInfoContainer {
+    background: linear-gradient(135deg, #ffffff, #f8fafc);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+#badgeInfoContainer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+}
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -687,66 +695,112 @@
         }
         
         // Update donation badge based on donation count
-        function updateDonationBadge(donationCount) {
-            const badge = document.getElementById('donationBadge');
-            const badgeIcon = badge.querySelector('i');
-            
-            // Remove all existing badge classes
-            badge.classList.remove('badge-bronze', 'badge-silver', 'badge-gold', 'badge-platinum', 'badge-diamond', 'badge-red-diamond');
-            
-            // Reset icon
-            badgeIcon.className = 'fas text-white text-xl';
-            
-            if (donationCount >= 1 && donationCount <= 3) {
-                badge.classList.add('badge-bronze');
-                badgeIcon.classList.add('fa-medal');
-            } else if (donationCount >= 4 && donationCount <= 15) {
-                badge.classList.add('badge-silver');
-                badgeIcon.classList.add('fa-award');
-            } else if (donationCount >= 16 && donationCount <= 20) {
-                badge.classList.add('badge-gold');
-                badgeIcon.classList.add('fa-trophy');
-            } else if (donationCount >= 21 && donationCount <= 30) {
-                badge.classList.add('badge-platinum');
-                badgeIcon.classList.add('fa-gem');
-            } else if (donationCount >= 31 && donationCount <= 39) {
-                badge.classList.add('badge-diamond');
-                badgeIcon.classList.add('fa-gem');
-            } else if (donationCount >= 40) {
-                badge.classList.add('badge-red-diamond');
-                badgeIcon.classList.add('fa-crown');
-            }
-            
-            // Update next badge info
-            updateNextBadge(donationCount);
-        }
-        
-        // Update next badge information
-        function updateNextBadge(currentDonations) {
-            const nextBadgeElement = document.getElementById('nextBadge');
-            const nextBadgeText = nextBadgeElement.querySelector('.next-badge-text');
-            const nextBadgeIcon = nextBadgeElement.querySelector('i');
-            
-            if (currentDonations < 4) {
-                nextBadgeText.textContent = 'Next badge: Silver (4 donations)';
-                nextBadgeIcon.className = 'fas fa-award text-gray-400';
-            } else if (currentDonations < 16) {
-                nextBadgeText.textContent = 'Next badge: Gold (16 donations)';
-                nextBadgeIcon.className = 'fas fa-trophy text-gray-400';
-            } else if (currentDonations < 21) {
-                nextBadgeText.textContent = 'Next badge: Platinum (21 donations)';
-                nextBadgeIcon.className = 'fas fa-gem text-gray-400';
-            } else if (currentDonations < 31) {
-                nextBadgeText.textContent = 'Next badge: Diamond (31 donations)';
-                nextBadgeIcon.className = 'fas fa-gem text-blue-300';
-            } else if (currentDonations < 40) {
-                nextBadgeText.textContent = 'Next badge: Red Diamond (40 donations)';
-                nextBadgeIcon.className = 'fas fa-crown text-red-300';
-            } else {
-                nextBadgeText.textContent = 'Maximum badge achieved!';
-                nextBadgeIcon.className = 'fas fa-star text-yellow-400';
-            }
-        }
+function updateDonationBadge(donationCount) {
+    const badge = document.getElementById('donationBadge');
+    const badgeIcon = badge.querySelector('i');
+    
+    // Remove all existing badge classes
+    badge.classList.remove('badge-bronze', 'badge-silver', 'badge-gold', 'badge-platinum', 'badge-diamond', 'badge-red-diamond');
+    
+    // Reset icon
+    badgeIcon.className = 'fas text-white text-xl';
+    
+    let currentBadgeName = '';
+    let badgeDescription = '';
+    
+    if (donationCount >= 1 && donationCount <= 3) {
+        badge.classList.add('badge-bronze');
+        badgeIcon.classList.add('fa-hand-holding-heart');
+        currentBadgeName = 'First Responder';
+        badgeDescription = 'Beginning your journey to save lives';
+    } else if (donationCount >= 4 && donationCount <= 15) {
+        badge.classList.add('badge-silver');
+        badgeIcon.classList.add('fa-heart');
+        currentBadgeName = 'Life Saver';
+        badgeDescription = 'Making a significant difference in the community';
+    } else if (donationCount >= 16 && donationCount <= 20) {
+        badge.classList.add('badge-gold');
+        badgeIcon.classList.add('fa-award');
+        currentBadgeName = 'Hero Donor';
+        badgeDescription = 'Going above and beyond to save lives';
+    } else if (donationCount >= 21 && donationCount <= 30) {
+        badge.classList.add('badge-platinum');
+        badgeIcon.classList.add('fa-star');
+        currentBadgeName = 'Platinum Champion';
+        badgeDescription = 'Exceptional commitment to saving lives';
+    } else if (donationCount >= 31 && donationCount <= 39) {
+        badge.classList.add('badge-diamond');
+        badgeIcon.classList.add('fa-gem');
+        currentBadgeName = 'Diamond Guardian';
+        badgeDescription = 'A true guardian of life';
+    } else if (donationCount >= 40) {
+        badge.classList.add('badge-red-diamond');
+        badgeIcon.classList.add('fa-crown');
+        currentBadgeName = 'Ruby Legacy';
+        badgeDescription = 'Leaving a life-saving legacy for generations';
+    } else {
+        currentBadgeName = 'New Donor';
+        badgeDescription = 'Ready to start your life-saving journey';
+    }
+    
+    // Update next badge info
+    updateNextBadge(donationCount, currentBadgeName, badgeDescription);
+}
+
+// Update next badge information
+function updateNextBadge(currentDonations, currentBadgeName, badgeDescription) {
+    const nextBadgeElement = document.getElementById('nextBadge');
+    const nextBadgeText = nextBadgeElement.querySelector('.next-badge-text');
+    const nextBadgeIcon = nextBadgeElement.querySelector('i');
+    
+    // Create a badge info container if it doesn't exist
+    let badgeInfoContainer = document.getElementById('badgeInfoContainer');
+    if (!badgeInfoContainer) {
+        badgeInfoContainer = document.createElement('div');
+        badgeInfoContainer.id = 'badgeInfoContainer';
+        badgeInfoContainer.className = 'mt-4 p-4 bg-gray-50 rounded-lg';
+        nextBadgeElement.parentNode.insertBefore(badgeInfoContainer, nextBadgeElement);
+    }
+    
+    // Display current badge info
+    badgeInfoContainer.innerHTML = `
+        <div class="text-center mb-3">
+            <div class="text-lg font-bold text-gray-800">${currentBadgeName}</div>
+            <div class="text-sm text-gray-600">${badgeDescription}</div>
+        </div>
+        <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center">
+                <i class="fas fa-tint text-red-500 mr-2"></i>
+                <span class="font-medium">Total Donations:</span>
+            </div>
+            <span class="font-bold">${currentDonations}</span>
+        </div>
+    `;
+    
+    // Update next badge info
+    if (currentDonations < 1) {
+        nextBadgeText.textContent = 'Next badge: First Responder (1 donation)';
+        nextBadgeIcon.className = 'fas fa-hand-holding-heart text-gray-400';
+    } else if (currentDonations < 4) {
+        nextBadgeText.textContent = 'Next badge: Life Saver (4 donations)';
+        nextBadgeIcon.className = 'fas fa-heart text-gray-400';
+    } else if (currentDonations < 16) {
+        nextBadgeText.textContent = 'Next badge: Hero Donor (16 donations)';
+        nextBadgeIcon.className = 'fas fa-award text-gray-400';
+    } else if (currentDonations < 21) {
+        nextBadgeText.textContent = 'Next badge: Platinum Champion (21 donations)';
+        nextBadgeIcon.className = 'fas fa-star text-gray-400';
+    } else if (currentDonations < 31) {
+        nextBadgeText.textContent = 'Next badge: Diamond Guardian (31 donations)';
+        nextBadgeIcon.className = 'fas fa-gem text-blue-300';
+    } else if (currentDonations < 40) {
+        nextBadgeText.textContent = 'Next badge: Ruby Legacy (40 donations)';
+        nextBadgeIcon.className = 'fas fa-crown text-red-300';
+    } else {
+        nextBadgeText.textContent = 'Maximum badge achieved!';
+        nextBadgeIcon.className = 'fas fa-star text-yellow-400';
+    }
+}
         
         // Setup star rating
         function setupStarRating() {
