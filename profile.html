@@ -206,6 +206,11 @@
             border-color: #cbd5e1;
             transform: translateY(-1px);
         }
+        .form-input:disabled {
+            background-color: #f8fafc;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
         /* Modal Styles */
         .modal {
             position: fixed;
@@ -290,6 +295,7 @@
             cursor: pointer;
             transition: color 0.2s;
         }
+        .star:hover,
         .star.active {
             color: #ffc107;
         }
@@ -310,6 +316,37 @@
             font-size: 0.9rem;
             color: #666;
             margin-top: 0.25rem;
+        }
+        .rating-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .btn-give-rating {
+            display: none;
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        .btn-give-rating:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(255, 193, 7, 0.4);
+        }
+        .btn-give-rating.show {
+            display: inline-flex;
+        }
+        /* Login Prompt Styles */
+        .login-prompt {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .login-prompt p {
+            color: #64748b;
+            margin-bottom: 0.5rem;
         }
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -440,6 +477,12 @@
                     <i class="fas fa-star star" data-rating="5"></i>
                 </div>
                 
+                <div class="rating-actions">
+                    <button id="giveRatingBtn" class="btn btn-give-rating">
+                        <i class="fas fa-star mr-2"></i> Give Rating
+                    </button>
+                </div>
+                
                 <div class="rating-info">
                     <div id="averageRating" class="rating-count">0.0</div>
                     <div id="ratingCount" class="rating-text">0 ratings</div>
@@ -451,8 +494,8 @@
                         <i class="fas fa-comment"></i> View Comments
                     </button>
                     
-                    <button id="shareBtn" class="btn btn-secondary w-full justify-center">
-                        <i class="fas fa-share-alt"></i> Share Profile
+                    <button id="reportBtn" class="btn btn-warning w-full justify-center">
+                        <i class="fas fa-flag"></i> Report Profile
                     </button>
                 </div>
                 
@@ -522,8 +565,8 @@
         </div>
         <!-- Action Buttons -->
         <div class="flex justify-center space-x-4 mb-8 fade-in" style="animation-delay: 0.4s;">
-            <button id="viewProfileBtn" class="btn btn-primary">
-                <i class="fas fa-user"></i> View Full Profile
+            <button id="shareBtn" class="btn btn-secondary">
+                <i class="fas fa-share-alt"></i> Share Profile
             </button>
         </div>
     </div>
@@ -560,6 +603,43 @@
             </div>
         </div>
     </div>
+    <!-- Report Modal -->
+    <div id="reportModal" class="modal hidden">
+        <div class="modal-content rounded-2xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold mb-4 flex items-center">
+                <i class="fas fa-flag text-yellow-500 mr-2"></i> Report User
+            </h3>
+            <form id="reportForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i> Reason
+                    </label>
+                    <select id="reportReason" class="form-input">
+                        <option value="">Select a reason</option>
+                        <option value="inappropriate">Inappropriate behavior</option>
+                        <option value="fake">Fake profile</option>
+                        <option value="spam">Spam</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-comment-alt text-yellow-500 mr-1"></i> Description
+                    </label>
+                    <textarea id="reportDescription" rows="4" 
+                              class="form-input" placeholder="Please provide details about your report..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelReportBtn" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-paper-plane"></i> Submit Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     <!-- Success Toast -->
     <div id="successToast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 flex items-center">
         <i class="fas fa-check-circle mr-2"></i>
@@ -573,7 +653,10 @@
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
         // Global variables
+        let currentUser = null;
         let donorData = null;
+        let userRating = null;
+        let selectedRating = 0;
         
         // Show success toast
         function showSuccessToast(message) {
@@ -618,6 +701,110 @@
             }
         }
         
+        // Setup star rating
+        function setupStarRating() {
+            const stars = document.querySelectorAll('.star');
+            const giveRatingBtn = document.getElementById('giveRatingBtn');
+            
+            stars.forEach(function(star) {
+                star.addEventListener('mouseover', function() {
+                    if (userRating) return; // User has already rated
+                    
+                    const rating = parseInt(star.getAttribute('data-rating'));
+                    highlightStars(rating);
+                });
+                
+                star.addEventListener('click', function() {
+                    if (userRating) return; // User has already rated
+                    
+                    const rating = parseInt(star.getAttribute('data-rating'));
+                    selectedRating = rating;
+                    highlightStars(rating);
+                    giveRatingBtn.classList.add('show');
+                });
+            });
+            
+            document.getElementById('starRating').addEventListener('mouseleave', function() {
+                if (userRating) {
+                    highlightStars(userRating);
+                } else {
+                    highlightStars(selectedRating);
+                }
+            });
+            
+            // Give rating button click
+            giveRatingBtn.addEventListener('click', async function() {
+                if (selectedRating === 0) return;
+                
+                // Check if user is authenticated
+                if (!currentUser) {
+                    alert('Please log in to rate this donor');
+                    window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                    return;
+                }
+                
+                await submitRating(selectedRating);
+                giveRatingBtn.classList.remove('show');
+            });
+        }
+        
+        // Highlight stars based on rating
+        function highlightStars(rating) {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(function(star, index) {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+        
+        // Submit rating
+        async function submitRating(rating) {
+            try {
+                // Record user rating
+                const { error } = await supabase
+                    .from('user_ratings')
+                    .insert({
+                        user_id: currentUser.id,
+                        target_donor_id: donorData.id,
+                        rating: rating
+                    });
+                
+                if (error) throw error;
+                
+                userRating = rating;
+                selectedRating = 0;
+                highlightStars(rating);
+                
+                // Update average rating display
+                await loadAverageRating();
+                
+                showSuccessToast('Thank you for your rating!');
+            } catch (error) {
+                console.error('Error submitting rating:', error);
+                alert('Error submitting rating');
+            }
+        }
+        
+        // Check if user has already rated
+        async function checkUserRating() {
+            if (!currentUser) return;
+            
+            const { data, error } = await supabase
+                .from('user_ratings')
+                .select('rating')
+                .eq('user_id', currentUser.id)
+                .eq('target_donor_id', donorData.id)
+                .single();
+                
+            if (!error && data) {
+                userRating = data.rating;
+                highlightStars(userRating);
+            }
+        }
+        
         // Load average rating and total star count
         async function loadAverageRating() {
             try {
@@ -642,15 +829,17 @@
                     document.getElementById('totalStarCount').textContent = 'Total stars: ' + sum;
                     
                     // Highlight stars for average rating
-                    const stars = document.querySelectorAll('.star');
-                    const fullStars = Math.floor(average);
-                    stars.forEach(function(star, index) {
-                        if (index < fullStars) {
-                            star.classList.add('active');
-                        } else {
-                            star.classList.remove('active');
-                        }
-                    });
+                    if (!currentUser || !userRating) {
+                        const stars = document.querySelectorAll('.star');
+                        const fullStars = Math.floor(average);
+                        stars.forEach(function(star, index) {
+                            if (index < fullStars) {
+                                star.classList.add('active');
+                            } else {
+                                star.classList.remove('active');
+                            }
+                        });
+                    }
                 } else {
                     // No ratings yet
                     document.getElementById('averageRating').textContent = '0.0';
@@ -660,6 +849,18 @@
             } catch (error) {
                 console.error('Error loading average rating:', error);
             }
+        }
+        
+        // Check authentication
+        async function checkAuth() {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            
+            if (error) {
+                console.error('Auth error:', error);
+                return null;
+            }
+            
+            return user;
         }
         
         // Load comments
@@ -723,17 +924,26 @@
                 return;
             }
             
+            // Check authentication
+            currentUser = await checkAuth();
+            
             // Load the donor profile
             await loadDonorProfile(donorId);
+            
+            // Setup star rating
+            setupStarRating();
+            
+            // Check if user has already rated
+            await checkUserRating();
+            
+            // Load average rating
+            await loadAverageRating();
             
             // Setup donation history
             setupDonationHistory();
             
             // Setup share button
             setupShareButton();
-            
-            // Setup view profile button
-            setupViewProfileButton();
         });
         
         // Load donor profile
@@ -762,9 +972,6 @@
                 
                 donorData = data;
                 updateUI();
-                
-                // Load average rating
-                await loadAverageRating();
             } catch (error) {
                 console.error('Error loading donor data:', error);
                 alert('Error loading profile data: ' + error.message);
@@ -921,14 +1128,6 @@
             });
         }
         
-        // Setup view profile button
-        function setupViewProfileButton() {
-            document.getElementById('viewProfileBtn').addEventListener('click', function() {
-                // Redirect to the full profile page
-                window.location.href = 'donor-profile.html?id=' + donorData.id;
-            });
-        }
-        
         // Comment functionality
         document.getElementById('commentBtn').addEventListener('click', function() {
             const section = document.getElementById('commentsSection');
@@ -941,6 +1140,13 @@
         
         // Add comment
         document.getElementById('addCommentBtn').addEventListener('click', async function() {
+            // Check if user is authenticated
+            if (!currentUser) {
+                alert('Please log in to add a comment');
+                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                return;
+            }
+            
             const input = document.getElementById('commentInput');
             const content = input.value.trim();
             
@@ -953,7 +1159,7 @@
                 const { error } = await supabase
                     .from('comments')
                     .insert({
-                        user_id: donorData.id, // Using donor's ID as commenter ID
+                        user_id: currentUser.id,
                         target_donor_id: donorData.id,
                         content: content
                     });
@@ -968,6 +1174,54 @@
                 alert('Error adding comment');
             } finally {
                 document.getElementById('loading').style.display = 'none';
+            }
+        });
+        
+        // Report functionality
+        document.getElementById('reportBtn').addEventListener('click', function() {
+            // Check if user is authenticated
+            if (!currentUser) {
+                alert('Please log in to report this profile');
+                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                return;
+            }
+            
+            document.getElementById('reportModal').classList.remove('hidden');
+        });
+        
+        document.getElementById('cancelReportBtn').addEventListener('click', function() {
+            document.getElementById('reportModal').classList.add('hidden');
+        });
+        
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const reason = document.getElementById('reportReason').value;
+            const description = document.getElementById('reportDescription').value;
+            
+            if (!reason) {
+                alert('Please select a reason');
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('reports')
+                    .insert({
+                        reporter_id: currentUser.id,
+                        reported_donor_id: donorData.id,
+                        reason: reason,
+                        description: description
+                    });
+                    
+                if (error) throw error;
+                
+                showSuccessToast('Report submitted successfully');
+                document.getElementById('reportModal').classList.add('hidden');
+                document.getElementById('reportForm').reset();
+            } catch (error) {
+                console.error('Error submitting report:', error);
+                alert('Error submitting report');
             }
         });
     </script>
