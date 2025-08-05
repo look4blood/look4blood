@@ -8,8 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Cropper.js CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <style>
         :root {
             --primary-red: #c62828;
@@ -62,13 +60,6 @@
             stroke-dashoffset: 339.292;
         }
         /* Animations */
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-        .like-animation {
-            animation: bounce 0.3s ease-in-out;
-        }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -84,28 +75,6 @@
         }
         .comment-section.open {
             max-height: 500px;
-        }
-        /* Cropper styles */
-        .cropper-container {
-            max-height: 400px;
-        }
-        .upload-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        .profile-photo-container:hover .upload-overlay {
-            opacity: 1;
         }
         /* Table styles */
         .donation-table {
@@ -197,15 +166,6 @@
             background: #f1f5f9;
             border-color: #cbd5e1;
         }
-        .btn-success {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.4);
-        }
         .btn-info {
             background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
@@ -223,15 +183,6 @@
         .btn-warning:hover {
             transform: translateY(-2px);
             box-shadow: 0 20px 25px -5px rgba(245, 158, 11, 0.4);
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.4);
         }
         /* Input Styles */
         .form-input {
@@ -254,11 +205,6 @@
         .form-input:hover {
             border-color: #cbd5e1;
             transform: translateY(-1px);
-        }
-        .form-input:disabled {
-            background-color: #f8fafc;
-            color: #94a3b8;
-            cursor: not-allowed;
         }
         /* Modal Styles */
         .modal {
@@ -344,7 +290,6 @@
             cursor: pointer;
             transition: color 0.2s;
         }
-        .star:hover,
         .star.active {
             color: #ffc107;
         }
@@ -365,24 +310,6 @@
             font-size: 0.9rem;
             color: #666;
             margin-top: 0.25rem;
-        }
-        .rating-actions {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-        .btn-give-rating {
-            display: none;
-            background: linear-gradient(135deg, #ffc107, #ff9800);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-        .btn-give-rating:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(255, 193, 7, 0.4);
-        }
-        .btn-give-rating.show {
-            display: inline-flex;
         }
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -421,19 +348,12 @@
             <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
                 <!-- Profile Photo -->
                 <div class="profile-photo-container relative">
-                    <img id="profilePhoto" src="https://bbvyjeljeyofswuijlyg.supabase.co/storage/v1/object/public/avatars//145856997_296fe121-5dfa-43f4-98b5-db50019738a7%20(2).jpg" 
+                    <img id="profilePhoto" src="" 
                          alt="Profile" class="w-40 h-40 rounded-full object-cover border-4 border-white shadow-lg">
-                    <div class="upload-overlay">
-                        <div class="text-white text-center">
-                            <i class="fas fa-camera text-3xl mb-2"></i>
-                            <p class="text-sm font-medium">Change Photo</p>
-                        </div>
-                    </div>
                     <!-- Donation Badge -->
                     <div id="donationBadge" class="donation-badge badge-bronze">
                         <i class="fas fa-medal text-white text-xl"></i>
                     </div>
-                    <input type="file" id="photoUpload" class="hidden" accept="image/*">
                 </div>
                 
                 <!-- Basic Info -->
@@ -472,14 +392,14 @@
                         <span class="text-gray-600 font-medium">
                             <i class="fas fa-hand-holding-heart text-red-500 mr-2"></i>Total Donations
                         </span>
-                        <span id="totalDonations" class="text-3xl font-bold text-red-500">12</span>
+                        <span id="totalDonations" class="text-3xl font-bold text-red-500">0</span>
                     </div>
                     
                     <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
                         <span class="text-gray-600 font-medium">
                             <i class="fas fa-calendar-check text-green-500 mr-2"></i>Last Donation
                         </span>
-                        <span id="lastDonation" class="text-xl font-semibold text-gray-800">25 days ago</span>
+                        <span id="lastDonation" class="text-xl font-semibold text-gray-800">Never</span>
                     </div>
                     
                     <!-- Progress Circle -->
@@ -493,13 +413,13 @@
                                         r="86" cx="96" cy="96"/>
                             </svg>
                             <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <span id="progressPercent" class="text-3xl font-bold text-gray-800">25%</span>
+                                <span id="progressPercent" class="text-3xl font-bold text-gray-800">0%</span>
                                 <span class="text-sm text-gray-500">Progress</span>
                             </div>
                         </div>
                         <p id="nextDonationText" class="mt-6 text-center text-gray-600 font-medium">
                             This donor will be eligible to donate in 
-                            <span class="font-bold text-red-500">65 days</span>
+                            <span class="font-bold text-red-500">90 days</span>
                         </p>
                     </div>
                 </div>
@@ -520,12 +440,6 @@
                     <i class="fas fa-star star" data-rating="5"></i>
                 </div>
                 
-                <div class="rating-actions">
-                    <button id="giveRatingBtn" class="btn btn-give-rating">
-                        <i class="fas fa-star mr-2"></i> Give Rating
-                    </button>
-                </div>
-                
                 <div class="rating-info">
                     <div id="averageRating" class="rating-count">0.0</div>
                     <div id="ratingCount" class="rating-text">0 ratings</div>
@@ -537,8 +451,8 @@
                         <i class="fas fa-comment"></i> View Comments
                     </button>
                     
-                    <button id="reportBtn" class="btn btn-warning w-full justify-center">
-                        <i class="fas fa-flag"></i> Report User
+                    <button id="shareBtn" class="btn btn-secondary w-full justify-center">
+                        <i class="fas fa-share-alt"></i> Share Profile
                     </button>
                 </div>
                 
@@ -565,7 +479,7 @@
         <!-- User Info Section -->
         <div class="stat-card mb-8 fade-in" style="animation-delay: 0.3s;">
             <h2 class="text-xl font-bold text-gray-800 mb-6">
-                <i class="fas fa-user-circle text-purple-500 mr-2"></i> User Information
+                <i class="fas fa-user-circle text-purple-500 mr-2"></i> Contact Information
             </h2>
             
             <div class="grid md:grid-cols-2 gap-6">
@@ -574,7 +488,7 @@
                         <label class="block text-sm font-medium text-gray-600 mb-2">
                             <i class="fas fa-phone text-blue-500 mr-1"></i> Phone Number
                         </label>
-                        <input id="phoneInput" type="tel" disabled 
+                        <input id="phoneInput" type="tel" readonly 
                                class="form-input">
                     </div>
                     
@@ -582,7 +496,7 @@
                         <label class="block text-sm font-medium text-gray-600 mb-2">
                             <i class="fas fa-map-marker-alt text-red-500 mr-1"></i> City
                         </label>
-                        <input id="cityInput" type="text" disabled 
+                        <input id="cityInput" type="text" readonly 
                                class="form-input">
                     </div>
                 </div>
@@ -592,13 +506,13 @@
                         <label class="block text-sm font-medium text-gray-600 mb-2">
                             <i class="fas fa-globe text-green-500 mr-1"></i> Division
                         </label>
-                        <input id="districtInput" type="text" disabled 
+                        <input id="districtInput" type="text" readonly 
                                class="form-input">
                     </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-2">
-                            <i class="fas fa-id-card text-purple-500 mr-1"></i> User ID
+                            <i class="fas fa-id-card text-purple-500 mr-1"></i> Donor ID
                         </label>
                         <input id="userIdInput" type="text" readonly 
                                class="form-input bg-gray-100">
@@ -608,34 +522,9 @@
         </div>
         <!-- Action Buttons -->
         <div class="flex justify-center space-x-4 mb-8 fade-in" style="animation-delay: 0.4s;">
-            <button id="editBtn" class="btn btn-primary">
-                <i class="fas fa-edit"></i> Edit Profile
+            <button id="viewProfileBtn" class="btn btn-primary">
+                <i class="fas fa-user"></i> View Full Profile
             </button>
-            <button id="saveBtn" class="btn btn-success hidden">
-                <i class="fas fa-save"></i> Save Changes
-            </button>
-            <button id="shareBtn" class="btn btn-secondary">
-                <i class="fas fa-share-alt"></i> Share Profile
-            </button>
-        </div>
-    </div>
-    <!-- Crop Modal -->
-    <div id="cropModal" class="modal hidden">
-        <div class="modal-content rounded-2xl p-6 max-w-md w-full mx-4">
-            <h3 class="text-2xl font-bold mb-4 flex items-center">
-                <i class="fas fa-crop text-red-500 mr-2"></i> Crop Your Profile Picture
-            </h3>
-            <div class="mb-4">
-                <img id="cropImage" class="max-w-full rounded-lg">
-            </div>
-            <div class="flex justify-end space-x-3">
-                <button id="cancelCropBtn" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-                <button id="applyCropBtn" class="btn btn-primary">
-                    <i class="fas fa-check"></i> Apply
-                </button>
-            </div>
         </div>
     </div>
     <!-- Donation History Modal -->
@@ -671,50 +560,11 @@
             </div>
         </div>
     </div>
-    <!-- Report Modal -->
-    <div id="reportModal" class="modal hidden">
-        <div class="modal-content rounded-2xl p-6 max-w-md w-full mx-4">
-            <h3 class="text-2xl font-bold mb-4 flex items-center">
-                <i class="fas fa-flag text-yellow-500 mr-2"></i> Report User
-            </h3>
-            <form id="reportForm">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i> Reason
-                    </label>
-                    <select id="reportReason" class="form-input">
-                        <option value="">Select a reason</option>
-                        <option value="inappropriate">Inappropriate behavior</option>
-                        <option value="fake">Fake profile</option>
-                        <option value="spam">Spam</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-comment-alt text-yellow-500 mr-1"></i> Description
-                    </label>
-                    <textarea id="reportDescription" rows="4" 
-                              class="form-input" placeholder="Please provide details about your report..."></textarea>
-                </div>
-                <div class="flex justify-end space-x-3">
-                    <button type="button" id="cancelReportBtn" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-paper-plane"></i> Submit Report
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
     <!-- Success Toast -->
     <div id="successToast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 flex items-center">
         <i class="fas fa-check-circle mr-2"></i>
         <span id="successMessage">Success!</span>
     </div>
-    <!-- Cropper.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     
     <script>
         // Initialize Supabase
@@ -723,14 +573,7 @@
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
         // Global variables
-        let currentUser = null;
         let donorData = null;
-        let isEditMode = false;
-        let isOwnProfile = false;
-        let userInteraction = null;
-        let cropper = null;
-        let userRating = null;
-        let selectedRating = 0;
         
         // Show success toast
         function showSuccessToast(message) {
@@ -775,101 +618,6 @@
             }
         }
         
-        // Setup star rating
-        function setupStarRating() {
-            const stars = document.querySelectorAll('.star');
-            const giveRatingBtn = document.getElementById('giveRatingBtn');
-            
-            stars.forEach(function(star) {
-                star.addEventListener('mouseover', function() {
-                    if (userRating) return; // User has already rated
-                    
-                    const rating = parseInt(star.getAttribute('data-rating'));
-                    highlightStars(rating);
-                });
-                
-                star.addEventListener('click', function() {
-                    if (userRating) return; // User has already rated
-                    
-                    const rating = parseInt(star.getAttribute('data-rating'));
-                    selectedRating = rating;
-                    highlightStars(rating);
-                    giveRatingBtn.classList.add('show');
-                });
-            });
-            
-            document.getElementById('starRating').addEventListener('mouseleave', function() {
-                if (userRating) {
-                    highlightStars(userRating);
-                } else {
-                    highlightStars(selectedRating);
-                }
-            });
-            
-            // Give rating button click
-            giveRatingBtn.addEventListener('click', async function() {
-                if (selectedRating === 0) return;
-                
-                await submitRating(selectedRating);
-                giveRatingBtn.classList.remove('show');
-            });
-        }
-        
-        // Highlight stars based on rating
-        function highlightStars(rating) {
-            const stars = document.querySelectorAll('.star');
-            stars.forEach(function(star, index) {
-                if (index < rating) {
-                    star.classList.add('active');
-                } else {
-                    star.classList.remove('active');
-                }
-            });
-        }
-        
-        // Submit rating
-        async function submitRating(rating) {
-            try {
-                // Record user rating
-                const { error } = await supabase
-                    .from('user_ratings')
-                    .insert({
-                        user_id: currentUser.id,
-                        target_donor_id: donorData.id,
-                        rating: rating
-                    });
-                
-                if (error) throw error;
-                
-                userRating = rating;
-                selectedRating = 0;
-                highlightStars(rating);
-                
-                // Update average rating display
-                await loadAverageRating();
-                
-                showSuccessToast('Thank you for your rating!');
-            } catch (error) {
-                console.error('Error submitting rating:', error);
-                alert('Error submitting rating');
-            }
-        }
-        
-        // Check if user has already rated
-        async function checkUserRating() {
-            const { data, error } = await supabase
-                .from('user_ratings')
-                .select('rating')
-                .eq('user_id', currentUser.id)
-                .eq('target_donor_id', donorData.id)
-                .single();
-                
-            if (!error && data) {
-                userRating = data.rating;
-                highlightStars(userRating);
-            }
-        }
-        
         // Load average rating and total star count
         async function loadAverageRating() {
             try {
@@ -892,6 +640,17 @@
                     document.getElementById('averageRating').textContent = average.toFixed(1);
                     document.getElementById('ratingCount').textContent = data.length + ' ratings';
                     document.getElementById('totalStarCount').textContent = 'Total stars: ' + sum;
+                    
+                    // Highlight stars for average rating
+                    const stars = document.querySelectorAll('.star');
+                    const fullStars = Math.floor(average);
+                    stars.forEach(function(star, index) {
+                        if (index < fullStars) {
+                            star.classList.add('active');
+                        } else {
+                            star.classList.remove('active');
+                        }
+                    });
                 } else {
                     // No ratings yet
                     document.getElementById('averageRating').textContent = '0.0';
@@ -903,13 +662,60 @@
             }
         }
         
-        // Check authentication on page load
+        // Load comments
+        async function loadComments() {
+            try {
+                // Get comments with donor info
+                const { data: comments, error } = await supabase
+                    .from('comments')
+                    .select(`
+                        *,
+                        commenter:donors!comments_user_id_fkey(name, avatar_url)
+                    `)
+                    .eq('target_donor_id', donorData.id)
+                    .order('created_at', { ascending: false });
+                    
+                if (error) throw error;
+                
+                const commentsList = document.getElementById('commentsList');
+                
+                if (comments && comments.length > 0) {
+                    commentsList.innerHTML = comments.map(function(comment) {
+                        // Get commenter info or use defaults
+                        const name = comment.commenter?.name || 'Anonymous';
+                        const avatar = comment.commenter?.avatar_url || 'https://picsum.photos/seed/default/40/40.jpg';
+                        
+                        return '<div class="flex space-x-3 p-4 bg-gray-50 rounded-lg">' +
+                            '<img src="' + avatar + '" alt="' + name + '" class="w-12 h-12 rounded-full object-cover">' +
+                            '<div class="flex-1">' +
+                                '<p class="font-semibold text-gray-800">' + name + '</p>' +
+                                '<p class="text-gray-700 mt-1">' + comment.content + '</p>' +
+                                '<p class="text-xs text-gray-500 mt-2">' +
+                                    '<i class="fas fa-clock mr-1"></i>' +
+                                    new Date(comment.created_at).toLocaleDateString() +
+                                '</p>' +
+                            '</div>' +
+                        '</div>';
+                    }).join('');
+                } else {
+                    commentsList.innerHTML = 
+                        '<div class="text-center py-8 text-gray-500">' +
+                            '<i class="fas fa-comments text-4xl mb-3"></i>' +
+                            '<p>No comments yet. Be the first to comment!</p>' +
+                        '</div>';
+                }
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+        }
+        
+        // Check URL parameters on page load
         document.addEventListener('DOMContentLoaded', async function() {
             // Get donor ID from URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const donorId = urlParams.get('id');
             
-            console.log('Retrieved donor ID from URL:', donorId); // Debug log
+            console.log('Retrieved donor ID from URL:', donorId);
             
             if (!donorId) {
                 alert('No donor ID specified. Redirecting to donor list...');
@@ -917,54 +723,23 @@
                 return;
             }
             
-            await checkAuth();
-            
-            if (currentUser) {
-                // Check if this is the user's own profile
-                isOwnProfile = currentUser.id === donorId;
-                console.log('Is own profile:', isOwnProfile); // Debug log
-            }
-            
             // Load the donor profile
             await loadDonorProfile(donorId);
-            
-            // Setup star rating
-            setupStarRating();
-            
-            // Check if user has already rated
-            await checkUserRating();
-            
-            // Load average rating
-            await loadAverageRating();
-            
-            // Setup photo upload only if it's the user's own profile
-            if (isOwnProfile) {
-                setupPhotoUpload();
-            }
             
             // Setup donation history
             setupDonationHistory();
             
             // Setup share button
             setupShareButton();
+            
+            // Setup view profile button
+            setupViewProfileButton();
         });
-        
-        // Authentication check
-        async function checkAuth() {
-            const { data: { user }, error } = await supabase.auth.getUser();
-            
-            if (error || !user) {
-                window.location.href = '/login.html';
-                return;
-            }
-            
-            currentUser = user;
-        }
         
         // Load donor profile
         async function loadDonorProfile(donorId) {
             try {
-                console.log('Loading donor profile for ID:', donorId); // Debug log
+                console.log('Loading donor profile for ID:', donorId);
                 
                 // Load donor data
                 const { data, error } = await supabase
@@ -983,15 +758,13 @@
                     throw new Error('Donor not found');
                 }
                 
-                console.log('Donor data loaded:', data); // Debug log
+                console.log('Donor data loaded:', data);
                 
                 donorData = data;
                 updateUI();
                 
-                // Hide edit button if it's not the user's own profile
-                if (!isOwnProfile) {
-                    document.getElementById('editBtn').style.display = 'none';
-                }
+                // Load average rating
+                await loadAverageRating();
             } catch (error) {
                 console.error('Error loading donor data:', error);
                 alert('Error loading profile data: ' + error.message);
@@ -1010,6 +783,10 @@
             
             if (donorData.avatar_url) {
                 document.getElementById('profilePhoto').src = donorData.avatar_url;
+            } else {
+                // Use a default avatar with donor's initials
+                const initials = donorData.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                document.getElementById('profilePhoto').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=c62828&color=fff&size=200`;
             }
             
             // Update donation badge
@@ -1018,27 +795,33 @@
             // Donation stats
             document.getElementById('totalDonations').textContent = donorData.times_donated || 0;
             
-            const lastDonationDate = new Date(donorData.last_donation);
-            const daysSinceLastDonation = Math.floor((new Date() - lastDonationDate) / (1000 * 60 * 60 * 24));
-            document.getElementById('lastDonation').textContent = daysSinceLastDonation + ' days ago';
-            
-            // Calculate progress
-            const daysRemaining = Math.max(0, 90 - daysSinceLastDonation);
-            const progressPercent = Math.min(100, Math.floor((daysSinceLastDonation / 90) * 100));
-            
-            updateProgressCircle(progressPercent);
-            
-            if (daysRemaining > 0) {
-                document.getElementById('nextDonationText').innerHTML = 
-                    'This donor will be eligible to donate in <span class="font-bold text-red-500">' + daysRemaining + ' days</span>';
+            if (donorData.last_donation) {
+                const lastDonationDate = new Date(donorData.last_donation);
+                const daysSinceLastDonation = Math.floor((new Date() - lastDonationDate) / (1000 * 60 * 60 * 24));
+                document.getElementById('lastDonation').textContent = daysSinceLastDonation + ' days ago';
+                
+                // Calculate progress
+                const daysRemaining = Math.max(0, 90 - daysSinceLastDonation);
+                const progressPercent = Math.min(100, Math.floor((daysSinceLastDonation / 90) * 100));
+                
+                updateProgressCircle(progressPercent);
+                
+                if (daysRemaining > 0) {
+                    document.getElementById('nextDonationText').innerHTML = 
+                        'This donor will be eligible to donate in <span class="font-bold text-red-500">' + daysRemaining + ' days</span>';
+                } else {
+                    document.getElementById('nextDonationText').textContent = 'This donor is eligible to donate now!';
+                }
             } else {
-                document.getElementById('nextDonationText').textContent = 'This donor is eligible to donate now!';
+                document.getElementById('lastDonation').textContent = 'Never';
+                document.getElementById('nextDonationText').textContent = 'No donation history available';
+                updateProgressCircle(0);
             }
             
             // User info
-            document.getElementById('phoneInput').value = donorData.phone || '';
-            document.getElementById('cityInput').value = donorData.city || '';
-            document.getElementById('districtInput').value = donorData.division || '';
+            document.getElementById('phoneInput').value = donorData.phone || 'Not provided';
+            document.getElementById('cityInput').value = donorData.city || 'Not provided';
+            document.getElementById('districtInput').value = donorData.division || 'Not provided';
             document.getElementById('userIdInput').value = donorData.custom_id || donorData.id.toString().substring(0, 8);
         }
         
@@ -1051,154 +834,6 @@
             
             circle.style.strokeDashoffset = offset;
             document.getElementById('progressPercent').textContent = percent + '%';
-        }
-        
-        // Setup photo upload
-        function setupPhotoUpload() {
-            const profilePhoto = document.getElementById('profilePhoto');
-            const photoUpload = document.getElementById('photoUpload');
-            const uploadOverlay = document.querySelector('.upload-overlay');
-            
-            // Click on overlay or photo to trigger file input
-            uploadOverlay.addEventListener('click', function() {
-                photoUpload.click();
-            });
-            
-            profilePhoto.addEventListener('click', function() {
-                photoUpload.click();
-            });
-            
-            // Handle file selection
-            photoUpload.addEventListener('change', function(e) {
-                if (e.target.files && e.target.files[0]) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(event) {
-                        // Show crop modal
-                        document.getElementById('cropImage').src = event.target.result;
-                        document.getElementById('cropModal').classList.remove('hidden');
-                        
-                        // Initialize cropper
-                        setTimeout(function() {
-                            if (cropper) {
-                                cropper.destroy();
-                            }
-                            
-                            const image = document.getElementById('cropImage');
-                            cropper = new Cropper(image, {
-                                aspectRatio: 1,
-                                viewMode: 2,
-                                autoCropArea: 0.8,
-                                responsive: true,
-                                checkCrossOrigin: false
-                            });
-                        }, 100);
-                    };
-                    
-                    reader.readAsDataURL(e.target.files[0]);
-                }
-            });
-            
-            // Cancel crop
-            document.getElementById('cancelCropBtn').addEventListener('click', function() {
-                document.getElementById('cropModal').classList.add('hidden');
-                if (cropper) {
-                    cropper.destroy();
-                    cropper = null;
-                }
-            });
-            
-            // Apply crop
-            document.getElementById('applyCropBtn').addEventListener('click', async function() {
-                if (cropper) {
-                    // Get cropped canvas
-                    const canvas = cropper.getCroppedCanvas({
-                        width: 300,
-                        height: 300,
-                        minWidth: 256,
-                        minHeight: 256,
-                        maxWidth: 4096,
-                        maxHeight: 4096,
-                        fillColor: '#fff',
-                        imageSmoothingEnabled: true,
-                        imageSmoothingQuality: 'high',
-                    });
-                    
-                    // Convert to blob
-                    canvas.toBlob(async function(blob) {
-                        try {
-                            // Show loading
-                            document.getElementById('loading').style.display = 'flex';
-                            
-                            // Generate unique filename
-                            const fileName = 'profile-' + currentUser.id + '-' + Date.now() + '.jpg';
-                            
-                            // Upload to Supabase Storage
-                            const { data, error } = await supabase.storage
-                                .from('avatars')
-                                .upload(fileName, blob, {
-                                    contentType: 'image/jpeg',
-                                    upsert: false
-                                });
-                            
-                            if (error) throw error;
-                            
-                            // Get public URL
-                            const { data: publicUrlData } = supabase.storage
-                                .from('avatars')
-                                .getPublicUrl(fileName);
-                            
-                            const avatarUrl = publicUrlData.publicUrl;
-                            
-                            // Update donor record
-                            const { error: updateError } = await supabase
-                                .from('donors')
-                                .update({ avatar_url: avatarUrl })
-                                .eq('id', donorData.id);
-                            
-                            if (updateError) throw updateError;
-                            
-                            // Update UI
-                            document.getElementById('profilePhoto').src = avatarUrl;
-                            donorData.avatar_url = avatarUrl;
-                            
-                            // Close modal and destroy cropper
-                            document.getElementById('cropModal').classList.add('hidden');
-                            cropper.destroy();
-                            cropper = null;
-                            
-                            showSuccessToast('Profile picture updated successfully!');
-                        } catch (error) {
-                            console.error('Error uploading profile picture:', error);
-                            alert('Error uploading profile picture');
-                        } finally {
-                            document.getElementById('loading').style.display = 'none';
-                        }
-                    }, 'image/jpeg', 0.9);
-                }
-            });
-        }
-        
-        // Setup share button
-        function setupShareButton() {
-            document.getElementById('shareBtn').addEventListener('click', function() {
-                if (navigator.share) {
-                    navigator.share({
-                        title: donorData.name + ' - Blood Donor Profile',
-                        text: 'Check out ' + donorData.name + "'s blood donor profile on Look4Blood",
-                        url: window.location.href
-                    });
-                } else {
-                    // Fallback for browsers that don't support Web Share API
-                    const dummy = document.createElement('input');
-                    document.body.appendChild(dummy);
-                    dummy.value = window.location.href;
-                    dummy.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(dummy);
-                    showSuccessToast('Profile link copied to clipboard!');
-                }
-            });
         }
         
         // Setup donation history
@@ -1216,7 +851,7 @@
                     const { data, error } = await supabase
                         .from('donation_updates')
                         .select('*')
-                        .eq('user_id', currentUser.id)
+                        .eq('user_id', donorData.id)
                         .order('donation_date', { ascending: false });
                     
                     if (error) throw error;
@@ -1264,6 +899,36 @@
             });
         }
         
+        // Setup share button
+        function setupShareButton() {
+            document.getElementById('shareBtn').addEventListener('click', function() {
+                if (navigator.share) {
+                    navigator.share({
+                        title: donorData.name + ' - Blood Donor Profile',
+                        text: 'Check out ' + donorData.name + "'s blood donor profile on Look4Blood",
+                        url: window.location.href
+                    });
+                } else {
+                    // Fallback for browsers that don't support Web Share API
+                    const dummy = document.createElement('input');
+                    document.body.appendChild(dummy);
+                    dummy.value = window.location.href;
+                    dummy.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(dummy);
+                    showSuccessToast('Profile link copied to clipboard!');
+                }
+            });
+        }
+        
+        // Setup view profile button
+        function setupViewProfileButton() {
+            document.getElementById('viewProfileBtn').addEventListener('click', function() {
+                // Redirect to the full profile page
+                window.location.href = 'donor-profile.html?id=' + donorData.id;
+            });
+        }
+        
         // Comment functionality
         document.getElementById('commentBtn').addEventListener('click', function() {
             const section = document.getElementById('commentsSection');
@@ -1274,48 +939,6 @@
             }
         });
         
-        async function loadComments() {
-            try {
-                const { data, error } = await supabase
-                    .from('comments')
-                    .select(`
-                        *,
-                        donors(name, avatar_url)
-                    `)
-                    .eq('target_donor_id', donorData.id)
-                    .order('created_at', { ascending: false });
-                    
-                if (error) throw error;
-                
-                const commentsList = document.getElementById('commentsList');
-                
-                if (data && data.length > 0) {
-                    commentsList.innerHTML = data.map(function(comment) {
-                        return '<div class="flex space-x-3 p-4 bg-gray-50 rounded-lg">' +
-                            '<img src="' + (comment.donors?.avatar_url || 'https://picsum.photos/seed/default/40/40.jpg') + '" ' +
-                                 'alt="User" class="w-12 h-12 rounded-full object-cover">' +
-                            '<div class="flex-1">' +
-                                '<p class="font-semibold text-gray-800">' + (comment.donors?.name || 'Anonymous') + '</p>' +
-                                '<p class="text-gray-700 mt-1">' + comment.content + '</p>' +
-                                '<p class="text-xs text-gray-500 mt-2">' +
-                                    '<i class="fas fa-clock mr-1"></i>' +
-                                    new Date(comment.created_at).toLocaleDateString() +
-                                '</p>' +
-                            '</div>' +
-                        '</div>';
-                    }).join('');
-                } else {
-                    commentsList.innerHTML = 
-                        '<div class="text-center py-8 text-gray-500">' +
-                            '<i class="fas fa-comments text-4xl mb-3"></i>' +
-                            '<p>No comments yet. Be the first to comment!</p>' +
-                        '</div>';
-                }
-            } catch (error) {
-                console.error('Error loading comments:', error);
-            }
-        }
-        
         // Add comment
         document.getElementById('addCommentBtn').addEventListener('click', async function() {
             const input = document.getElementById('commentInput');
@@ -1324,10 +947,13 @@
             if (!content) return;
             
             try {
+                // Show loading
+                document.getElementById('loading').style.display = 'flex';
+                
                 const { error } = await supabase
                     .from('comments')
                     .insert({
-                        user_id: currentUser.id,
+                        user_id: donorData.id, // Using donor's ID as commenter ID
                         target_donor_id: donorData.id,
                         content: content
                     });
@@ -1340,104 +966,8 @@
             } catch (error) {
                 console.error('Error adding comment:', error);
                 alert('Error adding comment');
-            }
-        });
-        
-        // Report functionality
-        document.getElementById('reportBtn').addEventListener('click', function() {
-            document.getElementById('reportModal').classList.remove('hidden');
-        });
-        
-        document.getElementById('cancelReportBtn').addEventListener('click', function() {
-            document.getElementById('reportModal').classList.add('hidden');
-        });
-        
-        document.getElementById('reportForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const reason = document.getElementById('reportReason').value;
-            const description = document.getElementById('reportDescription').value;
-            
-            if (!reason) {
-                alert('Please select a reason');
-                return;
-            }
-            
-            try {
-                const { error } = await supabase
-                    .from('reports')
-                    .insert({
-                        reporter_id: currentUser.id,
-                        reported_donor_id: donorData.id,
-                        reason: reason,
-                        description: description
-                    });
-                    
-                if (error) throw error;
-                
-                showSuccessToast('Report submitted successfully');
-                document.getElementById('reportModal').classList.add('hidden');
-                document.getElementById('reportForm').reset();
-            } catch (error) {
-                console.error('Error submitting report:', error);
-                alert('Error submitting report');
-            }
-        });
-        
-        // Edit/Save functionality
-        document.getElementById('editBtn').addEventListener('click', function() {
-            isEditMode = true;
-            document.getElementById('editBtn').classList.add('hidden');
-            document.getElementById('saveBtn').classList.remove('hidden');
-            
-            // Enable editable fields
-            document.getElementById('phoneInput').disabled = false;
-            document.getElementById('cityInput').disabled = false;
-            document.getElementById('districtInput').disabled = false;
-            
-            // Change background to indicate edit mode
-            document.getElementById('phoneInput').classList.remove('bg-gray-50');
-            document.getElementById('cityInput').classList.remove('bg-gray-50');
-            document.getElementById('districtInput').classList.remove('bg-gray-50');
-        });
-        
-        document.getElementById('saveBtn').addEventListener('click', async function() {
-            try {
-                const updateData = {
-                    phone: document.getElementById('phoneInput').value,
-                    city: document.getElementById('cityInput').value,
-                    division: document.getElementById('districtInput').value
-                };
-                
-                const { error } = await supabase
-                    .from('donors')
-                    .update(updateData)
-                    .eq('id', donorData.id);
-                    
-                if (error) throw error;
-                
-                // Update local data
-                donorData = { ...donorData, ...updateData };
-                
-                // Exit edit mode
-                isEditMode = false;
-                document.getElementById('editBtn').classList.remove('hidden');
-                document.getElementById('saveBtn').classList.add('hidden');
-                
-                // Disable fields
-                document.getElementById('phoneInput').disabled = true;
-                document.getElementById('cityInput').disabled = true;
-                document.getElementById('districtInput').disabled = true;
-                
-                // Restore background
-                document.getElementById('phoneInput').classList.add('bg-gray-50');
-                document.getElementById('cityInput').classList.add('bg-gray-50');
-                document.getElementById('districtInput').classList.add('bg-gray-50');
-                
-                showSuccessToast('Profile updated successfully');
-            } catch (error) {
-                console.error('Error updating profile:', error);
-                alert('Error updating profile');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
             }
         });
     </script>
