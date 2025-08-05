@@ -335,18 +335,21 @@
         .btn-give-rating.show {
             display: inline-flex;
         }
-        /* Login Prompt Styles */
-        .login-prompt {
+        /* Next Badge Styles */
+        .next-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+            padding: 0.75rem;
             background: #f8fafc;
-            border: 2px dashed #cbd5e1;
             border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
         }
-        .login-prompt p {
+        .next-badge-text {
+            font-size: 0.875rem;
             color: #64748b;
-            margin-bottom: 0.5rem;
+            margin-left: 0.5rem;
         }
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -499,6 +502,12 @@
                     </button>
                 </div>
                 
+                <!-- Next Badge -->
+                <div id="nextBadge" class="next-badge">
+                    <i class="fas fa-medal text-yellow-500"></i>
+                    <span class="next-badge-text">Next badge: Silver (4 donations)</span>
+                </div>
+                
                 <!-- Comments Section -->
                 <div id="commentsSection" class="comment-section mt-6">
                     <div class="border-t pt-6">
@@ -547,7 +556,7 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-2">
-                            <i class="fas fa-globe text-green-500 mr-1"></i> Division
+                            <i class="fas fa-globe text-green-500 mr-1"></i> District
                         </label>
                         <input id="districtInput" type="text" readonly 
                                class="form-input">
@@ -555,10 +564,10 @@
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-2">
-                            <i class="fas fa-id-card text-purple-500 mr-1"></i> Donor ID
+                            <i class="fas fa-map-marked-alt text-purple-500 mr-1"></i> Division
                         </label>
-                        <input id="userIdInput" type="text" readonly 
-                               class="form-input bg-gray-100">
+                        <input id="divisionInput" type="text" readonly 
+                               class="form-input">
                     </div>
                 </div>
             </div>
@@ -698,6 +707,36 @@
             } else if (donationCount >= 40) {
                 badge.classList.add('badge-red-diamond');
                 badgeIcon.classList.add('fa-crown');
+            }
+            
+            // Update next badge info
+            updateNextBadge(donationCount);
+        }
+        
+        // Update next badge information
+        function updateNextBadge(currentDonations) {
+            const nextBadgeElement = document.getElementById('nextBadge');
+            const nextBadgeText = nextBadgeElement.querySelector('.next-badge-text');
+            const nextBadgeIcon = nextBadgeElement.querySelector('i');
+            
+            if (currentDonations < 4) {
+                nextBadgeText.textContent = 'Next badge: Silver (4 donations)';
+                nextBadgeIcon.className = 'fas fa-award text-gray-400';
+            } else if (currentDonations < 16) {
+                nextBadgeText.textContent = 'Next badge: Gold (16 donations)';
+                nextBadgeIcon.className = 'fas fa-trophy text-gray-400';
+            } else if (currentDonations < 21) {
+                nextBadgeText.textContent = 'Next badge: Platinum (21 donations)';
+                nextBadgeIcon.className = 'fas fa-gem text-gray-400';
+            } else if (currentDonations < 31) {
+                nextBadgeText.textContent = 'Next badge: Diamond (31 donations)';
+                nextBadgeIcon.className = 'fas fa-gem text-blue-300';
+            } else if (currentDonations < 40) {
+                nextBadgeText.textContent = 'Next badge: Red Diamond (40 donations)';
+                nextBadgeIcon.className = 'fas fa-crown text-red-300';
+            } else {
+                nextBadgeText.textContent = 'Maximum badge achieved!';
+                nextBadgeIcon.className = 'fas fa-star text-yellow-400';
             }
         }
         
@@ -866,13 +905,10 @@
         // Load comments
         async function loadComments() {
             try {
-                // Get comments with donor info
+                // First get all comments
                 const { data: comments, error } = await supabase
                     .from('comments')
-                    .select(`
-                        *,
-                        commenter:donors!comments_user_id_fkey(name, avatar_url)
-                    `)
+                    .select('*')
                     .eq('target_donor_id', donorData.id)
                     .order('created_at', { ascending: false });
                     
@@ -881,10 +917,47 @@
                 const commentsList = document.getElementById('commentsList');
                 
                 if (comments && comments.length > 0) {
+                    // Get all unique commenter IDs
+                    const commenterIds = [...new Set(comments.map(comment => comment.user_id))];
+                    
+                    // Fetch commenter information from donors table
+                    const { data: donors, error: donorError } = await supabase
+                        .from('donors')
+                        .select('id, name, avatar_url, user_id')
+                        .in('user_id', commenterIds);
+                    
+                    if (donorError) {
+                        console.error('Error fetching donor info:', donorError);
+                        // Fallback to showing comments without donor info
+                        commentsList.innerHTML = comments.map(function(comment) {
+                            return '<div class="flex space-x-3 p-4 bg-gray-50 rounded-lg">' +
+                                '<img src="https://picsum.photos/seed/default/40/40.jpg" alt="User" class="w-12 h-12 rounded-full object-cover">' +
+                                '<div class="flex-1">' +
+                                    '<p class="font-semibold text-gray-800">Anonymous</p>' +
+                                    '<p class="text-gray-700 mt-1">' + comment.content + '</p>' +
+                                    '<p class="text-xs text-gray-500 mt-2">' +
+                                        '<i class="fas fa-clock mr-1"></i>' +
+                                        new Date(comment.created_at).toLocaleDateString() +
+                                    '</p>' +
+                                '</div>' +
+                            '</div>';
+                        }).join('');
+                        return;
+                    }
+                    
+                    // Create a map for quick lookup
+                    const donorMap = {};
+                    donors.forEach(donor => {
+                        donorMap[donor.user_id] = donor;
+                    });
+                    
+                    // Render comments with donor info
                     commentsList.innerHTML = comments.map(function(comment) {
-                        // Get commenter info or use defaults
-                        const name = comment.commenter?.name || 'Anonymous';
-                        const avatar = comment.commenter?.avatar_url || 'https://picsum.photos/seed/default/40/40.jpg';
+                        const donor = donorMap[comment.user_id];
+                        const name = donor?.name || 'Anonymous';
+                        const avatar = donor?.avatar_url || 'https://picsum.photos/seed/default/40/40.jpg';
+                        const date = new Date(comment.created_at);
+                        const formattedDate = date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                         
                         return '<div class="flex space-x-3 p-4 bg-gray-50 rounded-lg">' +
                             '<img src="' + avatar + '" alt="' + name + '" class="w-12 h-12 rounded-full object-cover">' +
@@ -893,7 +966,7 @@
                                 '<p class="text-gray-700 mt-1">' + comment.content + '</p>' +
                                 '<p class="text-xs text-gray-500 mt-2">' +
                                     '<i class="fas fa-clock mr-1"></i>' +
-                                    new Date(comment.created_at).toLocaleDateString() +
+                                    formattedDate +
                                 '</p>' +
                             '</div>' +
                         '</div>';
@@ -1028,7 +1101,8 @@
             // User info
             document.getElementById('phoneInput').value = donorData.phone || 'Not provided';
             document.getElementById('cityInput').value = donorData.city || 'Not provided';
-            document.getElementById('districtInput').value = donorData.division || 'Not provided';
+            document.getElementById('districtInput').value = donorData.district || 'Not provided';
+            document.getElementById('divisionInput').value = donorData.division || 'Not provided';
             document.getElementById('userIdInput').value = donorData.custom_id || donorData.id.toString().substring(0, 8);
         }
         
