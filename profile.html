@@ -571,6 +571,14 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="mt-6">
+                <label class="block text-sm font-medium text-gray-600 mb-2">
+                    <i class="fas fa-id-card text-yellow-500 mr-1"></i> Donor ID
+                </label>
+                <input id="customIdInput" type="text" readonly 
+                       class="form-input bg-gray-100">
+            </div>
         </div>
         <!-- Action Buttons -->
         <div class="flex justify-center space-x-4 mb-8 fade-in" style="animation-delay: 0.4s;">
@@ -1111,8 +1119,8 @@
             const divisionInput = document.getElementById('divisionInput');
             if (divisionInput) divisionInput.value = donorData.division || 'Not provided';
             
-            const userIdInput = document.getElementById('userIdInput');
-            if (userIdInput) userIdInput.value = donorData.custom_id || donorData.id.toString().substring(0, 8);
+            const customIdInput = document.getElementById('customIdInput');
+            if (customIdInput) customIdInput.value = donorData.custom_id || donorData.id.toString().substring(0, 8);
         }
         
         // Update progress circle
@@ -1139,12 +1147,15 @@
                 try {
                     // Fetch donation history
                     const { data, error } = await supabase
-                        .from('donation_updates')
+                        .from('donations')
                         .select('*')
-                        .eq('user_id', donorData.id)
+                        .eq('donor_id', donorData.id)
                         .order('donation_date', { ascending: false });
                     
-                    if (error) throw error;
+                    if (error) {
+                        console.error('Error fetching donation history:', error);
+                        throw error;
+                    }
                     
                     // Populate donation history table
                     const donationHistoryList = document.getElementById('donationHistoryList');
@@ -1156,7 +1167,7 @@
                                 '<td>' + new Date(donation.donation_date).toLocaleDateString() + '</td>' +
                                 '<td>' + (donation.place || 'N/A') + '</td>' +
                                 '<td><span class="badge badge-blood">' + donation.blood_group + '</span></td>' +
-                                '<td>#' + donation.times_donated + '</td>' +
+                                '<td>#' + donation.donation_number + '</td>' +
                             '</tr>';
                         }).join('');
                         donationHistoryList.classList.remove('hidden');
