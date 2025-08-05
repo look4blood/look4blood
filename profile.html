@@ -1149,7 +1149,7 @@
                     const { data, error } = await supabase
                         .from('donation_updates')
                         .select('*')
-                        .eq('user_id', donorData.id)
+                        .eq('user_id', currentUser.id)
                         .order('donation_date', { ascending: false });
                     
                     if (error) {
