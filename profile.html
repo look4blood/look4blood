@@ -1177,11 +1177,67 @@ function setupDonationHistory() {
             } else {
                 donationHistoryList.innerHTML = '';
                 donationHistoryList.classList.add('hidden');
+                // Setup donation history
+function setupDonationHistory() {
+    const donationHistoryBtn = document.getElementById('donationHistoryBtn');
+    const donationHistoryModal = document.getElementById('donationHistoryModal');
+    const closeDonationHistoryBtn = document.getElementById('closeDonationHistoryBtn');
+    
+    donationHistoryBtn.addEventListener('click', async function() {
+        // Show loading
+        document.getElementById('loading').style.display = 'flex';
+        
+        try {
+            // First, let's check if we have the donor data
+            console.log("Donor data:", donorData);
+            console.log("Donor ID:", donorData.id);
+            
+            // Fetch donation history using the correct table and field names
+            console.log("Fetching donation history...");
+            const { data, error } = await supabase
+                .from('donation_updates')
+                .select('*')
+                .eq('user_id', donorData.id)
+                .order('donation_date', { ascending: false });
+            
+            console.log("Query result:", { data, error });
+            
+            if (error) {
+                console.error('Error fetching donation history:', error);
+                throw error;
+            }
+            
+            // Check if we got any data
+            console.log("Data length:", data ? data.length : "null");
+            
+            // Populate donation history table
+            const donationHistoryList = document.getElementById('donationHistoryList');
+            const noDonationHistory = document.getElementById('noDonationHistory');
+            
+            if (data && data.length > 0) {
+                console.log("Populating donation history table...");
+                donationHistoryList.innerHTML = data.map(function(donation) {
+                    console.log("Processing donation:", donation);
+                    return '<tr>' +
+                        '<td>' + (donation.donation_date ? new Date(donation.donation_date).toLocaleDateString() : 'N/A') + '</td>' +
+                        '<td>' + (donation.place || 'N/A') + '</td>' +
+                        '<td><span class="badge badge-blood">' + (donation.blood_group || 'N/A') + '</span></td>' +
+                        '<td>#' + (donation.times_donated || 'N/A') + '</td>' +
+                    '</tr>';
+                }).join('');
+                donationHistoryList.classList.remove('hidden');
+                noDonationHistory.classList.add('hidden');
+                console.log("Donation history populated");
+            } else {
+                console.log("No donation history found");
+                donationHistoryList.innerHTML = '';
+                donationHistoryList.classList.add('hidden');
                 noDonationHistory.classList.remove('hidden');
             }
             
             // Show modal
             donationHistoryModal.classList.remove('hidden');
+            console.log("Modal should be visible now");
         } catch (error) {
             console.error('Error loading donation history:', error);
             alert('Error loading donation history: ' + error.message);
