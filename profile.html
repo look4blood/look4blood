@@ -358,7 +358,59 @@
     transform: translateY(-2px);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
 }
-        
+        /* Star Rating Styles */
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .star {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .star:hover,
+        .star.active {
+            color: #ffc107;
+        }
+        .rating-info {
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+        .rating-count {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .rating-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .total-star-count {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        .rating-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .btn-give-rating {
+            display: none;
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        .btn-give-rating:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(255, 193, 7, 0.4);
+        }
+        .btn-give-rating.show {
+            display: inline-flex;
+        }
+       
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
