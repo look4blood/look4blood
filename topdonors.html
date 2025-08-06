@@ -4,73 +4,189 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Top Donors</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
   <style>
     * { box-sizing: border-box; }
     body {
       font-family: 'Roboto', sans-serif;
       background: linear-gradient(135deg, #f0f0f0, #d0d0d0);
       margin: 0;
-      padding: 20px;
+      padding: 15px;
       color: #333;
     }
     header {
       background-color: #d32f2f;
       color: #fff;
-      padding: 20px;
+      padding: 15px;
       text-align: center;
       position: relative;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       border-radius: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
-    h1 { margin: 0; font-size: 2.5em; letter-spacing: 2px; }
-
-    #filters {
+    h1 { margin: 0; font-size: 2em; letter-spacing: 1px; }
+    
+    /* Toggle Button */
+    .toggle-container {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 30px;
+      justify-content: right;
+      margin-bottom: 15px;
     }
-    button {
+    .toggle-btn {
       background-color: #d32f2f;
       color: #fff;
       border: none;
-      padding: 10px 15px;
+      padding: 8px 16px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
       transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+    .toggle-btn:hover {
+      background-color: #b71c1c;
+      transform: translateY(-2px);
+    }
+    
+    /* Filter Section */
+    #filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: all 0.5s ease;
+      overflow: hidden;
+    }
+    #filters.hidden {
+      max-height: 0;
+      margin-bottom: 0;
+      padding: 0;
+      opacity: 0;
+    }
+    #filters.visible {
+      max-height: 500px;
+      opacity: 1;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 140px;
+    }
+    .filter-group label {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+    }
+    select {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      font-weight: 500;
+      cursor: pointer;
+      background-color: #fff;
+      transition: all 0.3s ease;
+      font-size: 13px;
+    }
+    select:hover, select:focus {
+      border-color: #d32f2f;
+      box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2);
+      outline: none;
+    }
+    
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    .filter-btn {
+      background-color: #f5f5f5;
+      color: #333;
+      border: 1px solid #ddd;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+    }
+    .filter-btn:hover {
+      background-color: #e0e0e0;
+      transform: translateY(-1px);
+    }
+    .filter-btn.active {
+      background-color: #d32f2f;
+      color: white;
+      border-color: #d32f2f;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    button {
+      background-color: #d32f2f;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
     }
     button:hover {
       background-color: #b71c1c;
       transform: translateY(-2px);
     }
-    select {
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      background-color: #fff;
+    .reset-btn {
+      background-color: #6c757d;
     }
+    .reset-btn:hover {
+      background-color: #5a6268;
+    }
+    
     #donors-section {
       background-color: #fff;
-      padding: 20px;
+      padding: 15px;
       border-radius: 15px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       max-width: 1200px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 15px;
     }
     #donors-header {
       text-align: center;
-      font-size: 2em;
+      font-size: 1.5em;
       color: #d32f2f;
       margin-bottom: 5px;
       font-weight: 700;
@@ -80,229 +196,556 @@
       font-weight: bold;
       color: #d32f2f;
       margin-bottom: 10px;
+      font-size: 14px;
     }
     #donors-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
     }
     .donor-card {
       display: flex;
       align-items: center;
       background: #fff;
-      border-radius: 15px;
-      padding: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
     }
     .donor-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     }
     .rank {
-      font-size: 1.8em;
+      font-size: 1.5em;
       font-weight: bold;
-      width: 50px;
+      width: 40px;
       text-align: center;
-      margin-right: 15px;
+      margin-right: 10px;
     }
-    .donor-card:nth-child(-n+3) { background: #ffe5b4; }
+    .donor-card:nth-child(-n+3) { background: #fff8e1; }
     .info { flex: 1; }
-    .name { font-size: 1.4em; font-weight: 700; margin-bottom: 4px; }
-    .details { margin-top: 8px; }
-    .detail { margin: 4px 0; font-size: 0.95em; }
+    .name { font-size: 1.1em; font-weight: 700; margin-bottom: 3px; }
+    .details { margin-top: 6px; }
+    .detail { margin: 3px 0; font-size: 0.85em; }
     .badge {
       display: inline-flex;
       align-items: center;
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 20px;
-      font-size: 1.1em;
+      font-size: 0.9em;
       font-weight: 600;
-      margin-top: 10px;
+      margin-top: 8px;
       cursor: default;
-      transition: all 0.4s ease;
+      transition: all 0.3s ease;
     }
-    .badge-bronze { background-color: #cd7f32; color: #fff; }
-    .badge-silver { background-color: #C0C0C0; color: #000; }
-    .badge-golden { background-color: #ffd700; color: #000; }
-    .badge-platinum { background-color: #e5e4e2; color: #000; }
-    .badge-diamond { background-color: #800080; color: #fff; }
-    .badge-symbol { font-size: 1.2em; margin-right: 8px; }
+    
+    /* Special badges */
+    .badge-silver { 
+      background: linear-gradient(135deg, #c0c0c0, #808080); 
+      color: #000; 
+      box-shadow: 0 3px 10px rgba(192, 192, 192, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .badge-platinum { 
+      background: linear-gradient(135deg, #e5e4e2, #b0c4de); 
+      color: #000; 
+      box-shadow: 0 3px 10px rgba(176, 196, 222, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .badge-platinum::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+      transform: rotate(25deg);
+      animation: shine 3s infinite;
+    }
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(25deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(25deg); }
+    }
+    
+    .badge-bronze { 
+      background: linear-gradient(135deg, #cd7f32, #8b4513); 
+      color: #fff; 
+    }
+    .badge-golden { 
+      background: linear-gradient(135deg, #ffd700, #b8860b); 
+      color: #000; 
+    }
+    .badge-diamond { 
+      background: linear-gradient(135deg, #b9f2ff, #87ceeb); 
+      color: #000; 
+    }
+    .badge-ruby { 
+      background: linear-gradient(135deg, #ff6b6b, #e0115f); 
+      color: #fff; 
+    }
+    .badge-symbol { 
+      font-size: 1em; 
+      margin-right: 6px; 
+    }
     .badge:hover { transform: scale(1.05); }
+    
+    /* Badge Ranks Section */
     #rank-badges {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 20px;
+      gap: 15px;
       margin-top: 20px;
     }
     .rank-badge {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 10px;
-      border-radius: 15px;
+      padding: 12px;
+      border-radius: 12px;
       background: #fff;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       transition: transform 0.3s, box-shadow 0.3s;
+      min-width: 130px;
     }
     .rank-badge:hover {
-      transform: scale(1.1);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     }
-    .rank-icon { font-size: 2em; margin-bottom: 8px; }
+    .rank-icon { 
+      font-size: 1.8em; 
+      margin-bottom: 6px; 
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    .rank-badge:nth-child(1) .rank-icon { background: linear-gradient(135deg, #cd7f32, #8b4513); }
+    .rank-badge:nth-child(2) .rank-icon { 
+      background: linear-gradient(135deg, #c0c0c0, #808080);
+      box-shadow: 0 3px 10px rgba(192, 192, 192, 0.5);
+    }
+    .rank-badge:nth-child(3) .rank-icon { background: linear-gradient(135deg, #ffd700, #b8860b); }
+    .rank-badge:nth-child(4) .rank-icon { 
+      background: linear-gradient(135deg, #e5e4e2, #b0c4de);
+      box-shadow: 0 3px 10px rgba(176, 196, 222, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .rank-badge:nth-child(4) .rank-icon::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+      transform: rotate(25deg);
+      animation: shine 3s infinite;
+    }
+    .rank-badge:nth-child(5) .rank-icon { background: linear-gradient(135deg, #b9f2ff, #87ceeb); }
+    .rank-badge:nth-child(6) .rank-icon { background: linear-gradient(135deg, #ff6b6b, #e0115f); }
+    .rank-badge-text {
+      font-size: 0.85em;
+      text-align: center;
+      font-weight: 500;
+    }
+    
     @media(max-width: 768px){
-      #donors-container { grid-template-columns: 1fr; }
+      body { padding: 10px; }
+      header { padding: 12px; margin-bottom: 12px; }
+      h1 { font-size: 1.8em; }
+      .toggle-btn { padding: 6px 12px; font-size: 13px; }
+      #filters { padding: 12px; margin-bottom: 15px; }
+      .filter-group { min-width: 120px; margin-bottom: 5px; }
+      .filter-btn { padding: 5px 10px; font-size: 11px; }
+      button { padding: 6px 10px; font-size: 12px; }
+      #donors-section { padding: 12px; }
+      #donors-header { font-size: 1.3em; }
+      #donors-container { grid-template-columns: 1fr; gap: 12px; }
+      .donor-card { padding: 10px; }
+      .rank { font-size: 1.3em; width: 35px; }
+      .name { font-size: 1em; }
+      .detail { font-size: 0.8em; }
+      .badge { padding: 5px 8px; font-size: 0.8em; margin-top: 6px; }
+      
+      /* Badge Ranks as List for Mobile */
+      #rank-badges {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .rank-badge {
+        width: 100%;
+        max-width: 300px;
+        flex-direction: row;
+        padding: 10px;
+      }
+      .rank-icon {
+        margin-right: 15px;
+        margin-bottom: 0;
+        min-width: 40px;
+        height: 40px;
+        font-size: 1.5em;
+      }
+      .rank-badge-text {
+        text-align: left;
+        font-size: 0.9em;
+      }
     }
   </style>
 </head>
 <body>
-
 <header>
   <h1>Heros Of Humanity</h1>
 </header>
 
+<!-- Toggle Button -->
+<div class="toggle-container">
+  <button id="toggleFilters" class="toggle-btn">
+    <i class="fas fa-filter"></i> <span id="toggleText">Show Filters</span>
+  </button>
+</div>
+
 <!-- Filters -->
-<div id="filters">
-  <button data-filter="all" class="active">All</button>
-  <button data-filter="top3">Top 3</button>
-  <button data-filter="bronze">Bronze</button>
-  <button data-filter="silver">Silver</button>
-  <button data-filter="gold">Gold</button>
-  <button data-filter="platinum">Platinum</button>
-  <button data-filter="diamond">Diamond</button>
-  <select id="bloodGroupFilter"><option value="all">All Blood Groups</option></select>
-  <select id="cityFilter"><option value="all">All Cities</option></select>
-  <select id="badgeFilter">
-    <option value="all">All Badges</option>
-    <option value="bronze">Bronze</option>
-    <option value="silver">Silver</option>
-    <option value="gold">Gold</option>
-    <option value="platinum">Platinum</option>
-    <option value="diamond">Diamond</option>
-  </select>
+<div id="filters" class="hidden">
+  <div class="filter-group">
+    <label><i class="fas fa-map-marked-alt"></i> Division</label>
+    <select id="divisionFilter">
+      <option value="all">All Divisions</option>
+    </select>
+  </div>
+  
+  <div class="filter-group">
+    <label><i class="fas fa-map-pin"></i> District</label>
+    <select id="districtFilter">
+      <option value="all">All Districts</option>
+    </select>
+  </div>
+  
+  <div class="filter-group">
+    <label><i class="fas fa-city"></i> City</label>
+    <select id="cityFilter">
+      <option value="all">All Cities</option>
+    </select>
+  </div>
+  
+  <div class="filter-group">
+    <label><i class="fas fa-tint"></i> Blood Group</label>
+    <select id="bloodGroupFilter">
+      <option value="all">All Blood Groups</option>
+    </select>
+  </div>
+  
+  <!-- Badge Filter Buttons -->
+  <div class="filter-buttons">
+    <button class="filter-btn active" data-filter="all">
+      <i class="fas fa-users"></i> All
+    </button>
+    <button class="filter-btn" data-filter="top3">
+      <i class="fas fa-trophy"></i> Top 3
+    </button>
+    <button class="filter-btn" data-filter="bronze">
+      <i class="fas fa-hand-holding-heart"></i> First Responder
+    </button>
+    <button class="filter-btn" data-filter="silver">
+      <i class="fas fa-heart"></i> Life Saver
+    </button>
+    <button class="filter-btn" data-filter="gold">
+      <i class="fas fa-award"></i> Hero Donor
+    </button>
+    <button class="filter-btn" data-filter="platinum">
+      <i class="fas fa-star"></i> Platinum
+    </button>
+    <button class="filter-btn" data-filter="diamond">
+      <i class="fas fa-gem"></i> Diamond
+    </button>
+    <button class="filter-btn" data-filter="ruby">
+      <i class="fas fa-crown"></i> Ruby
+    </button>
+  </div>
+  
+  <div class="action-buttons">
+    <button id="applyFilters">
+      <i class="fas fa-check"></i> Apply
+    </button>
+    <button id="resetFilters" class="reset-btn">
+      <i class="fas fa-undo"></i> Reset
+    </button>
+  </div>
 </div>
 
 <!-- Donors list -->
 <div id="donors-section">
-  <div id="donors-header">Donor List</div>
+  <div id="donors-header">Top Donor List</div>
   <div id="total-donors">Total Donors: 0</div>
   <div id="donors-container"></div>
 </div>
 
 <!-- Badge Ranks -->
-<h3 style="text-align:center; margin-top:40px; color:#d32f2f;">Badge Ranks & Symbols</h3>
+<h3 style="text-align:center; margin-top:30px; color:#d32f2f; font-size: 1.3em;">Badge Ranks & Symbols</h3>
 <div id="rank-badges">
-  <div class="rank-badge"><div class="rank-icon">🥉</div><div>Bronze (1–3)</div></div>
-  <div class="rank-badge"><div class="rank-icon">🥈</div><div>Silver (4–15)</div></div>
-  <div class="rank-badge"><div class="rank-icon">🥇</div><div>Gold (16–20)</div></div>
-  <div class="rank-badge"><div class="rank-icon">💠</div><div>Platinum (21–30)</div></div>
-  <div class="rank-badge"><div class="rank-icon">💎</div><div>Diamond (31+)</div></div>
+  <div class="rank-badge">
+    <div class="rank-icon"><i class="fas fa-hand-holding-heart"></i></div>
+    <div class="rank-badge-text">First Responder (1–3 donations)</div>
+  </div>
+  <div class="rank-badge">
+    <div class="rank-icon"><i class="fas fa-heart"></i></div>
+    <div class="rank-badge-text">Life Saver (4–15 donations)</div>
+  </div>
+  <div class="rank-badge">
+    <div class="rank-icon"><i class="fas fa-award"></i></div>
+    <div class="rank-badge-text">Hero Donor (16–20 donations)</div>
+  </div>
+  <div class="rank-badge">
+    <div class="rank-icon"><i class="fas fa-star"></i></div>
+    <div class="rank-badge-text">Platinum Champion (21–30 donations)</div>
+  </div>
+  <div class="rank-badge">
+    <div class="rank-icon"><i class="fas fa-gem"></i></div>
+    <div class="rank-badge-text">Diamond Guardian (31–39 donations)</div>
+  </div>
+  <div class="rank-badge">
+    <div class="rank-icon"><i class="fas fa-crown"></i></div>
+    <div class="rank-badge-text">Ruby Legacy (40+ donations)</div>
+  </div>
 </div>
 
 <!-- Supabase integration -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
   const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'; // your real key
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
   const { createClient } = supabase;
   const supabaseClient = createClient(supabaseUrl, supabaseKey);
   const tableName = 'donors';
-
   let donors = [];
-
+  let locations = [];
+  let currentBadgeFilter = 'all';
+  
+  // Toggle filter section
+  document.getElementById('toggleFilters').addEventListener('click', function() {
+    const filtersSection = document.getElementById('filters');
+    const toggleText = document.getElementById('toggleText');
+    
+    if (filtersSection.classList.contains('hidden')) {
+      filtersSection.classList.remove('hidden');
+      filtersSection.classList.add('visible');
+      toggleText.textContent = 'Hide Filters';
+      this.innerHTML = '<i class="fas fa-times"></i> <span id="toggleText">Hide Filters</span>';
+    } else {
+      filtersSection.classList.remove('visible');
+      filtersSection.classList.add('hidden');
+      toggleText.textContent = 'Show Filters';
+      this.innerHTML = '<i class="fas fa-filter"></i> <span id="toggleText">Show Filters</span>';
+    }
+  });
+  
+  // Fetch locations from database
+  async function fetchLocations() {
+    const { data, error } = await supabaseClient
+      .from('locations')
+      .select('*');
+    
+    if (error) {
+      console.error('Error fetching locations:', error);
+      return;
+    }
+    
+    locations = data || [];
+    
+    // Extract unique divisions
+    const divisions = [...new Set(locations.map(loc => loc.division))];
+    
+    // Populate division dropdown
+    const divisionFilter = document.getElementById('divisionFilter');
+    divisionFilter.innerHTML = '<option value="all">All Divisions</option>';
+    divisions.forEach(division => {
+      divisionFilter.innerHTML += `<option value="${division}">${division}</option>`;
+    });
+  }
+  
   async function fetchDonors() {
     const { data, error } = await supabaseClient.from(tableName).select('*');
     if (error) return alert('Error fetching donors: ' + error.message);
     donors = data || [];
+    
+    // Fetch locations
+    await fetchLocations();
+    
     processDonors();
   }
-
+  
   function processDonors() {
     donors.sort((a, b) => (b.times_donated || 0) - (a.times_donated || 0));
     donors.forEach((d, i) => d.rank = i + 1);
     populateFilters();
     renderDonors(donors);
   }
-
+  
+  // Updated badge function with real icons
   function getBadge(d = 0) {
-    if (d <= 3) return { label: 'Bronze', class: 'badge-bronze', symbol: '🥉' };
-    if (d <= 15) return { label: 'Silver', class: 'badge-silver', symbol: '🥈' };
-    if (d <= 20) return { label: 'Gold', class: 'badge-golden', symbol: '🥇' };
-    if (d <= 30) return { label: 'Platinum', class: 'badge-platinum', symbol: '💠' };
-    return { label: 'Diamond', class: 'badge-diamond', symbol: '💎' };
+    if (d <= 3) return { label: 'First Responder', class: 'badge-bronze', symbol: 'fas fa-hand-holding-heart' };
+    if (d <= 15) return { label: 'Life Saver', class: 'badge-silver', symbol: 'fas fa-heart' };
+    if (d <= 20) return { label: 'Hero Donor', class: 'badge-golden', symbol: 'fas fa-award' };
+    if (d <= 30) return { label: 'Platinum Champion', class: 'badge-platinum', symbol: 'fas fa-star' };
+    if (d <= 39) return { label: 'Diamond Guardian', class: 'badge-diamond', symbol: 'fas fa-gem' };
+    return { label: 'Ruby Legacy', class: 'badge-ruby', symbol: 'fas fa-crown' };
   }
-
+  
   function createDonorHTML(d) {
     const badge = getBadge(d.times_donated);
     return `
-      <div class="donor-card" data-rank="${d.rank}" data-badge="${badge.label.toLowerCase()}" data-blood="${d.blood_group}" data-city="${d.city}">
+      <div class="donor-card" data-rank="${d.rank}" data-badge="${badge.label.toLowerCase().replace(' ', '-')}" data-blood="${d.blood_group}" data-city="${d.city}" data-division="${d.division}" data-district="${d.district}">
         <div class="rank">${d.rank}</div>
         <div class="info">
           <div class="name">${d.name}</div>
           <div class="details">
             <div class="detail"><strong>Blood:</strong> ${d.blood_group}</div>
-            <div class="detail"><strong>City:</strong> ${d.city}</div>
+            <div class="detail"><strong>Location:</strong> ${d.city || 'N/A'}, ${d.state || 'N/A'}</div>
             <div class="detail"><strong>Donations:</strong> ${d.times_donated}</div>
             <div class="detail"><strong>Phone:</strong> ${d.phone}</div>
           </div>
           <div class="badge ${badge.class}">
-            <span class="badge-symbol">${badge.symbol}</span>
+            <i class="${badge.symbol} badge-symbol"></i>
             <span class="badge-label">${badge.label}</span>
           </div>
         </div>
       </div>`;
   }
-
+  
   function renderDonors(list) {
     document.getElementById('donors-container').innerHTML = list.map(createDonorHTML).join('') || '<p style="text-align:center;">No donors found.</p>';
     document.getElementById('total-donors').textContent = `Total Donors: ${list.length}`;
   }
-
+  
   function populateFilters() {
-    const bloodSet = new Set(), citySet = new Set();
+    const bloodSet = new Set();
     donors.forEach(d => {
       if (d.blood_group) bloodSet.add(d.blood_group);
-      if (d.city) citySet.add(d.city);
     });
     document.getElementById('bloodGroupFilter').innerHTML = '<option value="all">All Blood Groups</option>';
-    document.getElementById('cityFilter').innerHTML = '<option value="all">All Cities</option>';
-    [...bloodSet].sort().forEach(bg => bloodGroupFilter.innerHTML += `<option value="${bg}">${bg}</option>`);
-    [...citySet].sort().forEach(c => cityFilter.innerHTML += `<option value="${c}">${c}</option>`);
+    [...bloodSet].sort().forEach(bg => {
+      bloodGroupFilter.innerHTML += `<option value="${bg}">${bg}</option>`;
+    });
   }
-
+  
+  // Update district dropdown based on selected division
+  function updateDistrictDropdown() {
+    const districtFilter = document.getElementById('districtFilter');
+    const division = document.getElementById('divisionFilter').value;
+    
+    districtFilter.innerHTML = '<option value="all">All Districts</option>';
+    
+    if (division !== 'all') {
+      const districts = [...new Set(
+        locations
+          .filter(loc => loc.division === division)
+          .map(loc => loc.district)
+      )];
+      
+      districts.forEach(district => {
+        districtFilter.innerHTML += `<option value="${district}">${district}</option>`;
+      });
+    }
+    
+    // Reset city dropdown
+    document.getElementById('cityFilter').innerHTML = '<option value="all">All Cities</option>';
+  }
+  
+  // Update city dropdown based on selected district
+  function updateCityDropdown() {
+    const cityFilter = document.getElementById('cityFilter');
+    const district = document.getElementById('districtFilter').value;
+    
+    cityFilter.innerHTML = '<option value="all">All Cities</option>';
+    
+    if (district !== 'all') {
+      const cities = locations
+        .filter(loc => loc.district === district)
+        .map(loc => loc.city);
+      
+      cities.forEach(city => {
+        cityFilter.innerHTML += `<option value="${city}">${city}</option>`;
+      });
+    }
+  }
+  
+  // Badge filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentBadgeFilter = this.dataset.filter;
+    });
+  });
+  
   function applyFilters() {
     let filtered = [...donors];
-    const activeBtn = document.querySelector('#filters button.active')?.dataset.filter || 'all';
-    const bloodVal = document.getElementById('bloodGroupFilter').value;
+    const divisionVal = document.getElementById('divisionFilter').value;
+    const districtVal = document.getElementById('districtFilter').value;
     const cityVal = document.getElementById('cityFilter').value;
-    const badgeVal = document.getElementById('badgeFilter').value;
-
-    if (activeBtn === 'top3') filtered = filtered.slice(0, 3);
-    else if (["bronze", "silver", "gold", "platinum", "diamond"].includes(activeBtn)) {
-      filtered = filtered.filter(d => getBadge(d.times_donated).label.toLowerCase() === activeBtn);
+    const bloodVal = document.getElementById('bloodGroupFilter').value;
+    
+    // Apply badge filter
+    if (currentBadgeFilter === 'top3') {
+      filtered = filtered.slice(0, 3);
+    } else if (currentBadgeFilter !== 'all') {
+      filtered = filtered.filter(d => {
+        const count = d.times_donated || 0;
+        switch (currentBadgeFilter) {
+          case 'bronze': return count >= 1 && count <= 3;
+          case 'silver': return count >= 4 && count <= 15;
+          case 'gold': return count >= 16 && count <= 20;
+          case 'platinum': return count >= 21 && count <= 30;
+          case 'diamond': return count >= 31 && count <= 39;
+          case 'ruby': return count >= 40;
+          default: return true;
+        }
+      });
     }
-
-    if (bloodVal !== 'all') filtered = filtered.filter(d => d.blood_group === bloodVal);
+    
+    // Apply location filters
+    if (divisionVal !== 'all') filtered = filtered.filter(d => d.division === divisionVal);
+    if (districtVal !== 'all') filtered = filtered.filter(d => d.district === districtVal);
     if (cityVal !== 'all') filtered = filtered.filter(d => d.city === cityVal);
-    if (badgeVal !== 'all') filtered = filtered.filter(d => getBadge(d.times_donated).label.toLowerCase() === badgeVal);
-
+    
+    // Apply blood group filter
+    if (bloodVal !== 'all') filtered = filtered.filter(d => d.blood_group === bloodVal);
+    
     filtered.sort((a, b) => (b.times_donated || 0) - (a.times_donated || 0));
     filtered.forEach((d, i) => d.rank = i + 1);
     renderDonors(filtered);
   }
-
-  document.querySelectorAll('#filters button').forEach(btn =>
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#filters button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      applyFilters();
-    })
-  );
-  document.getElementById('bloodGroupFilter').addEventListener('change', applyFilters);
-  document.getElementById('cityFilter').addEventListener('change', applyFilters);
-  document.getElementById('badgeFilter').addEventListener('change', applyFilters);
-
+  
+  function resetFilters() {
+    document.getElementById('divisionFilter').value = 'all';
+    document.getElementById('districtFilter').innerHTML = '<option value="all">All Districts</option>';
+    document.getElementById('cityFilter').innerHTML = '<option value="all">All Cities</option>';
+    document.getElementById('bloodGroupFilter').value = 'all';
+    
+    // Reset badge filter
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+    currentBadgeFilter = 'all';
+    
+    renderDonors(donors);
+  }
+  
+  // Event listeners
+  document.getElementById('divisionFilter').addEventListener('change', updateDistrictDropdown);
+  document.getElementById('districtFilter').addEventListener('change', updateCityDropdown);
+  document.getElementById('applyFilters').addEventListener('click', applyFilters);
+  document.getElementById('resetFilters').addEventListener('click', resetFilters);
+  
   fetchDonors();
 </script>
 </body>
