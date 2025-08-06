@@ -855,154 +855,202 @@ function updateNextBadge(currentDonations, currentBadgeName, badgeDescription) {
 }
         
         // Setup star rating
-        function setupStarRating() {
-            const stars = document.querySelectorAll('.star');
-            const giveRatingBtn = document.getElementById('giveRatingBtn');
+function setupStarRating() {
+    const stars = document.querySelectorAll('.star');
+    const giveRatingBtn = document.getElementById('giveRatingBtn');
+    
+    // Initialize stars
+    stars.forEach(function(star) {
+        star.addEventListener('mouseover', function() {
+            if (userRating) return; // User has already rated
             
-            stars.forEach(function(star) {
-                star.addEventListener('mouseover', function() {
-                    if (userRating) return; // User has already rated
-                    
-                    const rating = parseInt(star.getAttribute('data-rating'));
-                    highlightStars(rating);
-                });
-                
-                star.addEventListener('click', function() {
-                    if (userRating) return; // User has already rated
-                    
-                    const rating = parseInt(star.getAttribute('data-rating'));
-                    selectedRating = rating;
-                    highlightStars(rating);
-                    giveRatingBtn.classList.add('show');
-                });
-            });
+            const rating = parseInt(star.getAttribute('data-rating'));
+            highlightStars(rating);
+        });
+        
+        star.addEventListener('click', function() {
+            if (userRating) return; // User has already rated
             
-            document.getElementById('starRating').addEventListener('mouseleave', function() {
-                if (userRating) {
-                    highlightStars(userRating);
-                } else {
-                    highlightStars(selectedRating);
-                }
-            });
-            
-            // Give rating button click
-            giveRatingBtn.addEventListener('click', async function() {
-                if (selectedRating === 0) return;
-                
-                // Check if user is authenticated
-                if (!currentUser) {
-                    alert('Please log in to rate this donor');
-                    window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
-                    return;
-                }
-                
-                await submitRating(selectedRating);
-                giveRatingBtn.classList.remove('show');
-            });
+            const rating = parseInt(star.getAttribute('data-rating'));
+            selectedRating = rating;
+            highlightStars(rating);
+            giveRatingBtn.classList.add('show');
+        });
+    });
+    
+    document.getElementById('starRating').addEventListener('mouseleave', function() {
+        if (userRating) {
+            highlightStars(userRating);
+        } else {
+            highlightStars(selectedRating);
+        }
+    });
+    
+    // Give rating button click
+    giveRatingBtn.addEventListener('click', async function() {
+        if (selectedRating === 0) return;
+        
+        // Check if user is authenticated
+        if (!currentUser) {
+            alert('Please log in to rate this donor');
+            window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+            return;
         }
         
-        // Highlight stars based on rating
-        function highlightStars(rating) {
-            const stars = document.querySelectorAll('.star');
-            stars.forEach(function(star, index) {
-                if (index < rating) {
-                    star.classList.add('active');
-                } else {
-                    star.classList.remove('active');
-                }
+        await submitRating(selectedRating);
+        giveRatingBtn.classList.remove('show');
+    });
+}
+
+// Highlight stars based on rating
+function highlightStars(rating) {
+    const stars = document.querySelectorAll('.star');
+    stars.forEach(function(star, index) {
+        if (index < rating) {
+            star.classList.add('active');
+        } else {
+            star.classList.remove('active');
+        }
+    });
+}
+
+// Submit rating
+async function submitRating(rating) {
+    try {
+        // Show loading
+        document.getElementById('loading').style.display = 'flex';
+        
+        // Record user rating
+        const { error } = await supabase
+            .from('user_ratings')
+            .insert({
+                user_id: currentUser.id,
+                target_donor_id: donorData.id,
+                rating: rating
             });
-        }
         
-        // Submit rating
-        async function submitRating(rating) {
-            try {
-                // Record user rating
-                const { error } = await supabase
-                    .from('user_ratings')
-                    .insert({
-                        user_id: currentUser.id,
-                        target_donor_id: donorData.id,
-                        rating: rating
-                    });
-                
-                if (error) throw error;
-                
-                userRating = rating;
-                selectedRating = 0;
-                highlightStars(rating);
-                
-                // Update average rating display
-                await loadAverageRating();
-                
-                showSuccessToast('Thank you for your rating!');
-            } catch (error) {
-                console.error('Error submitting rating:', error);
-                alert('Error submitting rating');
-            }
-        }
+        if (error) throw error;
         
-        // Check if user has already rated
-        async function checkUserRating() {
-            if (!currentUser) return;
+        userRating = rating;
+        selectedRating = 0;
+        highlightStars(rating);
+        
+        // Update average rating display
+        await loadAverageRating();
+        
+        showSuccessToast('Thank you for your rating!');
+    } catch (error) {
+        console.error('Error submitting rating:', error);
+        alert('Error submitting rating: ' + error.message);
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+    }
+}
+
+// Check if user has already rated
+async function checkUserRating() {
+    if (!currentUser || !donorData) {
+        console.log("Missing current user or donor data");
+        return;
+    }
+    
+    try {
+        console.log("Checking if user", currentUser.id, "has rated donor", donorData.id);
+        
+        const { data, error } = await supabase
+            .from('user_ratings')
+            .select('rating')
+            .eq('user_id', currentUser.id)
+            .eq('target_donor_id', donorData.id)
+            .single();
             
-            const { data, error } = await supabase
-                .from('user_ratings')
-                .select('rating')
-                .eq('user_id', currentUser.id)
-                .eq('target_donor_id', donorData.id)
-                .single();
-                
-            if (!error && data) {
-                userRating = data.rating;
-                highlightStars(userRating);
-            }
+        if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
+            console.error('Error checking user rating:', error);
+            return;
         }
         
-        // Load average rating and total star count
-        async function loadAverageRating() {
-            try {
-                // Get all ratings for this donor
-                const { data, error } = await supabase
-                    .from('user_ratings')
-                    .select('rating')
-                    .eq('target_donor_id', donorData.id);
+        if (data) {
+            userRating = data.rating;
+            console.log("User has already rated with:", userRating);
+            highlightStars(userRating);
+        } else {
+            console.log("User has not rated this donor yet");
+        }
+    } catch (error) {
+        console.error('Exception in checkUserRating:', error);
+    }
+}
+
+// Load average rating and total star count
+async function loadAverageRating() {
+    if (!donorData) {
+        console.log("Missing donor data");
+        return;
+    }
+    
+    try {
+        // Get all ratings for this donor
+        const { data, error } = await supabase
+            .from('user_ratings')
+            .select('rating')
+            .eq('target_donor_id', donorData.id);
+        
+        if (error) throw error;
+        
+        console.log("All ratings data:", data);
+        
+        if (data && data.length > 0) {
+            // Calculate average
+            const sum = data.reduce(function(acc, curr) {
+                return acc + curr.rating;
+            }, 0);
+            const average = sum / data.length;
+            
+            console.log("Rating sum:", sum, "Count:", data.length, "Average:", average);
+            
+            // Update UI
+            document.getElementById('averageRating').textContent = average.toFixed(1);
+            document.getElementById('ratingCount').textContent = data.length + ' ratings';
+            document.getElementById('totalStarCount').textContent = 'Total stars: ' + sum;
+            
+            // Highlight stars for average rating
+            if (!currentUser || !userRating) {
+                const stars = document.querySelectorAll('.star');
+                const fullStars = Math.floor(average);
+                const hasHalfStar = average % 1 >= 0.5;
                 
-                if (error) throw error;
+                console.log("Displaying average rating:", average, "Full stars:", fullStars, "Half star:", hasHalfStar);
                 
-                if (data && data.length > 0) {
-                    // Calculate average
-                    const sum = data.reduce(function(acc, curr) {
-                        return acc + curr.rating;
-                    }, 0);
-                    const average = sum / data.length;
-                    
-                    // Update UI
-                    document.getElementById('averageRating').textContent = average.toFixed(1);
-                    document.getElementById('ratingCount').textContent = data.length + ' ratings';
-                    document.getElementById('totalStarCount').textContent = 'Total stars: ' + sum;
-                    
-                    // Highlight stars for average rating
-                    if (!currentUser || !userRating) {
-                        const stars = document.querySelectorAll('.star');
-                        const fullStars = Math.floor(average);
-                        stars.forEach(function(star, index) {
-                            if (index < fullStars) {
-                                star.classList.add('active');
-                            } else {
-                                star.classList.remove('active');
-                            }
-                        });
+                stars.forEach(function(star, index) {
+                    if (index < fullStars) {
+                        star.classList.add('active');
+                    } else if (index === fullStars && hasHalfStar) {
+                        // For half star, we'll just highlight it as full for simplicity
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
                     }
-                } else {
-                    // No ratings yet
-                    document.getElementById('averageRating').textContent = '0.0';
-                    document.getElementById('ratingCount').textContent = '0 ratings';
-                    document.getElementById('totalStarCount').textContent = 'Total stars: 0';
-                }
-            } catch (error) {
-                console.error('Error loading average rating:', error);
+                });
+            }
+        } else {
+            // No ratings yet
+            console.log("No ratings found for this donor");
+            document.getElementById('averageRating').textContent = '0.0';
+            document.getElementById('ratingCount').textContent = '0 ratings';
+            document.getElementById('totalStarCount').textContent = 'Total stars: 0';
+            
+            // Clear any highlighted stars
+            if (!currentUser || !userRating) {
+                const stars = document.querySelectorAll('.star');
+                stars.forEach(function(star) {
+                    star.classList.remove('active');
+                });
             }
         }
+    } catch (error) {
+        console.error('Error loading average rating:', error);
+    }
+}
         
         // Check authentication
         async function checkAuth() {
@@ -1098,40 +1146,41 @@ function updateNextBadge(currentDonations, currentBadgeName, badgeDescription) {
         }
         
         // Check URL parameters on page load
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Get donor ID from URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const donorId = urlParams.get('id');
-            
-            console.log('Retrieved donor ID from URL:', donorId);
-            
-            if (!donorId) {
-                alert('No donor ID specified. Redirecting to donor list...');
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            // Check authentication
-            currentUser = await checkAuth();
-            
-            // Load the donor profile
-            await loadDonorProfile(donorId);
-            
-            // Setup star rating
-            setupStarRating();
-            
-            // Check if user has already rated
-            await checkUserRating();
-            
-            // Load average rating
-            await loadAverageRating();
-            
-            // Setup donation history
-            setupDonationHistory();
-            
-            // Setup share button
-            setupShareButton();
-        });
+document.addEventListener('DOMContentLoaded', async function() {
+    // Get donor ID from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const donorId = urlParams.get('id');
+    
+    console.log('Retrieved donor ID from URL:', donorId);
+    
+    if (!donorId) {
+        alert('No donor ID specified. Redirecting to donor list...');
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    // Check authentication
+    currentUser = await checkAuth();
+    console.log('Current user:', currentUser);
+    
+    // Load the donor profile
+    await loadDonorProfile(donorId);
+    
+    // Setup star rating
+    setupStarRating();
+    
+    // Load average rating first (this will show the average of all ratings)
+    await loadAverageRating();
+    
+    // Then check if current user has already rated (this will override the display if they have)
+    await checkUserRating();
+    
+    // Setup donation history
+    setupDonationHistory();
+    
+    // Setup share button
+    setupShareButton();
+});
         
         // Load donor profile
         async function loadDonorProfile(donorId) {
