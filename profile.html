@@ -722,6 +722,31 @@
         <i class="fas fa-check-circle mr-2"></i>
         <span id="successMessage">Success!</span>
     </div>
+    <!-- Authentication Modal -->
+<div id="authModal" class="modal hidden">
+    <div class="modal-content rounded-2xl p-6 max-w-md w-full mx-4">
+        <div class="text-center mb-6">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                <i class="fas fa-user-lock text-red-600 text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Authentication Required</h3>
+            <p class="text-gray-600">Please log in or register to continue with this action</p>
+        </div>
+        
+        <div class="flex flex-col space-y-4">
+            <button id="modalLoginBtn" class="btn btn-primary w-full justify-center">
+                <i class="fas fa-sign-in-alt mr-2"></i> Login
+            </button>
+            <button id="modalRegisterBtn" class="btn btn-secondary w-full justify-center">
+                <i class="fas fa-user-plus mr-2"></i> Register
+            </button>
+            <button id="modalCancelBtn" class="btn btn-secondary w-full justify-center">
+                <i class="fas fa-times mr-2"></i> Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
     
     <script>
         // Initialize Supabase
@@ -892,10 +917,9 @@ function setupStarRating() {
         
         // Check if user is authenticated
         if (!currentUser) {
-            alert('Please log in to rate this donor');
-            window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
-            return;
-        }
+    showAuthModal();
+    return;
+}
         
         await submitRating(selectedRating);
         giveRatingBtn.classList.remove('show');
@@ -1432,10 +1456,9 @@ function setupShareButton() {
         document.getElementById('addCommentBtn').addEventListener('click', async function() {
             // Check if user is authenticated
             if (!currentUser) {
-                alert('Please log in to add a comment');
-                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
-                return;
-            }
+    showAuthModal();
+    return;
+}
             
             const input = document.getElementById('commentInput');
             const content = input.value.trim();
@@ -1471,10 +1494,9 @@ function setupShareButton() {
         document.getElementById('reportBtn').addEventListener('click', function() {
             // Check if user is authenticated
             if (!currentUser) {
-                alert('Please log in to report this profile');
-                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
-                return;
-            }
+    showAuthModal();
+    return;
+}
             
             document.getElementById('reportModal').classList.remove('hidden');
         });
@@ -1514,6 +1536,42 @@ function setupShareButton() {
                 alert('Error submitting report');
             }
         });
+        
+        // Authentication Modal functionality
+const authModal = document.getElementById('authModal');
+const modalLoginBtn = document.getElementById('modalLoginBtn');
+const modalRegisterBtn = document.getElementById('modalRegisterBtn');
+const modalCancelBtn = document.getElementById('modalCancelBtn');
+
+// Function to show authentication modal
+function showAuthModal() {
+    authModal.classList.remove('hidden');
+}
+
+// Function to hide authentication modal
+function hideAuthModal() {
+    authModal.classList.add('hidden');
+}
+
+// Set up modal button event listeners
+modalLoginBtn.addEventListener('click', function() {
+    window.location.href = 'userlogin.html';
+});
+
+modalRegisterBtn.addEventListener('click', function() {
+    window.location.href = 'registerfrom.html';
+});
+
+modalCancelBtn.addEventListener('click', function() {
+    hideAuthModal();
+});
+
+// Close modal when clicking outside
+authModal.addEventListener('click', function(e) {
+    if (e.target === authModal) {
+        hideAuthModal();
+    }
+});
     </script>
 </body>
 </html>
