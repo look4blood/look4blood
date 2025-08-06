@@ -830,7 +830,8 @@
                     <i class="fas fa-user-lock text-red-600 text-2xl"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-gray-800 mb-2">Authentication Required</h3>
-                <p class="text-gray-600">Please log in or register to continue with this action</p>
+                <p class="text-gray-600">Please log in or register on Look4Blood to view your profile.
+Track your donation history, eligibility countdown, and feedback all in one place.</p>
             </div>
             
             <div class="flex flex-col space-y-4">
@@ -1309,11 +1310,19 @@
         
         // Check authentication on page load
         document.addEventListener('DOMContentLoaded', async function() {
-            // Check authentication
-            currentUser = await checkAuth();
-            console.log('Current user:', currentUser);
+            // Check authentication using getSession instead of getUser
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
             
-            if (currentUser) {
+            if (sessionError) {
+                console.error('Session error:', sessionError);
+                showAuthModal();
+                return;
+            }
+            
+            if (session && session.user) {
+                currentUser = session.user;
+                console.log('Current user:', currentUser);
+                
                 // Load the donor profile
                 await loadDonorProfile();
                 
@@ -1344,19 +1353,22 @@
                 // Show authentication modal
                 showAuthModal();
             }
+            
+            // Hide loading spinner
+            document.getElementById('loading').style.display = 'none';
         });
         
-        // Authentication check
+        // Authentication check using getSession
         async function checkAuth() {
             try {
-                const { data: { user }, error } = await supabase.auth.getUser();
+                const { data: { session }, error } = await supabase.auth.getSession();
                 
                 if (error) {
                     console.error('Auth error:', error);
                     return null;
                 }
                 
-                return user;
+                return session ? session.user : null;
             } catch (error) {
                 console.error('Exception during auth check:', error);
                 return null;
@@ -1393,8 +1405,6 @@
                 console.error('Error loading donor data:', error);
                 alert('Error loading profile data: ' + error.message);
                 window.location.href = 'userlogin.html';
-            } finally {
-                document.getElementById('loading').style.display = 'none';
             }
         }
         
