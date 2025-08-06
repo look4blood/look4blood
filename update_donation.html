@@ -4,143 +4,419 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Update Donation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      padding: 30px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+      padding: 20px;
       display: flex;
       justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
     }
+    
     .container {
       background: white;
-      padding: 30px;
-      border-radius: 10px;
+      padding: 35px;
+      border-radius: 15px;
       width: 100%;
-      max-width: 500px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 550px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
     }
+    
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #c62828, #e53935);
+    }
+    
     h2 {
       text-align: center;
       color: #c62828;
+      margin-bottom: 25px;
+      font-size: 28px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
+    
+    h2 i {
+      font-size: 24px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
     label {
       display: block;
       margin: 15px 0 5px;
-      font-weight: bold;
+      font-weight: 600;
+      color: #444;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-    input {
+    
+    input[type="text"],
+    input[type="date"] {
       width: 100%;
-      padding: 10px;
+      padding: 12px 15px;
       border: 1px solid #ddd;
-      border-radius: 6px;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
     }
+    
+    input[type="text"]:focus,
+    input[type="date"]:focus {
+      border-color: #c62828;
+      box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+      outline: none;
+    }
+    
+    input[readonly] {
+      background-color: #f5f5f5;
+      color: #555;
+    }
+    
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+    }
+    
+    .checkbox-container input[type="checkbox"] {
+      margin-right: 10px;
+      height: 18px;
+      width: 18px;
+      accent-color: #c62828;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
     button {
-      margin-top: 15px;
-      width: 100%;
-      padding: 12px;
+      padding: 12px 20px;
       border: none;
       background: #c62828;
       color: white;
-      border-radius: 6px;
-      font-size: 16px;
+      border-radius: 8px;
+      font-size: 15px;
       cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex: 1;
     }
+    
     button:hover {
       background: #a91e1e;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .secondary-button {
+      background: #c62828;
+    }
+    
+    .secondary-button:hover {
+      background: #7c3aed;
+    }
+    
+    .submit-button {
+      background: linear-gradient(135deg, #c62828, #e53935);
+      font-weight: 600;
+      margin-top: 10px;
+      padding: 15px;
+      font-size: 16px;
+    }
+    
+    .submit-button:hover {
+      background: linear-gradient(135deg, #a91e1e, #c62828);
+    }
+    
     .error {
-      color: red;
+      color: #d32f2f;
       text-align: center;
       margin-top: 10px;
+      padding: 10px;
+      background-color: #ffebee;
+      border-radius: 6px;
+      font-size: 14px;
     }
+    
     .loading {
       color: #555;
       text-align: center;
       margin-top: 10px;
+      padding: 10px;
+      background-color: #e8f5e9;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    .status-container {
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 450px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      animation: slideIn 0.3s ease;
+      position: relative;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-content h3 {
+      color: #c62828;
+      margin-bottom: 20px;
+      font-size: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .modal-content p {
+      margin: 15px 0 25px;
+      line-height: 1.6;
+      color: #555;
+    }
+    
+    .modal-content strong {
+      color: #c62828;
+      font-size: 18px;
+    }
+    
+    .close-button {
+      padding: 12px 25px;
+      background: #c62828;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .close-button:hover {
+      background: #a91e1e;
+      transform: translateY(-2px);
+    }
+    
+    .icon-heart {
+      color: #e53935;
+      font-size: 20px;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    
+    .form-divider {
+      height: 1px;
+      background: #eee;
+      margin: 25px 0;
+    }
+    
+    .info-card {
+      background-color: #f8f9fa;
+      border-left: 4px solid #c62828;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .info-card p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #555;
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+      }
+      
+      h2 {
+        font-size: 24px;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Update Donation</h2>
-
-    <label><input type="checkbox" id="useNumber" checked> Enter Mobile Number</label>
-    <input type="text" id="mobileInput" placeholder="01XXXXXXXXX" />
-    <button onclick="searchByPhone()">🔍 Auto-Fill by Number</button>
-    <button onclick="startQRScan()">📷 Scan ID QR Code</button>
-    <div id="statusMsg" class="loading"></div>
-
-    <label>User ID</label>
-    <input type="text" id="userId" readonly />
-    <label>Name</label>
-    <input type="text" id="name" readonly />
-    <label>Blood Group</label>
-    <input type="text" id="bloodGroup" readonly />
-    <label>Times Donated</label>
-    <input type="text" id="timesDonated" readonly />
-    <input type="hidden" id="lastDonation" />
-
-    <label>New Donation Date</label>
-    <input type="date" id="donationDate" required />
-    <label>Donation Place</label>
-    <input type="text" id="donationPlace" placeholder="Hospital / Location" required />
-    <button onclick="submitUpdate()">✅ Submit Donation Update</button>
-    <div id="submitMsg" class="loading"></div>
-  </div>
-
-  <div id="thankYouModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center;">
-    <div style="background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-      <h3 style="color: #c62828;">🎉 Thank You!</h3>
-      <p id="thankYouMsg" style="margin: 10px 0 20px;"></p>
-      <button onclick="closeModal()" style="padding: 10px 20px; background: #c62828; color: white; border: none; border-radius: 6px; cursor: pointer;">Close</button>
+    <h2><i class="fas fa-tint"></i> Update Donation</h2>
+    
+    <div class="form-group">
+      <div class="checkbox-container">
+        <input type="checkbox" id="useNumber" checked>
+        <label for="useNumber" style="margin: 0; text-transform: none;">Enter Mobile Number</label>
+      </div>
+      <input type="text" id="mobileInput" placeholder="01XXXXXXXXX" />
+      
+      <div class="button-group">
+        <button onclick="searchByPhone()"><i class="fas fa-search"></i> Auto-Fill by Number</button>
+        <button class="secondary-button" onclick="startQRScan()"><i class="fas fa-qrcode"></i> Scan ID QR Code</button>
+      </div>
+      
+      <div id="statusMsg" class="status-container"></div>
+    </div>
+    
+    <div class="form-divider"></div>
+    
+    <div class="form-group">
+      <label>User ID</label>
+      <input type="text" id="userId" readonly />
+      
+      <label>Name</label>
+      <input type="text" id="name" readonly />
+      
+      <label>Blood Group</label>
+      <input type="text" id="bloodGroup" readonly />
+      
+      <label>Times Donated</label>
+      <input type="text" id="timesDonated" readonly />
+      <input type="hidden" id="lastDonation" />
+    </div>
+    
+    <div class="form-divider"></div>
+    
+    <div class="form-group">
+      <label>New Donation Date</label>
+      <input type="date" id="donationDate" required />
+      
+      <label>Donation Place</label>
+      <input type="text" id="donationPlace" placeholder="Hospital / Location" required />
+      
+      <button class="submit-button" onclick="submitUpdate()"><i class="fas fa-check-circle"></i> Submit Donation Update</button>
+      
+      <div id="submitMsg" class="status-container"></div>
+    </div>
+    
+    <div class="info-card">
+      <p><i class="fas fa-info-circle"></i> <strong>Important:</strong> Donors must wait at least 90 days between blood donations.</p>
     </div>
   </div>
-
+  
+  <div id="thankYouModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-heart icon-heart"></i> Thank You!</h3>
+      <p id="thankYouMsg"></p>
+      <button class="close-button" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+  
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
     const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
     const supabase = createClient(supabaseUrl, supabaseKey);
-
+    
     function normalizeNumber(num) {
-  return num.replace(/\D/g, '').replace(/^(\+88)/, '');
-}
-
+      return num.replace(/\D/g, '').replace(/^(\+88)/, '');
+    }
+    
     window.searchByPhone = async function () {
       const mobileInput = document.getElementById('mobileInput').value.trim();
       const mobile = normalizeNumber(mobileInput);
       const statusMsg = document.getElementById('statusMsg');
-
+      
       if (!mobile) {
-        statusMsg.textContent = '❌ Please enter a valid mobile number.';
-        statusMsg.className = 'error';
+        statusMsg.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle"></i> Please enter a valid mobile number.</div>';
         return;
       }
-
-      statusMsg.textContent = '⏳ Searching in Supabase...';
+      
+      statusMsg.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Searching in database...</div>';
 
       const { data, error } = await supabase
         .from('donors')
         .select('*')
         .eq('phone', mobile)
         .single();
-
+        
       if (error || !data) {
-        statusMsg.textContent = '❌ No donor found with that number.';
-        statusMsg.className = 'error';
+        statusMsg.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle"></i> No donor found with that number.</div>';
       } else {
         document.getElementById('userId').value = data.custom_id || '';
         document.getElementById('name').value = data.name || '';
         document.getElementById('bloodGroup').value = data.blood_group || '';
         document.getElementById('timesDonated').value = data.times_donated || '0';
         document.getElementById('lastDonation').value = data.last_donation || '';
-        statusMsg.textContent = '✅ Donor info loaded.';
-        statusMsg.className = 'loading';
+        statusMsg.innerHTML = '<div class="loading"><i class="fas fa-check-circle"></i> Donor information loaded successfully.</div>';
       }
     }
-
+    
     window.submitUpdate = async function () {
       const userId = document.getElementById('userId').value.trim();
       const name = document.getElementById('name').value.trim();
@@ -150,24 +426,22 @@
       const lastDonation = document.getElementById('lastDonation').value;
       const times = parseInt(document.getElementById('timesDonated').value || '0');
       const submitMsg = document.getElementById('submitMsg');
-
+      
       if (!userId || !date || !place) {
-        submitMsg.textContent = '❌ Fill all fields before submitting.';
-        submitMsg.className = 'error';
+        submitMsg.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle"></i> Please fill all required fields before submitting.</div>';
         return;
       }
-
+      
       if (lastDonation) {
         const diffDays = (new Date(date) - new Date(lastDonation)) / (1000 * 60 * 60 * 24);
         if (diffDays < 90) {
-          submitMsg.textContent = '❌ You must wait at least 90 days between donations.';
-          submitMsg.className = 'error';
+          submitMsg.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle"></i> You must wait at least 90 days between donations.</div>';
           return;
         }
       }
-
-      submitMsg.textContent = '⏳ Submitting update...';
-
+      
+      submitMsg.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Submitting donation update...</div>';
+      
       // Update in Supabase
       const { error: updateError } = await supabase
         .from('donors')
@@ -176,69 +450,64 @@
           times_donated: times + 1
         })
         .eq('custom_id', userId);
-
+        
       if (updateError) {
-        submitMsg.textContent = '❌ Error updating Supabase.';
+        submitMsg.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle"></i> Error updating donor information.</div>';
+        return;
+      }
+     
+      // Get logged in user
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData?.user) {
+        submitMsg.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle"></i> You must be logged in to update donation.</div>';
         return;
       }
       
-       // 1️⃣ Get logged in user
-const { data: userData } = await supabase.auth.getUser();
-if (!userData?.user) {
-  submitMsg.textContent = '❌ You must be logged in to update donation.';
-  submitMsg.className = 'error';
-  return;
-}
-
-// 2️⃣ Insert with user_id for RLS
-const { error: logError } = await supabase
-  .from('donation_updates')
-  .insert([{
-    user_id: userData.user.id,  // ✅ Required for policy
-    custom_id: userId,
-    name: name,
-    blood_group: bloodGroup,
-    donation_date: date,
-    place: place,
-    times_donated: times + 1
-  }]);
-
-if (logError) {
-  submitMsg.textContent = '❌ Could not log donation update: ' + logError.message;
-  submitMsg.className = 'error';
-}
+      // Insert with user_id for RLS
+      const { error: logError } = await supabase
+        .from('donation_updates')
+        .insert([{
+          user_id: userData.user.id,
+          custom_id: userId,
+          name: name,
+          blood_group: bloodGroup,
+          donation_date: date,
+          place: place,
+          times_donated: times + 1
+        }]);
+          
+      if (logError) {
+        submitMsg.innerHTML = '<div class="error"><i class="fas fa-exclamation-circle"></i> Could not log donation update: ' + logError.message + '</div>';
+        return;
+      }
       
-  if (logError) {
-    console.warn('⚠ Could not log to donation_updates table:', logError.message);
-  }
-
       // Append to Google Sheet
       const scriptURL = 'https://script.google.com/macros/s/AKfycbwgKdkTu5z5LPlbIp0YKwqYedFz9oBqJ55kP_HbaglxIybqPqZBQJEZxAeCc1BoFNQ/exec';
       const formData = new FormData();
       formData.append('userId', userId);
       formData.append('newDate', date);
       formData.append('place', place);
-
+      
       try {
         await fetch(scriptURL, { method: 'POST', body: formData });
       } catch (err) {
         console.warn('Google Sheet update failed:', err);
       }
-
-      submitMsg.textContent = '✅ Donation updated successfully.';
+      
+      submitMsg.innerHTML = '<div class="loading"><i class="fas fa-check-circle"></i> Donation updated successfully.</div>';
       showThankYouModal(name, times + 1);
     }
-
+    
     window.closeModal = function () {
       document.getElementById('thankYouModal').style.display = 'none';
     }
-
+    
     window.startQRScan = function () {
-      alert('📷 QR Code scanner integration coming soon.');
+      alert('QR Code scanner integration coming soon.');
     }
-
+    
     function showThankYouModal(name, times) {
-      const msg = `Thank you, ${name || 'Donor'}!<br>You have now donated blood <strong>${times}</strong> times.<br><br>❤️ Your blood can save a life – be proud!`;
+      const msg = `Thank you, ${name || 'Donor'}!<br>You have now donated blood <strong>${times}</strong> times.<br><br><i class="fas fa-heart icon-heart"></i> Your blood can save a life – be proud!`;
       document.getElementById('thankYouMsg').innerHTML = msg;
       document.getElementById('thankYouModal').style.display = 'flex';
     }
