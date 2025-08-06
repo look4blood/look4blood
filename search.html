@@ -11,6 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         :root {
             --primary-color: #dc2626;
             --primary-dark: #991b1b;
@@ -28,6 +29,7 @@
             --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background-color: var(--bg-light);
@@ -35,6 +37,799 @@
             line-height: 1.5;
             min-height: 100vh;
         }
+
+        /* Header with Search */
+        .header {
+            background-color: var(--bg-white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.95);
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .search-container-header {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .search-bar-header {
+            width: 100%;
+            padding: 0.75rem 3rem 0.75rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            outline: none;
+        }
+
+        .search-bar-header:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .search-btn-header {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn-header:hover {
+            background: var(--primary-dark);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .search-btn-header i {
+            font-size: 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            background-color: rgba(220, 38, 38, 0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #dc2626 0%, #7c3aed 100%);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Results Section */
+        .results-section {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-header h2 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .results-count {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-weight: 500;
+            background-color: var(--bg-light);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        .donor-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        /* Donor Cards */
+        .donor-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+        }
+
+        .donor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-color);
+        }
+
+        .donor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-light);
+        }
+
+        .donor-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .donor-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .donor-detail i {
+            color: var(--primary-color);
+            width: 16px;
+            font-size: 0.9rem;
+        }
+
+        .donor-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .donor-blood-group {
+            display: inline-flex;
+            align-items: center;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .eligibility-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.75rem;
+        }
+
+        .eligibility-status.eligible {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--success-color);
+        }
+
+        .eligibility-status.not-eligible {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--primary-color);
+        }
+
+        .donor-actions {
+            margin-top: 1rem;
+            text-align: right;
+        }
+
+        .btn-view-profile {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .btn-view-profile:hover {
+            background: #6d28d9;
+            transform: translateY(-1px);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-light);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--border-color);
+        }
+
+        .no-results h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .no-results p {
+            font-size: 1rem;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Search Suggestions */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-radius: 0 0 12px 12px;
+            box-shadow: var(--shadow-hover);
+            margin-top: 2px;
+            z-index: 100;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            border: 1px solid var(--border-color);
+            border-top: none;
+        }
+
+        .search-suggestions.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--bg-light);
+            padding-left: 2rem;
+            color: var(--primary-color);
+        }
+
+        .suggestion-item .suggestion-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.2rem;
+        }
+
+        .suggestion-item .suggestion-desc {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--text-dark);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-hover);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            max-width: 350px;
+            font-size: 0.9rem;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--primary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .search-container-header {
+                order: 3;
+                flex-basis: 100%;
+                max-width: none;
+            }
+
+            .nav-links {
+                order: 2;
+                flex-basis: 100%;
+                justify-content: center;
+            }
+
+            .hero {
+                padding: 2rem 0;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .donor-info {
+                grid-template-columns: 1fr;
+            }
+
+            .donor-actions {
+                text-align: center;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .results-section {
+                padding: 1.5rem;
+            }
+
+            .donor-card {
+                padding: 1rem;
+            }
+
+            .toast {
+                right: 1rem;
+                left: 1rem;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Search -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-tint"></i>
+                Look4Blood
+            </a>
+            
+            <div class="search-container-header">
+                <form id="searchForm">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="search-bar-header" 
+                        placeholder="Search donors by name, blood group, location..."
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="search-btn-header">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <div class="search-suggestions" id="searchSuggestions">
+                    <!-- Suggestions will be dynamically inserted here -->
+                </div>
+            </div>
+            
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#donors">Donors</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Find Blood Donors</h1>
+            <p>Search our database of registered blood donors to save lives</p>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="results-header">
+                <h2>Search Results</h2>
+                <span class="results-count" id="resultsCount">Enter a search term to find donors</span>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Searching donors...</p>
+            </div>
+            
+            <div id="donorList" class="donor-list">
+                <!-- Donor cards will be dynamically inserted here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Search completed successfully!</span>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
+    
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Form submission handler
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const searchQuery = document.getElementById('searchInput').value.trim();
+            if (searchQuery) {
+                await searchDonors(searchQuery);
+                // Hide suggestions when searching
+                document.getElementById('searchSuggestions').classList.remove('show');
+            }
+        });
+
+        // Search input handler for real-time suggestions
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
+            
+            if (query.length < 2) {
+                document.getElementById('searchSuggestions').classList.remove('show');
+                return;
+            }
+            
+            // Set new timeout for debouncing
+            searchTimeout = setTimeout(async () => {
+                await showSearchSuggestions(query);
+            }, 300);
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container-header')) {
+                document.getElementById('searchSuggestions').classList.remove('show');
+            }
+        });
+
+        // Show search suggestions
+        async function showSearchSuggestions(query) {
+            try {
+                // Build a simple query for suggestions
+                const { data, error } = await supabase
+                    .from('donors')
+                    .select('name, blood_group, city, division')
+                    .or(`name.ilike.%${query}%,blood_group.ilike.%${query}%,city.ilike.%${query}%,division.ilike.%${query}%`)
+                    .limit(5);
+
+                if (error) throw error;
+
+                const suggestionsContainer = document.getElementById('searchSuggestions');
+                
+                if (data && data.length > 0) {
+                    suggestionsContainer.innerHTML = data.map(donor => `
+                        <div class="suggestion-item" onclick="selectSuggestion('${donor.name}')">
+                            <div class="suggestion-title">${donor.name}</div>
+                            <div class="suggestion-desc">${donor.blood_group} • ${donor.city}, ${donor.division}</div>
+                        </div>
+                    `).join('');
+                    suggestionsContainer.classList.add('show');
+                } else {
+                    suggestionsContainer.classList.remove('show');
+                }
+            } catch (error) {
+                console.error('Error fetching suggestions:', error);
+            }
+        }
+
+        // Select a suggestion
+        function selectSuggestion(name) {
+            document.getElementById('searchInput').value = name;
+            document.getElementById('searchSuggestions').classList.remove('show');
+            searchDonors(name);
+        }
+
+        // Search donors function
+        async function searchDonors(query) {
+            const loading = document.getElementById('loading');
+            const donorList = document.getElementById('donorList');
+            const resultsCount = document.getElementById('resultsCount');
+            
+            // Show loading
+            loading.classList.add('show');
+            donorList.innerHTML = '';
+            resultsCount.textContent = 'Searching...';
+
+            try {
+                // Build query to search in multiple fields
+                const { data, error } = await supabase
+                    .from('donors')
+                    .select('*')
+                    .or(`name.ilike.%${query}%,phone.ilike.%${query}%,blood_group.ilike.%${query}%,city.ilike.%${query}%,division.ilike.%${query}%,state.ilike.%${query}%,zip.ilike.%${query}%`)
+                    .eq('available', true)
+                    .order('name', { ascending: true });
+
+                if (error) {
+                    throw error;
+                }
+
+                // Display results
+                displayDonors(data || []);
+                resultsCount.textContent = `${data.length} donor${data.length !== 1 ? 's' : ''} found for "${query}"`;
+
+                if (data.length > 0) {
+                    showToast(`Found ${data.length} donor${data.length !== 1 ? 's' : ''}`, 'success');
+                } else {
+                    showToast(`No donors found for "${query}"`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error searching donors:', error);
+                donorList.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error</h3>
+                        <p>An error occurred while searching. Please try again.</p>
+                    </div>
+                `;
+                resultsCount.textContent = 'Error';
+                showToast('Error searching donors', 'error');
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        // Display donors function
+        function displayDonors(donors) {
+            const donorList = document.getElementById('donorList');
+            
+            if (donors.length === 0) {
+                donorList.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>No Donors Found</h3>
+                        <p>No donors match your search. Try a different search term.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            donorList.innerHTML = donors.map(donor => {
+                const lastDonation = donor.last_donation ? new Date(donor.last_donation) : null;
+                const today = new Date();
+                const daysSinceDonation = lastDonation ? Math.floor((today - lastDonation) / (1000 * 60 * 60 * 24)) : null;
+                const isEligible = daysSinceDonation === null || daysSinceDonation >= 90;
+
+                return `
+                    <div class="donor-card">
+                        <div class="donor-info">
+                            <div>
+                                <div class="donor-name">
+                                    ${donor.name}
+                                    <span class="donor-blood-group">${donor.blood_group}</span>
+                                </div>
+                                <div class="donor-detail">
+                                    <i class="fas fa-phone"></i>
+                                    <span>${donor.phone || 'Not provided'}</span>
+                                </div>
+                                <div class="donor-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${donor.city || 'Not provided'}, ${donor.division || 'Not provided'}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="donor-detail">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Last Donation: ${lastDonation ? lastDonation.toLocaleDateString() : 'Never'}</span>
+                                </div>
+                                <div class="eligibility-status ${isEligible ? 'eligible' : 'not-eligible'}">
+                                    <i class="fas ${isEligible ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                                    ${isEligible ? 'Eligible to donate' : `Not eligible (${90 - daysSinceDonation} days remaining)`}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="donor-actions">
+                            <a href="profile.html?id=${donor.id}" class="btn-view-profile">
+                                <i class="fas fa-user"></i>
+                                View Profile
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const icon = toast.querySelector('i');
+            
+            // Update icon based on type
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+            }
+            
+            toast.className = `toast ${type}`;
+            toastMessage.textContent = message;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Focus on search input when page loads
+            document.getElementById('searchInput').focus();
+        });
+    </script>
+</body>
+</html>        }
         /* Header with Search */
         .header {
             background-color: var(--bg-white);
