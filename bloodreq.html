@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-
+
+scale=1.0">
     <title>Blood Request - Look4Blood</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-
+
+awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         :root {
             --primary-color: #dc2626;
             --primary-dark: #991b1b;
@@ -28,13 +33,17 @@
             --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe 
+
+UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background-color: var(--bg-light);
             color: var(--text-dark);
             line-height: 1.5;
             min-height: 100vh;
         }
+
         /* Header */
         .header {
             background-color: var(--bg-white);
@@ -43,6 +52,7 @@
             top: 0;
             z-index: 1000;
         }
+
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -51,6 +61,7 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .logo {
             display: flex;
             align-items: center;
@@ -60,13 +71,16 @@
             color: var(--primary-color);
             text-decoration: none;
         }
+
         .logo i {
             font-size: 1.8rem;
         }
+
         .nav-links {
             display: flex;
             gap: 1.5rem;
         }
+
         .nav-links a {
             color: var(--text-dark);
             text-decoration: none;
@@ -75,37 +89,46 @@
             border-radius: 8px;
             transition: all 0.3s ease;
         }
+
         .nav-links a:hover {
             color: var(--primary-color);
             background-color: rgba(220, 38, 38, 0.1);
         }
+
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, #dc2626 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #dc2626 0%, #7c3aed 
+
+100%);
             color: white;
             padding: 4rem 0;
             text-align: center;
         }
+
         .hero-content {
             max-width: 800px;
             margin: 0 auto;
             padding: 0 2rem;
         }
+
         .hero h1 {
             font-size: 2.5rem;
             margin-bottom: 1rem;
             font-weight: 700;
         }
+
         .hero p {
             font-size: 1.2rem;
             opacity: 0.9;
         }
+
         /* Main Container */
         .container {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
+
         /* Request Form Section */
         .request-section {
             background-color: var(--bg-white);
@@ -114,33 +137,42 @@
             box-shadow: var(--card-shadow);
             margin-bottom: 2rem;
         }
+
         .section-header {
             margin-bottom: 2rem;
             text-align: center;
         }
+
         .section-header h2 {
             font-size: 1.8rem;
             color: var(--text-dark);
             margin-bottom: 0.5rem;
         }
+
         .section-header p {
             color: var(--text-light);
         }
+
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 
+
+1fr));
             gap: 1.5rem;
             margin-bottom: 1.5rem;
         }
+
         .form-group {
             display: flex;
             flex-direction: column;
         }
+
         .form-group label {
             font-weight: 600;
             margin-bottom: 0.5rem;
             color: var(--text-dark);
         }
+
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -151,6 +183,7 @@
             transition: all 0.3s ease;
             background-color: var(--bg-white);
         }
+
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
@@ -158,18 +191,22 @@
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
+
         .form-group textarea {
             resize: vertical;
             min-height: 100px;
         }
+
         .form-group.full-width {
             grid-column: 1 / -1;
         }
+
         .urgency-group {
             display: flex;
             gap: 1rem;
             margin-top: 0.5rem;
         }
+
         .urgency-option {
             flex: 1;
             padding: 1rem;
@@ -179,49 +216,61 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         .urgency-option:hover {
             border-color: var(--primary-color);
         }
+
         .urgency-option.selected {
             border-color: var(--primary-color);
             background-color: rgba(220, 38, 38, 0.1);
         }
+
         .urgency-option.normal.selected {
             border-color: var(--success-color);
             background-color: rgba(22, 163, 74, 0.1);
         }
+
         .urgency-option.urgent.selected {
             border-color: var(--warning-color);
             background-color: rgba(217, 119, 6, 0.1);
         }
+
         .urgency-option.emergency.selected {
             border-color: var(--danger-color);
             background-color: rgba(185, 28, 28, 0.1);
         }
+
         .urgency-option i {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
             display: block;
         }
+
         .urgency-option.normal i {
             color: var(--success-color);
         }
+
         .urgency-option.urgent i {
             color: var(--warning-color);
         }
+
         .urgency-option.emergency i {
             color: var(--danger-color);
         }
+
         .checkbox-group {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             margin-top: 0.5rem;
         }
+
         .checkbox-group input[type="checkbox"] {
             width: 1.2rem;
             height: 1.2rem;
         }
+
         .btn {
             padding: 0.75rem 2rem;
             border: none;
@@ -234,38 +283,47 @@
             align-items: center;
             gap: 0.5rem;
         }
+
         .btn-primary {
             background-color: var(--primary-color);
             color: white;
         }
+
         .btn-primary:hover {
             background-color: var(--primary-dark);
             transform: translateY(-2px);
         }
+
         .btn-secondary {
             background-color: var(--bg-light);
             color: var(--text-dark);
             border: 2px solid var(--border-color);
         }
+
         .btn-secondary:hover {
             background-color: white;
             border-color: var(--primary-color);
             color: var(--primary-color);
         }
+
         .btn-success {
             background-color: var(--success-color);
             color: white;
         }
+
         .btn-success:hover {
             background-color: #15803d;
         }
+
         .btn-warning {
             background-color: var(--warning-color);
             color: white;
         }
+
         .btn-warning:hover {
             background-color: #b45309;
         }
+
         /* Requests List Section */
         .requests-section {
             background-color: var(--bg-white);
@@ -273,13 +331,17 @@
             padding: 2rem;
             box-shadow: var(--card-shadow);
         }
+
         .filter-toggle {
             text-align: center;
             margin-bottom: 1.5rem;
         }
+
         .filters {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 
+
+1fr));
             gap: 1rem;
             margin-bottom: 2rem;
             transition: all 0.3s ease;
@@ -287,19 +349,23 @@
             max-height: 0;
             opacity: 0;
         }
+
         .filters.show {
             max-height: 500px;
             opacity: 1;
         }
+
         .filter-group {
             display: flex;
             flex-direction: column;
         }
+
         .filter-group label {
             font-weight: 600;
             margin-bottom: 0.5rem;
             color: var(--text-dark);
         }
+
         .request-card {
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -308,19 +374,24 @@
             transition: all 0.3s ease;
             position: relative;
         }
+
         .request-card:hover {
             box-shadow: var(--shadow-hover);
             transform: translateY(-2px);
         }
+
         .request-card.emergency {
             border-left: 5px solid var(--danger-color);
         }
+
         .request-card.urgent {
             border-left: 5px solid var(--warning-color);
         }
+
         .request-card.normal {
             border-left: 5px solid var(--success-color);
         }
+
         .request-header {
             display: flex;
             justify-content: space-between;
@@ -329,17 +400,20 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
+
         .request-info h3 {
             font-size: 1.3rem;
             color: var(--text-dark);
             margin-bottom: 0.25rem;
         }
+
         .request-meta {
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
             margin-bottom: 1rem;
         }
+
         .request-meta-item {
             display: flex;
             align-items: center;
@@ -347,9 +421,11 @@
             color: var(--text-light);
             font-size: 0.9rem;
         }
+
         .request-meta-item i {
             color: var(--primary-color);
         }
+
         .urgency-badge {
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
@@ -357,18 +433,22 @@
             font-weight: 600;
             text-transform: uppercase;
         }
+
         .urgency-badge.normal {
             background-color: rgba(22, 163, 74, 0.1);
             color: var(--success-color);
         }
+
         .urgency-badge.urgent {
             background-color: rgba(217, 119, 6, 0.1);
             color: var(--warning-color);
         }
+
         .urgency-badge.emergency {
             background-color: rgba(185, 28, 28, 0.1);
             color: var(--danger-color);
         }
+
         .status-badge {
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
@@ -376,37 +456,46 @@
             font-weight: 600;
             text-transform: uppercase;
         }
+
         .status-badge.pending {
             background-color: rgba(217, 119, 6, 0.1);
             color: var(--warning-color);
         }
+
         .status-badge.accepted {
             background-color: rgba(124, 58, 237, 0.1);
             color: var(--secondary-color);
         }
+
         .status-badge.inprogress {
             background-color: rgba(59, 130, 246, 0.1);
             color: #3b82f6;
         }
+
         .status-badge.fulfilled {
             background-color: rgba(22, 163, 74, 0.1);
             color: var(--success-color);
         }
+
         .status-badge.canceled {
             background-color: rgba(107, 114, 128, 0.1);
             color: var(--text-light);
         }
+
         .status-badge.expired {
             background-color: rgba(185, 28, 28, 0.1);
             color: var(--danger-color);
         }
+
         .request-details {
             margin-bottom: 1.5rem;
         }
+
         .request-details p {
             color: var(--text-light);
             margin-bottom: 0.5rem;
         }
+
         .request-actions {
             display: flex;
             flex-wrap: wrap;
@@ -414,19 +503,23 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .action-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
         }
+
         .countdown {
             font-weight: 600;
             color: var(--primary-color);
         }
+
         .share-buttons {
             display: flex;
             gap: 0.5rem;
         }
+
         .share-btn {
             width: 36px;
             height: 36px;
@@ -440,11 +533,13 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         .share-btn:hover {
             background-color: var(--primary-color);
             color: white;
             transform: scale(1.1);
         }
+
         .donor-response {
             margin-top: 1rem;
             padding: 1rem;
@@ -452,13 +547,16 @@
             border-radius: 8px;
             display: none;
         }
+
         .donor-response.show {
             display: block;
         }
+
         .donor-response h4 {
             margin-bottom: 0.5rem;
             color: var(--text-dark);
         }
+
         .patient-contact {
             background-color: white;
             padding: 1rem;
@@ -466,14 +564,17 @@
             margin-top: 0.5rem;
             border: 1px solid var(--border-color);
         }
+
         .patient-contact h5 {
             margin-bottom: 0.5rem;
             color: var(--text-dark);
         }
+
         .patient-contact p {
             margin-bottom: 0.25rem;
             color: var(--text-light);
         }
+
         .matching-donors {
             margin-top: 1rem;
             padding: 1rem;
@@ -481,13 +582,16 @@
             border-radius: 8px;
             display: none;
         }
+
         .matching-donors.show {
             display: block;
         }
+
         .matching-donors h4 {
             margin-bottom: 1rem;
             color: var(--text-dark);
         }
+
         .donor-item {
             display: flex;
             flex-direction: column;
@@ -499,9 +603,11 @@
             border: 1px solid var(--border-color);
             transition: all 0.3s ease;
         }
+
         .donor-item:hover {
             box-shadow: var(--shadow-hover);
         }
+
         .donor-header {
             display: flex;
             justify-content: space-between;
@@ -509,18 +615,22 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
+
         .donor-info {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
+
         .donor-info i {
             color: var(--primary-color);
         }
+
         .donor-name {
             font-weight: 600;
             color: var(--text-dark);
         }
+
         .donor-blood-group {
             display: inline-block;
             background-color: var(--primary-color);
@@ -530,12 +640,14 @@
             font-size: 0.8rem;
             font-weight: 600;
         }
+
         .donor-details {
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
             margin-top: 0.5rem;
         }
+
         .donor-detail {
             display: flex;
             align-items: center;
@@ -543,9 +655,11 @@
             color: var(--text-light);
             font-size: 0.9rem;
         }
+
         .donor-detail i {
             color: var(--primary-color);
         }
+
         .donor-eligibility {
             font-size: 0.85rem;
             padding: 0.25rem 0.5rem;
@@ -553,20 +667,24 @@
             font-weight: 500;
             margin-top: 0.5rem;
         }
+
         .donor-eligibility.eligible {
             background-color: rgba(22, 163, 74, 0.1);
             color: var(--success-color);
         }
+
         .donor-eligibility.not-eligible {
             background-color: rgba(220, 38, 38, 0.1);
             color: var(--primary-color);
         }
+
         .donor-actions {
             display: flex;
             gap: 0.5rem;
             margin-top: 0.75rem;
             flex-wrap: wrap;
         }
+
         .btn-contact {
             padding: 0.5rem 1rem;
             background-color: var(--secondary-color);
@@ -580,9 +698,11 @@
             align-items: center;
             gap: 0.5rem;
         }
+
         .btn-contact:hover {
             background-color: #6d28d9;
         }
+
         .btn-call {
             padding: 0.5rem 1rem;
             background-color: var(--success-color);
@@ -596,9 +716,11 @@
             align-items: center;
             gap: 0.5rem;
         }
+
         .btn-call:hover {
             background-color: #15803d;
         }
+
         .btn-view-profile {
             padding: 0.5rem 1rem;
             background-color: var(--bg-light);
@@ -612,20 +734,24 @@
             align-items: center;
             gap: 0.5rem;
         }
+
         .btn-view-profile:hover {
             background-color: white;
             border-color: var(--primary-color);
             color: var(--primary-color);
         }
+
         .requester-actions {
-            display: none;
+            display: flex;
             gap: 0.5rem;
             margin-top: 1rem;
             flex-wrap: wrap;
         }
+
         .requester-actions.show {
             display: flex;
         }
+
         .highlight-phone {
             background-color: rgba(220, 38, 38, 0.1);
             padding: 0.5rem 1rem;
@@ -634,12 +760,14 @@
             border: 2px dashed var(--primary-color);
             text-align: center;
         }
+
         .highlight-phone .phone-number {
             font-size: 1.2rem;
             font-weight: 700;
             color: var(--primary-color);
             margin: 0.5rem 0;
         }
+
         /* Modal */
         .modal {
             display: none;
@@ -653,9 +781,11 @@
             align-items: center;
             justify-content: center;
         }
+
         .modal.show {
             display: flex;
         }
+
         .modal-content {
             background-color: white;
             border-radius: 12px;
@@ -665,16 +795,19 @@
             max-height: 90vh;
             overflow-y: auto;
         }
+
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
+
         .modal-header h3 {
             font-size: 1.5rem;
             color: var(--text-dark);
         }
+
         .close-btn {
             background: none;
             border: none;
@@ -682,15 +815,18 @@
             cursor: pointer;
             color: var(--text-light);
         }
+
         .qr-code {
             text-align: center;
             margin: 1.5rem 0;
         }
+
         .qr-code img {
             max-width: 200px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
         }
+
         /* Toast Notification */
         .toast {
             position: fixed;
@@ -709,24 +845,30 @@
             gap: 0.5rem;
             max-width: 350px;
         }
+
         .toast.show {
             transform: translateX(0);
         }
+
         .toast.success {
             background: var(--success-color);
         }
+
         .toast.error {
             background: var(--primary-color);
         }
+
         /* Loading Spinner */
         .loading {
             display: none;
             text-align: center;
             padding: 2rem;
         }
+
         .loading.show {
             display: block;
         }
+
         .spinner {
             border: 3px solid var(--border-color);
             border-top: 3px solid var(--primary-color);
@@ -736,48 +878,61 @@
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
             }
+
             .hero {
                 padding: 3rem 0;
             }
+
             .hero h1 {
                 font-size: 2rem;
             }
+
             .form-grid {
                 grid-template-columns: 1fr;
             }
+
             .request-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
+
             .request-actions {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .share-buttons {
                 justify-content: center;
             }
+
             .donor-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
+
             .donor-actions {
                 justify-content: center;
             }
+
             .filters {
                 grid-template-columns: 1fr;
             }
+
             .request-card {
                 padding: 1rem;
             }
+
             .donor-item {
                 padding: 0.75rem;
             }
@@ -800,13 +955,17 @@
             </div>
         </nav>
     </header>
+
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
             <h1>Request Blood</h1>
-            <p>Post your blood request and connect with willing donors in your area</p>
+            <p>Post your blood request and connect with willing donors 
+
+in your area</p>
         </div>
     </section>
+
     <!-- Main Container -->
     <main class="container">
         <!-- Request Form Section -->
@@ -820,12 +979,19 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="patientName">Patient Name</label>
-                        <input type="text" id="patientName" name="patientName" required>
+                        <input type="text" id="patientName" 
+
+name="patientName" required>
                     </div>
+
                     <div class="form-group">
                         <label for="bloodGroup">Blood Group</label>
-                        <select id="bloodGroup" name="bloodGroup" required>
-                            <option value="">Select Blood Group</option>
+                        <select id="bloodGroup" name="bloodGroup" 
+
+required>
+                            <option value="">Select Blood 
+
+Group</option>
                             <option value="A+">A+</option>
                             <option value="A-">A-</option>
                             <option value="B+">B+</option>
@@ -836,9 +1002,12 @@
                             <option value="O-">O-</option>
                         </select>
                     </div>
+
                     <div class="form-group">
                         <label for="unitsNeeded">Units Needed</label>
-                        <select id="unitsNeeded" name="unitsNeeded" required>
+                        <select id="unitsNeeded" name="unitsNeeded" 
+
+required>
                             <option value="">Select Units</option>
                             <option value="1">1 Unit</option>
                             <option value="2">2 Units</option>
@@ -847,65 +1016,115 @@
                             <option value="5+">5+ Units</option>
                         </select>
                     </div>
+
                     <div class="form-group">
-                        <label for="requiredDate">Required Date & Time</label>
-                        <input type="datetime-local" id="requiredDate" name="requiredDate" required>
+                        <label for="requiredDate">Required Date & 
+
+Time</label>
+                        <input type="datetime-local" id="requiredDate" 
+
+name="requiredDate" required>
                     </div>
+
                     <div class="form-group">
-                        <label for="hospitalName">Hospital Name</label>
-                        <input type="text" id="hospitalName" name="hospitalName" required>
+                        <label for="hospitalName">Hospital 
+
+Name</label>
+                        <input type="text" id="hospitalName" 
+
+name="hospitalName" required>
                     </div>
+
                     <div class="form-group">
                         <label for="division">Division</label>
-                        <select id="division" name="division" required>
+                        <select id="division" name="division" 
+
+required>
                             <option value="">Select Division</option>
                         </select>
                     </div>
+
                     <div class="form-group">
                         <label for="district">District</label>
-                        <select id="district" name="district" required disabled>
+                        <select id="district" name="district" required 
+
+disabled>
                             <option value="">Select District</option>
                         </select>
                     </div>
+
                     <div class="form-group">
                         <label for="city">City</label>
-                        <select id="city" name="city" required disabled>
+                        <select id="city" name="city" required 
+
+disabled>
                             <option value="">Select City</option>
                         </select>
                     </div>
+
                     <div class="form-group">
-                        <label for="contactNumber">Contact Number</label>
-                        <input type="tel" id="contactNumber" name="contactNumber" required>
+                        <label for="contactNumber">Contact 
+
+Number</label>
+                        <input type="tel" id="contactNumber" 
+
+name="contactNumber" required>
                     </div>
+
                     <div class="form-group full-width">
                         <label>Urgency Level</label>
                         <div class="urgency-group">
-                            <div class="urgency-option normal" data-urgency="Normal">
+                            <div class="urgency-option normal" data-
+
+urgency="Normal">
                                 <i class="fas fa-circle"></i>
                                 <span>Normal</span>
                             </div>
-                            <div class="urgency-option urgent" data-urgency="Urgent">
-                                <i class="fas fa-exclamation-triangle"></i>
+                            <div class="urgency-option urgent" data-
+
+urgency="Urgent">
+                                <i class="fas fa-exclamation-
+
+triangle"></i>
                                 <span>Urgent</span>
                             </div>
-                            <div class="urgency-option emergency" data-urgency="Emergency">
-                                <i class="fas fa-exclamation-circle"></i>
+                            <div class="urgency-option emergency" 
+
+data-urgency="Emergency">
+                                <i class="fas fa-exclamation-
+
+circle"></i>
                                 <span>Emergency</span>
                             </div>
                         </div>
-                        <input type="hidden" id="urgency" name="urgency" required>
+                        <input type="hidden" id="urgency" 
+
+name="urgency" required>
                     </div>
+
                     <div class="form-group full-width">
-                        <label for="additionalNotes">Additional Notes</label>
-                        <textarea id="additionalNotes" name="additionalNotes" placeholder="Any additional information..."></textarea>
+                        <label for="additionalNotes">Additional 
+
+Notes</label>
+                        <textarea id="additionalNotes" 
+
+name="additionalNotes" placeholder="Any additional 
+
+information..."></textarea>
                     </div>
+
                     <div class="form-group full-width">
                         <div class="checkbox-group">
-                            <input type="checkbox" id="anonymous" name="anonymous">
-                            <label for="anonymous">Post as Anonymous</label>
+                            <input type="checkbox" id="anonymous" 
+
+name="anonymous">
+                            <label for="anonymous">Post as 
+
+Anonymous</label>
                         </div>
                     </div>
                 </div>
+
                 <div style="text-align: center; margin-top: 2rem;">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-paper-plane"></i>
@@ -914,18 +1133,23 @@
                 </div>
             </form>
         </section>
+
         <!-- Requests List Section -->
         <section class="requests-section">
             <div class="section-header">
                 <h2>Blood Requests</h2>
                 <p>Find and respond to blood requests in your area</p>
             </div>
+
             <div class="filter-toggle">
-                <button class="btn btn-secondary" id="filterToggleBtn" onclick="toggleFilters()">
+                <button class="btn btn-secondary" id="filterToggleBtn" 
+
+onclick="toggleFilters()">
                     <i class="fas fa-filter"></i>
                     Find and respond to blood requests in your area
                 </button>
             </div>
+
             <div class="filters" id="filtersSection">
                 <div class="filter-group">
                     <label for="filterBloodGroup">Blood Group</label>
@@ -941,24 +1165,28 @@
                         <option value="O-">O-</option>
                     </select>
                 </div>
+
                 <div class="filter-group">
                     <label for="filterDivision">Division</label>
                     <select id="filterDivision">
                         <option value="">All Divisions</option>
                     </select>
                 </div>
+
                 <div class="filter-group">
                     <label for="filterDistrict">District</label>
                     <select id="filterDistrict" disabled>
                         <option value="">All Districts</option>
                     </select>
                 </div>
+
                 <div class="filter-group">
                     <label for="filterCity">City</label>
                     <select id="filterCity" disabled>
                         <option value="">All Cities</option>
                     </select>
                 </div>
+
                 <div class="filter-group">
                     <label for="filterUrgency">Urgency</label>
                     <select id="filterUrgency">
@@ -968,48 +1196,68 @@
                         <option value="Emergency">Emergency</option>
                     </select>
                 </div>
+
                 <div class="filter-group">
                     <label for="filterStatus">Status</label>
                     <select id="filterStatus">
                         <option value="">All Statuses</option>
                         <option value="Pending">Pending</option>
                         <option value="Accepted">Accepted</option>
-                        <option value="In Progress">In Progress</option>
+                        <option value="In Progress">In 
+
+Progress</option>
                         <option value="Fulfilled">Fulfilled</option>
                         <option value="Canceled">Canceled</option>
                         <option value="Expired">Expired</option>
                     </select>
                 </div>
             </div>
+
             <div class="loading" id="loadingRequests">
                 <div class="spinner"></div>
                 <p>Loading requests...</p>
             </div>
+
             <div id="requestsList">
                 <!-- Requests will be dynamically inserted here -->
             </div>
         </section>
     </main>
+
     <!-- Share Modal -->
     <div class="modal" id="shareModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Share Request</h3>
-                <button class="close-btn" onclick="closeShareModal()">&times;</button>
+                <button class="close-btn" onclick="closeShareModal
+
+()">&times;</button>
             </div>
             <div class="share-options">
-                <p>Share this blood request to help find donors faster:</p>
-                <div class="share-buttons" style="justify-content: center; margin: 1.5rem 0;">
-                    <button class="share-btn" onclick="shareOnWhatsApp()" title="Share on WhatsApp">
+                <p>Share this blood request to help find donors 
+
+faster:</p>
+                <div class="share-buttons" style="justify-content: 
+
+center; margin: 1.5rem 0;">
+                    <button class="share-btn" 
+
+onclick="shareOnWhatsApp()" title="Share on WhatsApp">
                         <i class="fab fa-whatsapp"></i>
                     </button>
-                    <button class="share-btn" onclick="shareOnMessenger()" title="Share on Messenger">
+                    <button class="share-btn" 
+
+onclick="shareOnMessenger()" title="Share on Messenger">
                         <i class="fab fa-facebook-messenger"></i>
                     </button>
-                    <button class="share-btn" onclick="shareOnFacebook()" title="Share on Facebook">
+                    <button class="share-btn" 
+
+onclick="shareOnFacebook()" title="Share on Facebook">
                         <i class="fab fa-facebook-f"></i>
                     </button>
-                    <button class="share-btn" onclick="copyLink()" title="Copy Link">
+                    <button class="share-btn" onclick="copyLink()" 
+
+title="Copy Link">
                         <i class="fas fa-link"></i>
                     </button>
                 </div>
@@ -1020,29 +1268,48 @@
             </div>
         </div>
     </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage">Request submitted successfully!</span>
     </div>
+
     <!-- Supabase SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-
+
+js@2.39.7"></script>
+    <script 
+
+src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.
+
+js"></script>
     
     <script>
         // Initialize Supabase
-        const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        
+        const supabaseUrl = 
+
+'https://bbvyjeljeyofswuijlyg.supabase.co';
+        const supabaseKey = 
+
+'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6
+
+ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2Mz
+
+EsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-
+
+6yY136I';
+        const supabase = window.supabase.createClient(supabaseUrl, 
+
+supabaseKey);
+
         // Global variables
         let selectedUrgency = '';
         let currentRequestId = '';
         let currentUser = null;
         let currentDonorProfile = null;
         let filtersVisible = false;
-        let requestsData = []; // Store requests data to avoid unnecessary reloads
-        
+
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
             loadLocations();
@@ -1050,79 +1317,118 @@
             setupEventListeners();
             checkUserSession();
         });
-        
+
         // Setup event listeners
         function setupEventListeners() {
             // Form submission
-            document.getElementById('requestForm').addEventListener('submit', handleFormSubmit);
-            
+            document.getElementById('requestForm').addEventListener
+
+('submit', handleFormSubmit);
+
             // Urgency selection
-            document.querySelectorAll('.urgency-option').forEach(option => {
+            document.querySelectorAll('.urgency-option').forEach
+
+(option => {
                 option.addEventListener('click', function() {
-                    document.querySelectorAll('.urgency-option').forEach(opt => opt.classList.remove('selected'));
+                    document.querySelectorAll('.urgency-
+
+option').forEach(opt => opt.classList.remove('selected'));
                     this.classList.add('selected');
-                    document.getElementById('urgency').value = this.dataset.urgency;
+                    document.getElementById('urgency').value = 
+
+this.dataset.urgency;
                     selectedUrgency = this.dataset.urgency;
                 });
             });
-            
+
             // Location dropdowns
-            document.getElementById('division').addEventListener('change', loadDistricts);
-            document.getElementById('district').addEventListener('change', loadCities);
-            
+            document.getElementById('division').addEventListener
+
+('change', loadDistricts);
+            document.getElementById('district').addEventListener
+
+('change', loadCities);
+
             // Filters
-            document.getElementById('filterBloodGroup').addEventListener('change', filterRequests);
-            document.getElementById('filterDivision').addEventListener('change', loadFilterDistricts);
-            document.getElementById('filterDistrict').addEventListener('change', loadFilterCities);
-            document.getElementById('filterCity').addEventListener('change', filterRequests);
-            document.getElementById('filterUrgency').addEventListener('change', filterRequests);
-            document.getElementById('filterStatus').addEventListener('change', filterRequests);
+            document.getElementById
+
+('filterBloodGroup').addEventListener('change', filterRequests);
+            document.getElementById
+
+('filterDivision').addEventListener('change', loadFilterDistricts);
+            document.getElementById
+
+('filterDistrict').addEventListener('change', loadFilterCities);
+            document.getElementById('filterCity').addEventListener
+
+('change', filterRequests);
+            document.getElementById('filterUrgency').addEventListener
+
+('change', filterRequests);
+            document.getElementById('filterStatus').addEventListener
+
+('change', filterRequests);
         }
-        
+
         // Toggle filters visibility
         function toggleFilters() {
-            const filtersSection = document.getElementById('filtersSection');
-            const toggleBtn = document.getElementById('filterToggleBtn');
+            const filtersSection = document.getElementById
+
+('filtersSection');
+            const toggleBtn = document.getElementById
+
+('filterToggleBtn');
             
             filtersVisible = !filtersVisible;
             
             if (filtersVisible) {
                 filtersSection.classList.add('show');
-                toggleBtn.innerHTML = '<i class="fas fa-times"></i> Hide Filters';
+                toggleBtn.innerHTML = '<i class="fas fa-times"></i> 
+
+Hide Filters';
             } else {
                 filtersSection.classList.remove('show');
-                toggleBtn.innerHTML = '<i class="fas fa-filter"></i> Find and respond to blood requests in your area';
+                toggleBtn.innerHTML = '<i class="fas fa-filter"></i> 
+
+Find and respond to blood requests in your area';
             }
         }
-        
+
         // Check user session
         async function checkUserSession() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await 
+
+supabase.auth.getSession();
             if (session) {
                 currentUser = session.user;
                 loadDonorProfile();
             }
         }
-        
+
         // Load donor profile
         async function loadDonorProfile() {
             if (!currentUser) return;
+
             try {
                 const { data, error } = await supabase
                     .from('donors')
                     .select('*')
                     .eq('user_id', currentUser.id)
                     .single();
+
                 if (error && error.code !== 'PGRST116') {
-                    console.error('Error loading donor profile:', error);
+                    console.error('Error loading donor profile:', 
+
+error);
                     return;
                 }
+
                 currentDonorProfile = data;
             } catch (error) {
                 console.error('Error loading donor profile:', error);
             }
         }
-        
+
         // Load locations
         async function loadLocations() {
             try {
@@ -1130,14 +1436,26 @@
                     .from('locations')
                     .select('division')
                     .order('division');
+
                 if (error) throw error;
-                const divisionSelect = document.getElementById('division');
-                const filterDivisionSelect = document.getElementById('filterDivision');
+
+                const divisionSelect = document.getElementById
+
+('division');
+                const filterDivisionSelect = document.getElementById
+
+('filterDivision');
                 
-                divisionSelect.innerHTML = '<option value="">Select Division</option>';
-                filterDivisionSelect.innerHTML = '<option value="">All Divisions</option>';
+                divisionSelect.innerHTML = '<option value="">Select 
+
+Division</option>';
+                filterDivisionSelect.innerHTML = '<option value="">All 
+
+Divisions</option>';
                 
-                const divisions = [...new Set(data.map(item => item.division))];
+                const divisions = [...new Set(data.map(item => 
+
+item.division))];
                 divisions.forEach(division => {
                     const option1 = document.createElement('option');
                     option1.value = division;
@@ -1154,26 +1472,41 @@
                 showToast('Error loading locations', 'error');
             }
         }
-        
+
         // Load districts based on selected division
         async function loadDistricts() {
-            const division = document.getElementById('division').value;
-            const districtSelect = document.getElementById('district');
+            const division = document.getElementById
+
+('division').value;
+            const districtSelect = document.getElementById
+
+('district');
             const citySelect = document.getElementById('city');
+
             // Reset dependent dropdowns
-            districtSelect.innerHTML = '<option value="">Select District</option>';
+            districtSelect.innerHTML = '<option value="">Select 
+
+District</option>';
             districtSelect.disabled = !division;
-            citySelect.innerHTML = '<option value="">Select City</option>';
+            citySelect.innerHTML = '<option value="">Select 
+
+City</option>';
             citySelect.disabled = true;
+
             if (!division) return;
+
             try {
                 const { data, error } = await supabase
                     .from('locations')
                     .select('district')
                     .eq('division', division)
                     .order('district');
+
                 if (error) throw error;
-                const districts = [...new Set(data.map(item => item.district))];
+
+                const districts = [...new Set(data.map(item => 
+
+item.district))];
                 districts.forEach(district => {
                     const option = document.createElement('option');
                     option.value = district;
@@ -1185,16 +1518,25 @@
                 showToast('Error loading districts', 'error');
             }
         }
-        
+
         // Load cities based on selected district
         async function loadCities() {
-            const division = document.getElementById('division').value;
-            const district = document.getElementById('district').value;
+            const division = document.getElementById
+
+('division').value;
+            const district = document.getElementById
+
+('district').value;
             const citySelect = document.getElementById('city');
+
             // Reset dependent dropdown
-            citySelect.innerHTML = '<option value="">Select City</option>';
+            citySelect.innerHTML = '<option value="">Select 
+
+City</option>';
             citySelect.disabled = !district;
+
             if (!district) return;
+
             try {
                 const { data, error } = await supabase
                     .from('locations')
@@ -1202,7 +1544,9 @@
                     .eq('division', division)
                     .eq('district', district)
                     .order('city');
+
                 if (error) throw error;
+
                 data.forEach(item => {
                     const option = document.createElement('option');
                     option.value = item.city;
@@ -1214,26 +1558,41 @@
                 showToast('Error loading cities', 'error');
             }
         }
-        
+
         // Load filter districts
         async function loadFilterDistricts() {
-            const division = document.getElementById('filterDivision').value;
-            const districtSelect = document.getElementById('filterDistrict');
+            const division = document.getElementById
+
+('filterDivision').value;
+            const districtSelect = document.getElementById
+
+('filterDistrict');
             const citySelect = document.getElementById('filterCity');
+
             // Reset dependent dropdowns
-            districtSelect.innerHTML = '<option value="">All Districts</option>';
+            districtSelect.innerHTML = '<option value="">All 
+
+Districts</option>';
             districtSelect.disabled = !division;
-            citySelect.innerHTML = '<option value="">All Cities</option>';
+            citySelect.innerHTML = '<option value="">All 
+
+Cities</option>';
             citySelect.disabled = true;
+
             if (!division) return;
+
             try {
                 const { data, error } = await supabase
                     .from('locations')
                     .select('district')
                     .eq('division', division)
                     .order('district');
+
                 if (error) throw error;
-                const districts = [...new Set(data.map(item => item.district))];
+
+                const districts = [...new Set(data.map(item => 
+
+item.district))];
                 districts.forEach(district => {
                     const option = document.createElement('option');
                     option.value = district;
@@ -1245,16 +1604,25 @@
                 showToast('Error loading districts', 'error');
             }
         }
-        
+
         // Load filter cities
         async function loadFilterCities() {
-            const division = document.getElementById('filterDivision').value;
-            const district = document.getElementById('filterDistrict').value;
+            const division = document.getElementById
+
+('filterDivision').value;
+            const district = document.getElementById
+
+('filterDistrict').value;
             const citySelect = document.getElementById('filterCity');
+
             // Reset dependent dropdown
-            citySelect.innerHTML = '<option value="">All Cities</option>';
+            citySelect.innerHTML = '<option value="">All 
+
+Cities</option>';
             citySelect.disabled = !district;
+
             if (!district) return;
+
             try {
                 const { data, error } = await supabase
                     .from('locations')
@@ -1262,7 +1630,9 @@
                     .eq('division', division)
                     .eq('district', district)
                     .order('city');
+
                 if (error) throw error;
+
                 data.forEach(item => {
                     const option = document.createElement('option');
                     option.value = item.city;
@@ -1274,10 +1644,11 @@
                 showToast('Error loading cities', 'error');
             }
         }
-        
+
         // Handle form submission
         async function handleFormSubmit(e) {
             e.preventDefault();
+
             const formData = new FormData(e.target);
             const requestData = {
                 patient_name: formData.get('patientName'),
@@ -1295,16 +1666,24 @@
                 status: 'Pending',
                 requester_id: currentUser?.id || null
             };
+
             try {
                 const { data, error } = await supabase
                     .from('blood_requests')
                     .insert([requestData])
                     .select();
+
                 if (error) throw error;
-                showToast('Blood request submitted successfully!', 'success');
+
+                showToast('Blood request submitted successfully!', 
+
+'success');
                 e.target.reset();
-                document.querySelectorAll('.urgency-option').forEach(opt => opt.classList.remove('selected'));
+                document.querySelectorAll('.urgency-option').forEach
+
+(opt => opt.classList.remove('selected'));
                 loadRequests();
+
                 // Send notifications to matching donors (simulated)
                 notifyDonors(requestData);
             } catch (error) {
@@ -1312,20 +1691,27 @@
                 showToast('Error submitting request', 'error');
             }
         }
-        
+
         // Load requests
         async function loadRequests() {
-            const loading = document.getElementById('loadingRequests');
-            const requestsList = document.getElementById('requestsList');
+            const loading = document.getElementById
+
+('loadingRequests');
+            const requestsList = document.getElementById
+
+('requestsList');
+
             loading.classList.add('show');
             requestsList.innerHTML = '';
+
             try {
                 const { data, error } = await supabase
                     .from('blood_requests')
                     .select('*')
                     .order('created_at', { ascending: false });
+
                 if (error) throw error;
-                requestsData = data; // Store data for future updates
+
                 displayRequests(data);
             } catch (error) {
                 console.error('Error loading requests:', error);
@@ -1334,98 +1720,162 @@
                 loading.classList.remove('show');
             }
         }
-        
+
         // Display requests
         function displayRequests(requests) {
-            const requestsList = document.getElementById('requestsList');
+            const requestsList = document.getElementById
+
+('requestsList');
+
             if (requests.length === 0) {
                 requestsList.innerHTML = `
-                    <div style="text-align: center; padding: 3rem; color: var(--text-light);">
-                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <div style="text-align: center; padding: 3rem; 
+
+color: var(--text-light);">
+                        <i class="fas fa-inbox" style="font-size: 
+
+3rem; margin-bottom: 1rem;"></i>
                         <h3>No blood requests found</h3>
                         <p>Be the first to request blood</p>
                     </div>
                 `;
                 return;
             }
+
             requestsList.innerHTML = requests.map(request => {
                 const isEmergency = isRequestEmergency(request);
                 const timeLeft = getTimeLeft(request.required_date);
-                const isOwner = currentUser && request.requester_id === currentUser.id;
+                const isOwner = currentUser && request.requester_id 
+
+=== currentUser.id;
                 
                 return `
-                    <div class="request-card ${request.urgency.toLowerCase()} ${isEmergency ? 'emergency' : ''}" data-request-id="${request.id}">
+                    <div class="request-card 
+
+${request.urgency.toLowerCase()} ${isEmergency ? 'emergency' : ''}" 
+
+data-request-id="${request.id}">
                         <div class="request-header">
                             <div class="request-info">
-                                <h3>${request.anonymous ? 'Anonymous Patient' : request.patient_name}</h3>
+                                <h3>${request.anonymous ? 'Anonymous 
+
+Patient' : request.patient_name}</h3>
                                 <div class="request-meta">
                                     <div class="request-meta-item">
                                         <i class="fas fa-tint"></i>
-                                        <span>${request.blood_group}</span>
+                                        <span>${request.blood_group}
+
+</span>
                                     </div>
                                     <div class="request-meta-item">
-                                        <i class="fas fa-hospital"></i>
-                                        <span>${request.hospital_name}</span>
+                                        <i class="fas fa-
+
+hospital"></i>
+                                        <span>
+
+${request.hospital_name}</span>
                                     </div>
                                     <div class="request-meta-item">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span>${request.city}, ${request.district}</span>
+                                        <i class="fas fa-map-marker-
+
+alt"></i>
+                                        <span>${request.city}, 
+
+${request.district}</span>
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <span class="urgency-badge ${request.urgency.toLowerCase()}">${request.urgency}</span>
-                                <span class="status-badge ${request.status.toLowerCase()}">${request.status}</span>
+                                <span class="urgency-badge 
+
+${request.urgency.toLowerCase()}">${request.urgency}</span>
+                                <span class="status-badge 
+
+${request.status.toLowerCase()}">${request.status}</span>
                             </div>
                         </div>
                         
                         <div class="request-details">
-                            <p><strong>Units Needed:</strong> ${request.units_needed}</p>
-                            <p><strong>Contact:</strong> ${request.contact_number}</p>
-                            ${request.additional_notes ? `<p><strong>Notes:</strong> ${request.additional_notes}</p>` : ''}
-                            ${timeLeft ? `<p class="countdown"><i class="fas fa-clock"></i> ${timeLeft}</p>` : ''}
+                            <p><strong>Units Needed:</strong> 
+
+${request.units_needed}</p>
+                            <p><strong>Contact:</strong> 
+
+${request.contact_number}</p>
+                            ${request.additional_notes ? 
+
+`<p><strong>Notes:</strong> ${request.additional_notes}</p>` : ''}
+                            ${timeLeft ? `<p class="countdown"><i 
+
+class="fas fa-clock"></i> ${timeLeft}</p>` : ''}
                         </div>
                         
                         <div class="request-actions">
                             <div class="action-buttons">
-                                ${request.status === 'Pending' && currentDonorProfile ? `
-                                    <button class="btn btn-primary" onclick="respondToRequest('${request.id}')">
-                                        <i class="fas fa-hand-holding-heart"></i>
+                                ${request.status === 'Pending' && 
+
+currentDonorProfile ? `
+                                    <button class="btn btn-primary" 
+
+onclick="respondToRequest('${request.id}')">
+                                        <i class="fas fa-hand-
+
+holding-heart"></i>
                                         I Want to Donate
                                     </button>
                                 ` : ''}
                                 
-                                <button class="btn btn-secondary" onclick="showMatchingDonors('${request.id}')">
+                                <button class="btn btn-secondary" 
+
+onclick="showMatchingDonors('${request.id}')">
                                     <i class="fas fa-users"></i>
                                     See Matching Donors
                                 </button>
                             </div>
                             <div class="share-buttons">
-                                <button class="share-btn" onclick="openShareModal('${request.id}')" title="Share">
+                                <button class="share-btn" 
+
+onclick="openShareModal('${request.id}')" title="Share">
                                     <i class="fas fa-share-alt"></i>
                                 </button>
                             </div>
                         </div>
                         
-                        <div class="donor-response" id="response-${request.id}">
+                        <div class="donor-response" id="response-
+
+${request.id}">
                             <!-- Donor response will be shown here -->
                         </div>
                         
-                        <div class="matching-donors" id="donors-${request.id}">
-                            <!-- Matching donors will be shown here -->
+                        <div class="matching-donors" id="donors-
+
+${request.id}">
+                            <!-- Matching donors will be shown here 
+
+-->
                         </div>
                         
                         ${isOwner ? `
-                            <div class="requester-actions" id="requester-actions-${request.id}">
-                                ${request.status === 'Pending' || request.status === 'Accepted' ? `
-                                    <button class="btn btn-success" onclick="fulfillRequest('${request.id}')">
+                            <div class="requester-actions" 
+
+id="requester-actions-${request.id}">
+                                ${request.status === 'Pending' || 
+
+request.status === 'Accepted' ? `
+                                    <button class="btn btn-success" 
+
+onclick="fulfillRequest('${request.id}')">
                                         <i class="fas fa-check"></i>
                                         Mark as Fulfilled
                                     </button>
                                 ` : ''}
                                 
-                                ${request.status !== 'Fulfilled' && request.status !== 'Canceled' && request.status !== 'Expired' ? `
-                                    <button class="btn btn-warning" onclick="cancelRequest('${request.id}')">
+                                ${request.status !== 'Fulfilled' && 
+
+request.status !== 'Canceled' && request.status !== 'Expired' ? `
+                                    <button class="btn btn-warning" 
+
+onclick="cancelRequest('${request.id}')">
                                         <i class="fas fa-times"></i>
                                         Cancel Request
                                     </button>
@@ -1435,11 +1885,45 @@
                     </div>
                 `;
             }).join('');
-            
+
             // Update countdown timers
             updateCountdowns();
+            
+            // Restore "I Want to Donate" button visibility
+            restoreDonateButtons();
         }
-        
+
+        // Restore "I Want to Donate" button visibility
+        function restoreDonateButtons() {
+            if (!currentDonorProfile) return;
+            
+            // Check each request to see if donor has already 
+
+responded
+            document.querySelectorAll('.request-card').forEach(card => 
+
+{
+                const requestId = card.dataset.requestId;
+                const responseDiv = document.getElementById
+
+(`response-${requestId}`);
+                
+                // If response div is not shown, show the donate 
+
+button
+                if (!responseDiv.classList.contains('show')) {
+                    const donateButton = card.querySelector('.btn-
+
+primary');
+                    if (donateButton && 
+
+donateButton.textContent.includes('I Want to Donate')) {
+                        donateButton.style.display = 'inline-flex';
+                    }
+                }
+            });
+        }
+
         // Check if request is emergency (within 1 hour)
         function isRequestEmergency(request) {
             const requiredDate = new Date(request.required_date);
@@ -1447,38 +1931,50 @@
             const diffHours = (requiredDate - now) / (1000 * 60 * 60);
             return diffHours <= 1 && diffHours > 0;
         }
-        
-        // Get time left for request
-        function getTimeLeft(requiredDate) {
-            const required = new Date(requiredDate);
-            const now = new Date();
-            const diff = required - now;
-            if (diff <= 0) {
-                return 'Expired';
-            }
-            
-            // Calculate days, hours, and minutes
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            
-            if (days > 0) {
-                return days + ' day' + (days !== 1 ? 's' : '') + ' ' + hours + ' hour' + (hours !== 1 ? 's' : '');
-            } else if (hours > 0) {
-                return hours + ' hour' + (hours !== 1 ? 's' : '') + ' ' + minutes + ' minute' + (minutes !== 1 ? 's' : '');
-            } else {
-                return minutes + ' minute' + (minutes !== 1 ? 's' : '');
-            }
-        }
-        
+
+       // Get time left for request
+function getTimeLeft(requiredDate) {
+    const required = new Date(requiredDate);
+    const now = new Date();
+    const diff = required - now;
+    if (diff <= 0) {
+        return 'Expired';
+    }
+    
+    // Calculate days, hours, and minutes
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 
+
+60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 
+
+60));
+    
+    if (days > 0) {
+        return days + ' day' + (days !== 1 ? 's' : '') + ' ' + hours + 
+
+' hour' + (hours !== 1 ? 's' : '');
+    } else if (hours > 0) {
+        return hours + ' hour' + (hours !== 1 ? 's' : '') + ' ' + 
+
+minutes + ' minute' + (minutes !== 1 ? 's' : '');
+    } else {
+        return minutes + ' minute' + (minutes !== 1 ? 's' : '');
+    }
+}
+
         // Update countdown timers
         function updateCountdowns() {
-            document.querySelectorAll('.countdown').forEach(countdown => {
-                const requestId = countdown.closest('.request-card').dataset.requestId;
+            document.querySelectorAll('.countdown').forEach(countdown 
+
+=> {
+                const requestId = countdown.closest('.request-
+
+card').dataset.requestId;
                 updateRequestCountdown(requestId);
             });
         }
-        
+
         // Update specific request countdown
         async function updateRequestCountdown(requestId) {
             try {
@@ -1487,39 +1983,43 @@
                     .select('required_date, status')
                     .eq('id', requestId)
                     .single();
+
                 if (error) throw error;
-                
-                const countdown = document.querySelector(`[data-request-id="${requestId}"] .countdown`);
+
+                const countdown = document.querySelector(`[data-
+
+request-id="${requestId}"] .countdown`);
                 if (countdown) {
                     const timeLeft = getTimeLeft(data.required_date);
-                    countdown.innerHTML = `<i class="fas fa-clock"></i> ${timeLeft}`;
+                    countdown.innerHTML = `<i class="fas fa-
+
+clock"></i> ${timeLeft}`;
                     
-                    // Auto-expire requests - but don't reload the entire list
-                    if (timeLeft === 'Expired' && data.status !== 'Expired') {
+                    // Auto-expire requests
+                    if (timeLeft === 'Expired' && data.status !== 
+
+'Expired') {
                         await supabase
                             .from('blood_requests')
                             .update({ status: 'Expired' })
                             .eq('id', requestId);
-                        
-                        // Update just the status badge instead of reloading everything
-                        const statusBadge = document.querySelector(`[data-request-id="${requestId}"] .status-badge`);
-                        if (statusBadge) {
-                            statusBadge.className = 'status-badge expired';
-                            statusBadge.textContent = 'Expired';
-                        }
+                        loadRequests();
                     }
                 }
             } catch (error) {
                 console.error('Error updating countdown:', error);
             }
         }
-        
+
         // Respond to request
         async function respondToRequest(requestId) {
             if (!currentDonorProfile) {
-                showToast('Please complete your donor profile first', 'error');
+                showToast('Please complete your donor profile first', 
+
+'error');
                 return;
             }
+
             try {
                 // Get request details
                 const { data: request, error } = await supabase
@@ -1527,15 +2027,27 @@
                     .select('*')
                     .eq('id', requestId)
                     .single();
+
                 if (error) throw error;
-                
+
                 // Check donor eligibility
-                const lastDonation = currentDonorProfile.last_donation ? new Date(currentDonorProfile.last_donation) : null;
+                const lastDonation = currentDonorProfile.last_donation 
+
+? new Date(currentDonorProfile.last_donation) : null;
                 const now = new Date();
-                const daysSinceDonation = lastDonation ? Math.floor((now - lastDonation) / (1000 * 60 * 60 * 24)) : null;
-                const isEligible = daysSinceDonation === null || daysSinceDonation >= 90;
-                const responseDiv = document.getElementById(`response-${requestId}`);
-                const donateButton = document.querySelector(`[data-request-id="${requestId}"] .btn-primary`);
+                const daysSinceDonation = lastDonation ? Math.floor
+
+((now - lastDonation) / (1000 * 60 * 60 * 24)) : null;
+                const isEligible = daysSinceDonation === null || 
+
+daysSinceDonation >= 90;
+
+                const responseDiv = document.getElementById
+
+(`response-${requestId}`);
+                const donateButton = document.querySelector(`[data-
+
+request-id="${requestId}"] .btn-primary`);
                 
                 // Hide the donate button after clicking
                 if (donateButton) {
@@ -1548,14 +2060,28 @@
                         <h4>You are eligible to donate!</h4>
                         <div class="patient-contact">
                             <h5>Patient Contact Information</h5>
-                            <p><strong>Patient:</strong> ${request.anonymous ? 'Anonymous' : request.patient_name}</p>
-                            <p><strong>Contact:</strong> ${request.contact_number}</p>
-                            <p><strong>Hospital:</strong> ${request.hospital_name}</p>
-                            <p><strong>Location:</strong> ${request.hospital_name}, ${request.city}</p>
+                            <p><strong>Patient:</strong> 
+
+${request.anonymous ? 'Anonymous' : request.patient_name}</p>
+                            <p><strong>Contact:</strong> 
+
+${request.contact_number}</p>
+                            <p><strong>Hospital:</strong> 
+
+${request.hospital_name}</p>
+                            <p><strong>Location:</strong> 
+
+${request.hospital_name}, ${request.city}</p>
                             <div class="highlight-phone">
-                                <p>Please contact the patient directly using the provided information.</p>
-                                <div class="phone-number">${request.contact_number}</div>
-                                <button class="btn-call" onclick="makeCall('${request.contact_number}')">
+                                <p>Please contact the patient directly 
+
+using the provided information.</p>
+                                <div class="phone-number">
+
+${request.contact_number}</div>
+                                <button class="btn-call" 
+
+onclick="makeCall('${request.contact_number}')">
                                     <i class="fas fa-phone"></i>
                                     Call Now
                                 </button>
@@ -1569,22 +2095,23 @@
                         .update({ status: 'Accepted' })
                         .eq('id', requestId);
                     
-                    // Update just the status badge instead of reloading everything
-                    const statusBadge = document.querySelector(`[data-request-id="${requestId}"] .status-badge`);
-                    if (statusBadge) {
-                        statusBadge.className = 'status-badge accepted';
-                        statusBadge.textContent = 'Accepted';
-                    }
-                    
-                    showToast('Patient contact information has been shared with you!', 'success');
+                    showToast('Patient contact information has been 
+
+shared with you!', 'success');
                 } else {
                     // Show remind me option
                     const daysRemaining = 90 - daysSinceDonation;
                     responseDiv.innerHTML = `
                         <h4>You are not yet eligible to donate</h4>
-                        <p>Your last donation was ${daysSinceDonation} days ago.</p>
-                        <p>You need to wait ${daysRemaining} more days before you can donate again.</p>
-                        <button class="btn btn-warning" onclick="setReminder('${requestId}')">
+                        <p>Your last donation was ${daysSinceDonation} 
+
+days ago.</p>
+                        <p>You need to wait ${daysRemaining} more days 
+
+before you can donate again.</p>
+                        <button class="btn btn-warning" 
+
+onclick="setReminder('${requestId}')">
                             <i class="fas fa-bell"></i>
                             Remind Me Next Time
                         </button>
@@ -1592,23 +2119,28 @@
                 }
                 
                 responseDiv.classList.add('show');
+                loadRequests();
             } catch (error) {
                 console.error('Error responding to request:', error);
                 showToast('Error responding to request', 'error');
             }
         }
-        
+
         // Make call function
         function makeCall(phoneNumber) {
             window.open(`tel:${phoneNumber}`, '_self');
         }
-        
+
         // Set reminder for next time
         async function setReminder(requestId) {
-            // In a real implementation, this would set a reminder in the database
-            showToast('We will remind you when you are eligible to donate!', 'success');
+            // In a real implementation, this would set a reminder in 
+
+the database
+            showToast('We will remind you when you are eligible to 
+
+donate!', 'success');
         }
-        
+
         // Show matching donors
         async function showMatchingDonors(requestId) {
             try {
@@ -1618,67 +2150,106 @@
                     .select('*')
                     .eq('id', requestId)
                     .single();
+
                 if (error) throw error;
-                
+
                 // Find matching donors with exact location match
-                const { data: donors, error: donorError } = await supabase
+                const { data: donors, error: donorError } = await 
+
+supabase
                     .from('donors')
                     .select('*')
                     .eq('blood_group', request.blood_group)
                     .eq('division', request.division)
-                    .eq('state', request.district);
-                    
+                    .eq('state', request.district)
+
                 if (donorError) throw donorError;
-                
-                const donorsDiv = document.getElementById(`donors-${requestId}`);
+
+                const donorsDiv = document.getElementById(`donors-
+
+${requestId}`);
                 donorsDiv.innerHTML = `
                     <h4>Matching Donors (${donors.length})</h4>
                     ${donors.length === 0 ? 
-                        '<p>No matching donors found in your area.</p>' :
+                        '<p>No matching donors found in your 
+
+area.</p>' :
                         donors.map(donor => {
-                            const lastDonation = donor.last_donation ? new Date(donor.last_donation) : null;
+                            const lastDonation = donor.last_donation ? 
+
+new Date(donor.last_donation) : null;
                             const now = new Date();
-                            const daysSinceDonation = lastDonation ? Math.floor((now - lastDonation) / (1000 * 60 * 60 * 24)) : null;
-                            const isEligible = daysSinceDonation === null || daysSinceDonation >= 90;
+                            const daysSinceDonation = lastDonation ? 
+
+Math.floor((now - lastDonation) / (1000 * 60 * 60 * 24)) : null;
+                            const isEligible = daysSinceDonation === 
+
+null || daysSinceDonation >= 90;
                             
                             return `
                                 <div class="donor-item">
                                     <div class="donor-header">
                                         <div class="donor-info">
-                                            <i class="fas fa-user"></i>
+                                            <i class="fas fa-
+
+user"></i>
                                             <div>
-                                                <span class="donor-name">${donor.name}</span>
-                                                <span class="donor-blood-group">${donor.blood_group}</span>
+                                                <span class="donor-
+
+name">${donor.name}</span>
+                                                <span class="donor-
+
+blood-group">${donor.blood_group}</span>
                                             </div>
                                         </div>
                                     </div>
                                     
                                     <div class="donor-details">
                                         <div class="donor-detail">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                            <span>${donor.city}, ${donor.state}</span>
+                                            <i class="fas fa-map-
+
+marker-alt"></i>
+                                            <span>${donor.city}, 
+
+${donor.state}</span>
                                         </div>
                                         <div class="donor-detail">
-                                            <i class="fas fa-calendar"></i>
-                                            <span>Last donation: ${lastDonation ? lastDonation.toLocaleDateString() : 'Never'}</span>
+                                            <i class="fas fa-
+
+calendar"></i>
+                                            <span>Last donation: 
+
+${lastDonation ? lastDonation.toLocaleDateString() : 'Never'}</span>
                                         </div>
                                     </div>
                                     
-                                    <div class="donor-eligibility ${isEligible ? 'eligible' : 'not-eligible'}">
+                                    <div class="donor-eligibility 
+
+${isEligible ? 'eligible' : 'not-eligible'}">
                                         ${isEligible ? 
                                             'Eligible to donate' : 
-                                            `Not eligible (${90 - daysSinceDonation} days remaining)`
+                                            `Not eligible (${90 - 
+
+daysSinceDonation} days remaining)`
                                         }
                                     </div>
                                     
                                     <div class="donor-actions">
-                                        <button class="btn-view-profile" onclick="viewProfile('${donor.id}')">
-                                            <i class="fas fa-user"></i>
+                                        <button class="btn-view-
+
+profile" onclick="viewProfile('${donor.id}')">
+                                            <i class="fas fa-
+
+user"></i>
                                             View Profile
                                         </button>
                                         ${isEligible ? `
-                                            <button class="btn-call" onclick="makeCall('${donor.phone}')">
-                                                <i class="fas fa-phone"></i>
+                                            <button class="btn-call" 
+
+onclick="makeCall('${donor.phone}')">
+                                                <i class="fas fa-
+
+phone"></i>
                                                 Call Now
                                             </button>
                                         ` : ''}
@@ -1690,16 +2261,18 @@
                 `;
                 donorsDiv.classList.add('show');
             } catch (error) {
-                console.error('Error showing matching donors:', error);
+                console.error('Error showing matching donors:', 
+
+error);
                 showToast('Error showing matching donors', 'error');
             }
         }
-        
+
         // View donor profile
         function viewProfile(donorId) {
             window.open(`profile.html?id=${donorId}`, '_blank');
         }
-        
+
         // Fulfill request
         async function fulfillRequest(requestId) {
             try {
@@ -1708,26 +2281,14 @@
                     .update({ status: 'Fulfilled' })
                     .eq('id', requestId);
                 
-                // Update just the status badge instead of reloading everything
-                const statusBadge = document.querySelector(`[data-request-id="${requestId}"] .status-badge`);
-                if (statusBadge) {
-                    statusBadge.className = 'status-badge fulfilled';
-                    statusBadge.textContent = 'Fulfilled';
-                }
-                
-                // Hide requester actions
-                const requesterActions = document.getElementById(`requester-actions-${requestId}`);
-                if (requesterActions) {
-                    requesterActions.classList.remove('show');
-                }
-                
                 showToast('Request marked as fulfilled!', 'success');
+                loadRequests();
             } catch (error) {
                 console.error('Error fulfilling request:', error);
                 showToast('Error fulfilling request', 'error');
             }
         }
-        
+
         // Cancel request
         async function cancelRequest(requestId) {
             try {
@@ -1736,43 +2297,50 @@
                     .update({ status: 'Canceled' })
                     .eq('id', requestId);
                 
-                // Update just the status badge instead of reloading everything
-                const statusBadge = document.querySelector(`[data-request-id="${requestId}"] .status-badge`);
-                if (statusBadge) {
-                    statusBadge.className = 'status-badge canceled';
-                    statusBadge.textContent = 'Canceled';
-                }
-                
-                // Hide requester actions
-                const requesterActions = document.getElementById(`requester-actions-${requestId}`);
-                if (requesterActions) {
-                    requesterActions.classList.remove('show');
-                }
-                
                 showToast('Request has been canceled!', 'success');
+                loadRequests();
             } catch (error) {
                 console.error('Error canceling request:', error);
                 showToast('Error canceling request', 'error');
             }
         }
-        
+
         // Filter requests
         function filterRequests() {
-            const bloodGroup = document.getElementById('filterBloodGroup').value;
-            const division = document.getElementById('filterDivision').value;
-            const district = document.getElementById('filterDistrict').value;
+            const bloodGroup = document.getElementById
+
+('filterBloodGroup').value;
+            const division = document.getElementById
+
+('filterDivision').value;
+            const district = document.getElementById
+
+('filterDistrict').value;
             const city = document.getElementById('filterCity').value;
-            const urgency = document.getElementById('filterUrgency').value;
-            const status = document.getElementById('filterStatus').value;
-            const requests = document.querySelectorAll('.request-card');
+            const urgency = document.getElementById
+
+('filterUrgency').value;
+            const status = document.getElementById
+
+('filterStatus').value;
+
+            const requests = document.querySelectorAll('.request-
+
+card');
             requests.forEach(request => {
                 let show = true;
+
                 // Check blood group filter
-                if (bloodGroup && !request.querySelector('.request-meta-item span').textContent.includes(bloodGroup)) {
+                if (bloodGroup && !request.querySelector('.request-
+
+meta-item span').textContent.includes(bloodGroup)) {
                     show = false;
                 }
+
                 // Check location filters
-                const locationText = request.querySelector('.request-meta-item:last-child span').textContent;
+                const locationText = request.querySelector('.request-
+
+meta-item:last-child span').textContent;
                 if (division && !locationText.includes(division)) {
                     show = false;
                 }
@@ -1782,76 +2350,118 @@
                 if (city && !locationText.includes(city)) {
                     show = false;
                 }
+
                 // Check urgency filter
-                if (urgency && !request.querySelector('.urgency-badge').classList.contains(urgency.toLowerCase())) {
+                if (urgency && !request.querySelector('.urgency-
+
+badge').classList.contains(urgency.toLowerCase())) {
                     show = false;
                 }
+
                 // Check status filter
-                if (status && !request.querySelector('.status-badge').classList.contains(status.toLowerCase())) {
+                if (status && !request.querySelector('.status-
+
+badge').classList.contains(status.toLowerCase())) {
                     show = false;
                 }
+
                 request.style.display = show ? 'block' : 'none';
             });
         }
-        
+
         // Open share modal
         function openShareModal(requestId) {
             currentRequestId = requestId;
             const modal = document.getElementById('shareModal');
             modal.classList.add('show');
+
             // Generate QR code
-            const qrCodeImage = document.getElementById('qrCodeImage');
-            const requestUrl = `${window.location.origin}/request.html?id=${requestId}`;
+            const qrCodeImage = document.getElementById
+
+('qrCodeImage');
+            const requestUrl = `
+
+${window.location.origin}/request.html?id=${requestId}`;
             new QRCode(qrCodeImage, {
                 text: requestUrl,
                 width: 200,
                 height: 200
             });
         }
-        
+
         // Close share modal
         function closeShareModal() {
-            document.getElementById('shareModal').classList.remove('show');
+            document.getElementById('shareModal').classList.remove
+
+('show');
         }
-        
+
         // Share functions
         function shareOnWhatsApp() {
-            const text = `Urgent blood request! Please help if you can donate. View details: ${window.location.origin}/request.html?id=${currentRequestId}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            const text = `Urgent blood request! Please help if you can 
+
+donate. View details: ${window.location.origin}/request.html?id=
+
+${currentRequestId}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent
+
+(text)}`, '_blank');
         }
-        
+
         function shareOnMessenger() {
-            const text = `Urgent blood request! Please help if you can donate. View details: ${window.location.origin}/request.html?id=${currentRequestId}`;
-            window.open(`https://www.facebook.com/dialog/send?link=${encodeURIComponent(window.location.origin)}&quote=${encodeURIComponent(text)}`, '_blank');
+            const text = `Urgent blood request! Please help if you can 
+
+donate. View details: ${window.location.origin}/request.html?id=
+
+${currentRequestId}`;
+            window.open(`https://www.facebook.com/dialog/send?link=
+
+${encodeURIComponent(window.location.origin)}&quote=
+
+${encodeURIComponent(text)}`, '_blank');
         }
-        
+
         function shareOnFacebook() {
-            const text = `Urgent blood request! Please help if you can donate.`;
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin)}&quote=${encodeURIComponent(text)}`, '_blank');
+            const text = `Urgent blood request! Please help if you can 
+
+donate.`;
+            window.open(`https://www.facebook.com/sharer/sharer.php?
+
+u=${encodeURIComponent(window.location.origin)}&quote=
+
+${encodeURIComponent(text)}`, '_blank');
         }
-        
+
         function copyLink() {
-            const link = `${window.location.origin}/request.html?id=${currentRequestId}`;
+            const link = `${window.location.origin}/request.html?id=
+
+${currentRequestId}`;
             navigator.clipboard.writeText(link).then(() => {
                 showToast('Link copied to clipboard!', 'success');
             });
         }
-        
+
         // Notify donors (simulated)
         function notifyDonors(request) {
-            // In a real implementation, this would send SMS notifications
+            // In a real implementation, this would send SMS 
+
+notifications
             console.log('Notifying donors about request:', request);
             
             // Show notification for demo purposes
             if (request.urgency === 'Emergency') {
-                showToast('Emergency alert sent to nearby donors!', 'success');
+                showToast('Emergency alert sent to nearby donors!', 
+
+'success');
             }
         }
-        
+
         // Toast notification
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
+            const toastMessage = document.getElementById
+
+('toastMessage');
             const icon = toast.querySelector('i');
             
             if (type === 'success') {
@@ -1869,9 +2479,9 @@
                 toast.classList.remove('show');
             }, 3000);
         }
-        
-        // Update countdowns every 5 minutes instead of every minute
-        setInterval(updateCountdowns, 300000); // 5 minutes in milliseconds
+
+        // Update countdowns every minute
+        setInterval(updateCountdowns, 60000);
     </script>
 </body>
 </html>
