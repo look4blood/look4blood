@@ -7,39 +7,44 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         /* CSS Reset & Base Styles */
         :root {
-            --primary-red: #e74c3c;
-            --dark-red: #c0392b;
-            --light-grey: #f4f4f9;
-            --dark-grey: #333;
+            --primary-red: #e53935;
+            --dark-red: #c62828;
+            --light-red: #ffebee;
+            --accent-red: #ff5252;
+            --light-grey: #f5f5f5;
+            --medium-grey: #e0e0e0;
+            --dark-grey: #333333;
+            --text-secondary: #757575;
             --white: #ffffff;
-            --success-green: #2ecc71;
-            --border-color: #ddd;
+            --success-green: #2e7d32;
+            --border-color: #e0e0e0;
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: var(--light-grey);
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
             color: var(--dark-grey);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
-
+        
         /* Top Bar */
         .top-bar {
             background-color: var(--primary-red);
@@ -47,146 +52,263 @@
             padding: 1rem 2rem;
             font-size: 1.5rem;
             font-weight: 600;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
         }
-
+        
+        .top-bar::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
         .top-bar .logo-icon {
-            margin-right: 0.5rem;
+            margin-right: 0.8rem;
+            font-size: 1.8rem;
+            animation: pulse 2s infinite;
         }
-
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
         /* Main Content & Login Container */
         .container {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-grow: 1;
-            padding: 1rem;
+            padding: 2rem 1rem;
         }
-
+        
         .login-card {
             background-color: var(--white);
-            padding: 2.5rem 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 3rem 2.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             text-align: center;
-            animation: fadeIn 0.5s ease-in-out;
+            animation: fadeIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
         }
-
+        
+        .login-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-red), var(--accent-red));
+        }
+        
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { 
+                opacity: 0; 
+                transform: translateY(-20px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
         }
-
+        
         .login-card h1 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             margin-bottom: 0.5rem;
             color: var(--dark-grey);
+            font-weight: 600;
+        }
+        
+        .login-card .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
         }
         
         .login-card .heart-icon {
             color: var(--primary-red);
-            font-size: 2rem;
-            margin-bottom: 1rem;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            animation: heartbeat 1.5s infinite;
         }
-
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.15); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+        
         /* Form Styling */
         .login-form .input-group {
             position: relative;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.8rem;
         }
-
+        
         .login-form .input-group i {
             position: absolute;
-            left: 15px;
+            left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: #aaa;
-            transition: color 0.3s ease;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            font-size: 1.1rem;
         }
-
+        
         .login-form .input-field {
             width: 100%;
-            padding: 12px 12px 12px 45px; /* Padding for icon */
+            padding: 15px 15px 15px 50px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: var(--transition);
+            background-color: var(--light-grey);
         }
-
+        
         .login-form .input-field:focus {
             outline: none;
             border-color: var(--primary-red);
-            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+            background-color: var(--white);
+            box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.1);
         }
-
+        
         .login-form .input-field:focus + i {
             color: var(--primary-red);
         }
         
         .login-form .options {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
+            justify-content: flex-end;
+            margin-bottom: 2rem;
             font-size: 0.9rem;
         }
         
         .login-form a {
             color: var(--primary-red);
             text-decoration: none;
-            transition: color 0.3s ease;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
         }
-
+        
+        .login-form a::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--primary-red);
+            transition: var(--transition);
+        }
+        
         .login-form a:hover {
             color: var(--dark-red);
-            text-decoration: underline;
+        }
+        
+        .login-form a:hover::after {
+            width: 100%;
         }
         
         .btn-login {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             background-color: var(--primary-red);
             color: var(--white);
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
         }
-
+        
         .btn-login:hover {
             background-color: var(--dark-red);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(198, 40, 40, 0.3);
         }
-
+        
+        .btn-login:active {
+            transform: translateY(1px);
+        }
+        
         /* Links & Messages */
         .register-link {
             margin-top: 1.5rem;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
         }
-
+        
+        .register-link a {
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .register-link a:hover {
+            color: var(--dark-red);
+        }
+        
         .message {
-            padding: 10px;
-            margin-top: 1rem;
-            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
             font-size: 0.9rem;
-            display: none; /* Initially hidden */
-            animation: fadeIn 0.3s;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+            font-weight: 500;
         }
-
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .message.success {
-            background-color: var(--success-green);
-            color: var(--white);
+            background-color: rgba(46, 125, 50, 0.1);
+            color: var(--success-green);
+            border-left: 4px solid var(--success-green);
         }
-
+        
         .message.error {
-            background-color: var(--primary-red);
-            color: var(--white);
+            background-color: rgba(229, 57, 53, 0.1);
+            color: var(--primary-red);
+            border-left: 4px solid var(--primary-red);
         }
-
+        
         /* Loading Overlay */
         .loading-overlay {
             position: fixed;
@@ -194,56 +316,108 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            backdrop-filter: blur(4px);
-            display: none; /* Initially hidden */
+            backdrop-filter: blur(5px);
+            display: none;
+        }
+        
+        .loader-container {
+            text-align: center;
         }
         
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid var(--light-grey);
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(229, 57, 53, 0.2);
             border-top-color: var(--primary-red);
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        .loading-text {
+            color: var(--primary-red);
+            font-weight: 500;
         }
         
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
+        
         /* Responsive Design */
         @media (max-width: 480px) {
             .top-bar {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
                 padding: 1rem;
-                text-align: center;
             }
+            
             .login-card {
-                padding: 2rem 1.5rem;
+                padding: 2.5rem 1.8rem;
+            }
+            
+            .login-card h1 {
+                font-size: 1.7rem;
+            }
+            
+            .login-form .input-field {
+                padding: 12px 12px 12px 45px;
+            }
+            
+            .btn-login {
+                padding: 12px;
             }
         }
-
+        
+        /* Blood drop decoration */
+        .blood-drop {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary-red);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(45deg);
+            opacity: 0.1;
+        }
+        
+        .blood-drop:nth-child(1) {
+            top: 30px;
+            right: 40px;
+        }
+        
+        .blood-drop:nth-child(2) {
+            bottom: 50px;
+            left: 30px;
+            transform: rotate(45deg) scale(0.7);
+        }
+        
+        .blood-drop:nth-child(3) {
+            top: 50%;
+            right: 20px;
+            transform: rotate(45deg) scale(0.5);
+        }
     </style>
 </head>
 <body>
-
     <header class="top-bar">
         <span class="logo-icon">🩸</span>Look4Blood
     </header>
-
     <main class="container">
         <div class="login-card">
+            <div class="blood-drop"></div>
+            <div class="blood-drop"></div>
+            <div class="blood-drop"></div>
+            
             <i class="fas fa-heartbeat heart-icon"></i>
-            <h1>Find a Life-Saving Donor</h1>
+            <h1>Welcome Back</h1>
+            <p class="subtitle">Login to access your donor account</p>
             
             <form id="login-form" class="login-form">
                 <div id="message-box" class="message"></div>
-
+                
                 <div class="input-group">
                     <input type="email" id="email" class="input-field" placeholder="Email Address" required>
                     <i class="fas fa-envelope"></i>
@@ -262,32 +436,33 @@
                     <i class="fas fa-sign-in-alt"></i> Login
                 </button>
             </form>
-
+            
             <p class="register-link">
-                Don't have an account? <a href="register.html">Register Now</a>
+                Don't have an account? <a href="registerfrom.html">Register Now</a>
             </p>
         </div>
     </main>
-
+    
     <div id="loading-overlay" class="loading-overlay">
-        <div class="spinner"></div>
+        <div class="loader-container">
+            <div class="spinner"></div>
+            <div class="loading-text">Authenticating...</div>
+        </div>
     </div>
-
+    
     <script>
         // --- SUPABASE CLIENT SETUP ---
         // IMPORTANT: Replace these with your actual Supabase project URL and Anon Key
         const SUPABASE_URL = 'https://bbvyjeljeyofswuijlyg.supabase.co'; // e.g., 'https://xyz.supabase.co'
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
-
         // Check if placeholders are still there
         if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
             console.warn("Supabase credentials are not set. Please replace placeholders in the script.");
         }
-
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         console.log('Supabase Initialized');
-
+        
         // --- DOM ELEMENT REFERENCES ---
         const loginForm = document.getElementById('login-form');
         const emailInput = document.getElementById('email');
@@ -321,16 +496,15 @@
             messageBox.className = `message ${type}`;
             messageBox.style.display = 'block';
         }
-
+        
         /**
          * Hides the message box.
          */
         function hideMessage() {
             messageBox.style.display = 'none';
         }
-
+        
         // --- EVENT LISTENERS ---
-
         /**
          * Handles the login form submission.
          */
@@ -338,29 +512,24 @@
             event.preventDefault(); // Prevent default form submission
             hideMessage(); // Clear previous messages
             showLoader();
-
             const email = emailInput.value.trim();
             const password = passwordInput.value.trim();
-
             try {
                 const { data, error } = await _supabase.auth.signInWithPassword({
                     email: email,
                     password: password,
                 });
-
                 if (error) {
                     throw error; // Throw the error to be caught by the catch block
                 }
-
                 // On successful login
                 console.log('Login successful:', data);
                 showMessage('Login successful! Redirecting...', 'success');
                 
                 // Redirect to profile page after a short delay
                 setTimeout(() => {
-                    window.location.href = 'profile.html';
+                    window.location.href = 'index.html';
                 }, 1500);
-
             } catch (error) {
                 console.error('Login Error:', error.message);
                 showMessage(error.message || 'An unexpected error occurred.', 'error');
@@ -368,29 +537,25 @@
                 hideLoader(); // Always hide the loader
             }
         });
-
+        
         /**
          * Handles the "Forgot Password" link click.
          */
         forgotPasswordLink.addEventListener('click', async (event) => {
             event.preventDefault();
             hideMessage();
-
             const email = prompt("Please enter your email address to reset your password:");
-
             if (email) {
                 showLoader();
                 try {
                     const { error } = await _supabase.auth.resetPasswordForEmail(email, {
                         redirectTo: window.location.origin, // Optional: URL to redirect to after password reset
                     });
-
                     if (error) {
                         throw error;
                     }
                     
                     showMessage('Password reset link has been sent to your email.', 'success');
-
                 } catch (error) {
                     console.error('Password Reset Error:', error.message);
                     showMessage(error.message, 'error');
@@ -399,7 +564,6 @@
                 }
             }
         });
-
     </script>
 </body>
 </html>
