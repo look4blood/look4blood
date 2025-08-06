@@ -1031,16 +1031,35 @@
         }
 
         // Check authentication on page load
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Check if we're in preview mode first
-            if (!checkPreviewMode()) {
-                // Only proceed with database operations if not in preview mode
-                await checkAuth();
-                await loadAnnouncements();
+document.addEventListener('DOMContentLoaded', async () => {
+    // Check if we're in preview mode first
+    if (!checkPreviewMode()) {
+        // Run the admin check first
+        const isAdmin = await (async () => {
+            try {
+                const { data, error } = await supabase.rpc('is_admin');
+                if (error) {
+                    console.error('Error checking admin status:', error);
+                    return false;
+                }
+                return data; // true/false
+            } catch (err) {
+                console.error('Error in checkIfAdmin:', err);
+                return false;
             }
-            
-            setupEventListeners();
-        });
+        })();
+
+        if (isAdmin) {
+            document.getElementById('adminSection').classList.remove('hidden');
+            window.isAdmin = true; // optional global flag
+        }
+
+        // Proceed with auth check and load announcements
+        await checkAuth();
+        await loadAnnouncements();
+    }
+    setupEventListeners();
+});
 
         // Authentication check
         async function checkAuth() {
