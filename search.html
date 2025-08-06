@@ -659,30 +659,31 @@
         async function showSearchSuggestions(query) {
             try {
                 // Build a simple query for suggestions
-                const { data, error } = await supabase
-                    .from('donors')
-                    .select('name, blood_group, city, division')
-                    .or(`name.ilike.%${query}%,blood_group.ilike.%${query}%,city.ilike.%${query}%,division.ilike.%${query}%`)
-                    .limit(5);
+const { data, error } = await supabase
+    .from('donors')
+    .select('name, phone, blood_group, city, division')
+    .or(`name.ilike.%${query}%,phone.ilike.%${query}%,blood_group.ilike.%${query}%,city.ilike.%${query}%,division.ilike.%${query}%`)
+    .limit(5);
+
                 
-                if (error) throw error;
-                
-                const suggestionsContainer = document.getElementById('searchSuggestions');
-                
-                if (data && data.length > 0) {
-                    suggestionsContainer.innerHTML = data.map(donor => `
-                        <div class="suggestion-item" onclick="selectSuggestion('${donor.name}')">
-                            <div class="suggestion-title">${donor.name}</div>
-                            <div class="suggestion-desc">${donor.blood_group} • ${donor.city}, ${donor.division}</div>
-                        </div>
-                    `).join('');
-                    suggestionsContainer.classList.add('show');
-                } else {
-                    suggestionsContainer.classList.remove('show');
-                }
-            } catch (error) {
-                console.error('Error fetching suggestions:', error);
-            }
+                iif (error) throw error;
+
+const suggestionsContainer = document.getElementById('searchSuggestions');
+
+if (data && data.length > 0) {
+    suggestionsContainer.innerHTML = data.map(donor => `
+        <div class="suggestion-item" onclick="selectSuggestion('${donor.name}')">
+            <div class="suggestion-title">${donor.name}</div>
+            <div class="suggestion-desc">
+                ${donor.blood_group} • ${donor.city}, ${donor.division}<br>
+                📞 ${donor.phone || 'No phone'}
+            </div>
+        </div>
+    `).join('');
+    suggestionsContainer.classList.add('show');
+} else {
+    suggestionsContainer.classList.remove('show');
+}
         }
 
         // Select a suggestion
@@ -724,17 +725,18 @@
                 const normalizedQuery = query.trim().toLowerCase();
                 
                 // Build the search query
-                let searchQuery;
-                
-                if (isBloodGroupSearch(query)) {
-                    // For blood group searches, be more specific
-                    searchQuery = `blood_group.ilike.%${normalizedQuery}%`;
-                } else {
-                    // For other searches, use multiple OR conditions
-                    searchQuery = `name.ilike.%${normalizedQuery}%,city.ilike.%${normalizedQuery}%,division.ilike.%${normalizedQuery}%,blood_group.ilike.%${normalizedQuery}%`;
-                }
-                
-                console.log('Search query:', searchQuery);
+let searchQuery;
+
+if (isBloodGroupSearch(query)) {
+    // For blood group searches, be more specific
+    searchQuery = `blood_group.ilike.%${normalizedQuery}%`;
+} else {
+    // For other searches, include phone as well
+    searchQuery = `name.ilike.%${normalizedQuery}%,phone.ilike.%${normalizedQuery}%,city.ilike.%${normalizedQuery}%,division.ilike.%${normalizedQuery}%,blood_group.ilike.%${normalizedQuery}%`;
+}
+
+console.log('Search query:', searchQuery);
+
                 
                 // First try with available filter
                 let { data, error } = await supabase
