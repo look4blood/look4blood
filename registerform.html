@@ -4,118 +4,185 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Blood Donor Registration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    :root {
+      --primary-color: #e53935;
+      --primary-dark: #c62828;
+      --primary-light: #ffcdd2;
+      --secondary-color: #f5f5f5;
+      --text-color: #333333;
+      --error-color: #c62828;
+      --success-color: #2e7d32;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #fff4f4;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffebee, #ffcdd2);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       padding: 20px;
+      color: var(--text-color);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      position: relative;
+    }
+
+    .form-header {
+      background: var(--primary-color);
+      color: white;
+      padding: 25px 30px;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+      text-align: center;
+      position: relative;
+    }
+
+    .form-header h2 {
+      font-weight: 600;
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .form-header p {
+      font-size: 14px;
+      opacity: 0.9;
     }
 
     form {
       background: white;
       padding: 30px;
-      border-radius: 10px;
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
       width: 100%;
-      max-width: 500px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--box-shadow);
     }
 
-    h2 {
-      color: #c62828;
+    .form-group {
       margin-bottom: 20px;
-      text-align: center;
     }
 
     label {
       display: block;
-      margin: 10px 0 5px;
-      font-weight: bold;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--text-color);
     }
 
     input, select {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      transition: all 0.3s ease;
     }
 
-    button {
-      background: #c62828;
+    input:focus, select:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+    }
+
+    .location-group {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    @media (min-width: 768px) {
+      .location-group {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    button[type="submit"] {
+      background: var(--primary-color);
       color: white;
-      padding: 12px;
+      padding: 14px;
       border: none;
       width: 100%;
-      border-radius: 6px;
+      border-radius: var(--border-radius);
       font-size: 16px;
+      font-weight: 500;
       cursor: pointer;
-    }
-
-    button:hover {
-      background: #b71c1c;
-    }
-
-    .success {
-      text-align: center;
+      transition: all 0.3s ease;
       margin-top: 10px;
-      color: green;
     }
 
-    .error {
-      text-align: center;
-      margin-top: 10px;
-      color: #c62828;
+    button[type="submit"]:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    button[type="submit"]:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .checkbox-group {
-      margin-top: 15px;
+      margin-top: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
     }
 
     .checkbox-group input[type="checkbox"] {
-      margin-right: 8px;
+      width: auto;
+      margin-top: 3px;
     }
 
     .checkbox-group label {
       display: inline;
       font-weight: normal;
-    }
-
-    .lang-toggle {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .lang-toggle button {
-      background: #e0e0e0;
-      color: #333;
-      border: none;
-      padding: 8px 12px;
-      margin: 0 5px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .lang-toggle button.active {
-      background: #c62828;
-      color: white;
+      font-size: 13px;
+      line-height: 1.4;
     }
 
     .login-link {
       text-align: center;
-      margin-top: 15px;
+      margin-top: 20px;
+      font-size: 14px;
     }
 
     .login-link a {
-      color: #c62828;
+      color: var(--primary-color);
       text-decoration: none;
+      font-weight: 500;
     }
 
     .login-link a:hover {
       text-decoration: underline;
+    }
+
+    .success {
+      text-align: center;
+      margin-top: 15px;
+      color: var(--success-color);
+      font-weight: 500;
+    }
+
+    .error {
+      text-align: center;
+      margin-top: 15px;
+      color: var(--error-color);
+      font-weight: 500;
     }
 
     #loading-overlay {
@@ -124,132 +191,224 @@
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.7);
       z-index: 9999;
       justify-content: center;
       align-items: center;
       color: white;
       font-size: 20px;
       flex-direction: column;
-      font-family: sans-serif;
+      font-family: 'Poppins', sans-serif;
     }
 
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    .blood-drop {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      background: var(--primary-color);
+      border-radius: 50% 50% 50% 0;
+      transform: translateX(-50%) rotate(45deg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .blood-drop::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      top: 10px;
+      left: 10px;
+      transform: rotate(-45deg);
+    }
+
+    .blood-drop::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: white;
+      border-radius: 50%;
+      top: 15px;
+      left: 15px;
+      transform: rotate(-45deg);
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+      font-style: italic;
+      color: #666;
+      font-size: 13px;
+    }
+
+    .required::after {
+      content: " *";
+      color: var(--error-color);
+    }
+
+    .lang-toggle {
+      margin-top: 25px;
+      text-align: center;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .lang-toggle button {
+      background: #e0e0e0;
+      color: #333;
+      border: none;
+      padding: 8px 15px;
+      margin: 0 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .lang-toggle button:hover {
+      background: #d0d0d0;
+    }
+
+    .lang-toggle button.active {
+      background: var(--primary-color);
+      color: white;
+    }
   </style>
 </head>
 <body>
-
-<form id="donor-form" name="donor-form">
-  <div class="lang-toggle">
-    <button type="button" class="active" onclick="setLang('en')">English</button>
-    <button type="button" onclick="setLang('bn')">বাংলা</button>
+<div class="container">
+  <div class="form-header">
+    <div class="blood-drop"></div>
+    <h2 data-en="Donor Registration" data-bn="রক্তদাতার নিবন্ধন">Donor Registration</h2>
+    <p data-en="Join our life-saving community" data-bn="আমাদের জীবন রক্ষাকারী সম্প্রদায়ে যোগ দিন">Join our life-saving community</p>
   </div>
-
-  <h2 data-en="Donor Registration" data-bn="রক্তদাতার নিবন্ধন">Donor Registration</h2>
-
-  <label data-en="Full Name" data-bn="পূর্ণ নাম">Full Name</label>
-  <input type="text" name="name" required>
-
-  <label data-en="Age" data-bn="বয়স">Age</label>
-  <input type="number" name="age" required>
-
-  <label data-en="Gender" data-bn="লিঙ্গ">Gender</label>
-  <select name="gender" required>
-    <option value="">Select</option>
-    <option data-en="Male" data-bn="পুরুষ">Male</option>
-    <option data-en="Female" data-bn="মহিলা">Female</option>
-    <option data-en="Other" data-bn="অন্যান্য">Other</option>
-  </select>
-
-  <label data-en="Blood Group" data-bn="রক্তের গ্রুপ">Blood Group</label>
-  <select name="bloodGroup" required>
-    <option value="">Select</option>
-    <option>A+</option><option>A-</option>
-    <option>B+</option><option>B-</option>
-    <option>AB+</option><option>AB-</option>
-    <option>O+</option><option>O-</option>
-  </select>
-
-  <label data-en="Phone Number" data-bn="ফোন নম্বর">Phone Number</label>
-  <input type="tel" name="phone" required>
-
-  <label data-en="Email" data-bn="ইমেইল">Email</label>
-  <input type="email" name="email" required>
-
-  <label data-en="Password" data-bn="পাসওয়ার্ড">Password</label>
-  <input type="password" name="password" minlength="6" required>
-
-  <!-- বিভাজন ড্রপডাউন -->
-<label class="form-label">Division / বিভাগ</label>
-<select id="division" name="division" class="form-select" required>
-    <option value="">Select Division</option>
-</select>
-
-<!-- জেলা ড্রপডাউন -->
-<label class="form-label">District / জেলা</label>
-<select id="district" name="district" class="form-select" disabled required>
-    <option value="">Select District</option>
-</select>
-
-<!-- শহর ড্রপডাউন -->
-<label class="form-label">City / শহর</label>
-<select id="city" name="city" class="form-select" disabled required>
-  <option value="">Select City</option>
-</select>
-
-  <label data-en="ZIP Code" data-bn="জিপ কোড">ZIP Code</label>
-  <input type="text" name="zip">
-
-  <label data-en="Last Donation Date" data-bn="শেষ রক্তদান তারিখ">Last Donation Date</label>
-  <input type="date" name="lastDonation">
-
-  <label data-en="How many times donated before?" data-bn="পূর্বে কতবার রক্তদান করেছেন?">How many times donated before?</label>
-  <input type="number" name="donationCount" min="0">
-
-  <label data-en="Willing to Donate Now?" data-bn="এখন রক্ত দিতে ইচ্ছুক?">Willing to Donate Now?</label>
-  <select name="available" required>
-    <option value="">Select</option>
-    <option data-en="Yes" data-bn="হ্যাঁ">Yes</option>
-    <option data-en="No" data-bn="না">No</option>
-  </select>
-
-  <div class="checkbox-group">
-    <input type="checkbox" id="terms" name="terms" required>
-    <label for="terms" data-en="I agree to the Terms and Conditions: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible." data-bn="আমি শর্তাবলীতে সম্মত: অনুগ্রহ করে ভুল তথ্য প্রদান করবেন না। এটি একটি জীবন রক্ষার বিষয়। দয়া করে সৎ এবং দায়িত্বশীল হোন।">
-      I agree to the Terms and Conditions...
-    </label>
-  </div>
-
-  <p style="margin-top:10px; font-style:italic; color:#444;" data-en="Your blood can be someone's second chance at life. Be the reason someone smiles today." data-bn="আপনার রক্ত কারো জীবনের দ্বিতীয় সুযোগ হতে পারে। কারো মুখে হাসি ফোটাতে সাহায্য করুন।">
-    Your blood can be someone's second chance at life...
-  </p>
-
-  <button type="submit" data-en="Register" data-bn="নিবন্ধন করুন">Register</button>
-  
-  <div class="login-link">
-    <span data-en="Already have an account?" data-bn="ইতিমধ্যে একটি অ্যাকাউন্ট আছে?">Already have an account?</span>
-    <a href="userlogin.html" data-en="Login here" data-bn="এখানে লগইন করুন">Login here</a>
-  </div>
-
-  <div class="success" id="success-msg"></div>
-  <div class="error" id="error-msg"></div>
-</form>
-
+  <form id="donor-form" name="donor-form">
+    <div class="form-group">
+      <label data-en="Full Name" data-bn="পূর্ণ নাম" class="required">Full Name</label>
+      <input type="text" name="name" required>
+    </div>
+    <div class="form-group">
+      <label data-en="Age" data-bn="বয়স" class="required">Age</label>
+      <input type="number" name="age" required>
+    </div>
+    <div class="form-group">
+      <label data-en="Gender" data-bn="লিঙ্গ" class="required">Gender</label>
+      <select name="gender" required>
+        <option value="">Select</option>
+        <option data-en="Male" data-bn="পুরুষ">Male</option>
+        <option data-en="Female" data-bn="মহিলা">Female</option>
+        <option data-en="Other" data-bn="অন্যান্য">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label data-en="Blood Group" data-bn="রক্তের গ্রুপ" class="required">Blood Group</label>
+      <select name="bloodGroup" required>
+        <option value="">Select</option>
+        <option>A+</option><option>A-</option>
+        <option>B+</option><option>B-</option>
+        <option>AB+</option><option>AB-</option>
+        <option>O+</option><option>O-</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label data-en="Phone Number" data-bn="ফোন নম্বর" class="required">Phone Number</label>
+      <input type="tel" name="phone" required>
+    </div>
+    <div class="form-group">
+      <label data-en="Email" data-bn="ইমেইল" class="required">Email</label>
+      <input type="email" name="email" required>
+    </div>
+    <div class="form-group">
+      <label data-en="Password" data-bn="পাসওয়ার্ড" class="required">Password</label>
+      <input type="password" name="password" minlength="6" required>
+    </div>
+    <div class="location-group">
+      <div class="form-group">
+        <label data-en="Division" data-bn="বিভাগ" class="required">Division / বিভাগ</label>
+        <select id="division" name="division" required>
+          <option value="">Select Division</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label data-en="District" data-bn="জেলা" class="required">District / জেলা</label>
+        <select id="district" name="district" disabled required>
+          <option value="">Select District</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label data-en="City" data-bn="শহর" class="required">City / শহর</label>
+        <select id="city" name="city" disabled required>
+          <option value="">Select City</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label data-en="Last Donation Date" data-bn="শেষ রক্তদান তারিখ">Last Donation Date</label>
+      <input type="date" name="lastDonation">
+    </div>
+    <div class="form-group">
+      <label data-en="How many times donated before?" data-bn="পূর্বে কতবার রক্তদান করেছেন?">How many times donated before?</label>
+      <input type="number" name="donationCount" min="0">
+    </div>
+    <div class="form-group">
+      <label data-en="Are you willing to donate blood?" data-bn="আপনি কি রক্তদান করতে আগ্রহী?" class="required">Are you willing to donate blood?</label>
+      <select name="available" required>
+        <option value="">Select</option>
+        <option data-en="Yes" data-bn="হ্যাঁ">Yes</option>
+        <option data-en="No" data-bn="না">No</option>
+      </select>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="terms" name="terms" required>
+      <label for="terms" data-en="I agree to the Terms and Conditions: Please do not fill out false information. This is a matter of saving lives. Be honest and responsible." data-bn="আমি শর্তাবলীতে সম্মত: অনুগ্রহ করে ভুল তথ্য প্রদান করবেন না। এটি একটি জীবন রক্ষার বিষয়। দয়া করে সৎ এবং দায়িত্বশীল হোন।">
+        I agree to the Terms and Conditions...
+      </label>
+    </div>
+    <div class="form-footer">
+      <p data-en="Your blood can be someone's second chance at life. Be the reason someone smiles today." data-bn="আপনার রক্ত কারো জীবনের দ্বিতীয় সুযোগ হতে পারে। কারো মুখে হাসি ফোটাতে সাহায্য করুন।">
+        Your blood can be someone's second chance at life...
+      </p>
+    </div>
+    <button type="submit" data-en="Register" data-bn="নিবন্ধন করুন">Register</button>
+    
+    <div class="login-link">
+      <span data-en="Already have an account?" data-bn="ইতিমধ্যে একটি অ্যাকাউন্ট আছে?">Already have an account?</span>
+      <a href="userlogin.html" data-en="Login here" data-bn="এখানে লগইন করুন">Login here</a>
+    </div>
+    
+    <div class="lang-toggle">
+      <button type="button" class="active" onclick="setLang('en')">English</button>
+      <button type="button" onclick="setLang('bn')">বাংলা</button>
+    </div>
+    
+    <div class="success" id="success-msg"></div>
+    <div class="error" id="error-msg"></div>
+  </form>
+</div>
 <div id="loading-overlay">
   <div class="spinner" style="border:6px solid #f3f3f3;border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;"></div>
   <div style="margin-top:10px;">Processing...</div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   // Initialize Supabase
   const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
   const SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
-
   function setLang(lang) {
     document.querySelectorAll('[data-en]').forEach(el => {
       el.textContent = el.getAttribute(`data-${lang}`);
@@ -257,14 +416,12 @@
     document.querySelectorAll('.lang-toggle button').forEach(btn => btn.classList.remove('active'));
     document.querySelector(`.lang-toggle button[onclick*="${lang}"]`).classList.add('active');
   }
-
   const form = document.forms['donor-form'];
   const successMsg = document.getElementById('success-msg');
   const errorMsg = document.getElementById('error-msg');
   const submitBtn = form.querySelector('button[type="submit"]');
   const loadingOverlay = document.getElementById('loading-overlay');
   const scriptURL = 'https://script.google.com/macros/s/AKfycbzXTMAauYEzYhM-12zcf2pMJY4ZNh4kcbTDug1VX4mazMUYrR1k2QUHJyTtO0OawAnL/exec';
-
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -275,32 +432,25 @@
       errorMsg.textContent = "You must agree to the terms.";
       return;
     }
-
     submitBtn.disabled = true;
     submitBtn.textContent = "Processing...";
     loadingOverlay.style.display = "flex";
-
     const formData = new FormData(form);
 const body = {};
 formData.forEach((value, key) => body[key] = value);
-
 // Generate custom_id once and reuse it
 const customId = `L4B-${Math.random().toString(36).substring(2,6).toUpperCase()}${Date.now().toString().slice(-2)}`;
-
 body.custom_id = customId;
 body.userId = customId;
-
 try {
   // Step 1: Create Supabase Auth user with minimal signup
   const { data, error } = await supabase.auth.signUp({
     email: body.email,
     password: body.password
   });
-
   if (error) {
     throw new Error(`Authentication failed: ${error.message}`);
   }
-
   // Step 2: Prepare data for database (exclude password)
   const donorData = {
     user_id: data.user.id,              // Use Supabase user ID
@@ -314,7 +464,6 @@ try {
     division: body.division,
     state: body.district,
     city: body.city,
-    zip: body.zip,
     last_donation: body.lastDonation || null,
     times_donated: Number(body.donationCount) || 0,
     available: body.available === "Yes",
@@ -325,11 +474,9 @@ try {
       const { error: dbError } = await supabase
         .from('donors')
         .insert(donorData);
-
       if (dbError) {
         throw new Error(`Database error: ${dbError.message}`);
       }
-
       // Step 4: Send to Google Sheets (exclude password)
       const googleFormData = new FormData();
       Object.keys(body).forEach(key => {
@@ -337,24 +484,19 @@ try {
           googleFormData.append(key, body[key]);
         }
       });
-
       const googleResponse = await fetch(scriptURL, { 
         method: 'POST', 
         body: googleFormData 
       });
-
       if (!googleResponse.ok) {
         throw new Error('Google Sheets submission failed');
       }
-
       successMsg.textContent = "✅ Registration successful!";
       form.reset();
       setLang('en');
-
       setTimeout(() => {
         window.location.href = 'index.html';
       }, 2000);
-
     } catch (err) {
       errorMsg.textContent = `❌ Error: ${err.message}`;
       console.error('Registration error:', err);
@@ -374,16 +516,13 @@ async function loadDivisions() {
         console.error('Error loading divisions:', error);
         return;
     }
-
     const uniqueDivisions = [...new Set(locations.map(l => l.division))];
     const divisionSelect = document.getElementById("division");
     divisionSelect.innerHTML = '<option value="">Select Division</option>';
-
     uniqueDivisions.forEach(division => {
         divisionSelect.innerHTML += `<option value="${division}">${division}</option>`;
     });
 }
-
 // Load districts based on selected division
 async function loadDistricts(selectedDivision) {
     const { data: locations, error } = await supabase
@@ -395,22 +534,18 @@ async function loadDistricts(selectedDivision) {
         console.error('Error loading districts:', error);
         return;
     }
-
     const uniqueDistricts = [...new Set(locations.map(l => l.district))];
     const districtSelect = document.getElementById("district");
     districtSelect.innerHTML = '<option value="">Select District</option>';
     districtSelect.disabled = false;
-
     uniqueDistricts.forEach(district => {
         districtSelect.innerHTML += `<option value="${district}">${district}</option>`;
     });
-
     // Reset city dropdown
     const citySelect = document.getElementById("city");
-    citySelect.innerHTML = '<option value="All">All Cities</option>';
+    citySelect.innerHTML = '<option value="">Select City</option>';
     citySelect.disabled = true;
 }
-
 // Load cities based on selected district
 async function loadCities(selectedDistrict) {
     const division = document.getElementById("division").value;
@@ -424,17 +559,14 @@ async function loadCities(selectedDistrict) {
         console.error('Error loading cities:', error);
         return;
     }
-
     const uniqueCities = [...new Set(locations.map(l => l.city))];
     const citySelect = document.getElementById("city");
-    citySelect.innerHTML = '<option value="All">All Cities</option>';
+    citySelect.innerHTML = '<option value="">Select City</option>';
     citySelect.disabled = false;
-
     uniqueCities.forEach(city => {
         citySelect.innerHTML += `<option value="${city}">${city}</option>`;
     });
 }
-
 // Event listener for division change
 document.getElementById("division").addEventListener("change", (e) => {
     const selectedDivision = e.target.value;
@@ -444,11 +576,10 @@ document.getElementById("division").addEventListener("change", (e) => {
         // Reset district and city
         document.getElementById("district").innerHTML = '<option value="">Select District</option>';
         document.getElementById("district").disabled = true;
-        document.getElementById("city").innerHTML = '<option value="All">All Cities</option>';
+        document.getElementById("city").innerHTML = '<option value="">Select City</option>';
         document.getElementById("city").disabled = true;
     }
 });
-
 // Event listener for district change
 document.getElementById("district").addEventListener("change", (e) => {
     const selectedDistrict = e.target.value;
@@ -456,14 +587,12 @@ document.getElementById("district").addEventListener("change", (e) => {
         loadCities(selectedDistrict);
     } else {
         // Reset city
-        document.getElementById("city").innerHTML = '<option value="All">All Cities</option>';
+        document.getElementById("city").innerHTML = '<option value="">Select City</option>';
         document.getElementById("city").disabled = true;
     }
 });
-
 // Load initial divisions when page loads
 loadDivisions();
 </script>
-
 </body>
 </html>
