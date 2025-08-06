@@ -1037,25 +1037,17 @@ async function loadAverageRating() {
             document.getElementById('ratingCount').textContent = data.length + ' ratings';
             document.getElementById('totalStarCount').textContent = 'Total stars: ' + sum;
             
-            // Highlight stars for average rating
-            if (!currentUser || !userRating) {
-                const stars = document.querySelectorAll('.star');
-                const fullStars = Math.floor(average);
-                const hasHalfStar = average % 1 >= 0.5;
-                
-                console.log("Displaying average rating:", average, "Full stars:", fullStars, "Half star:", hasHalfStar);
-                
-                stars.forEach(function(star, index) {
-                    if (index < fullStars) {
-                        star.classList.add('active');
-                    } else if (index === fullStars && hasHalfStar) {
-                        // For half star, we'll just highlight it as full for simplicity
-                        star.classList.add('active');
-                    } else {
-                        star.classList.remove('active');
-                    }
-                });
-            }
+           // Only highlight stars if the current user has rated
+if (currentUser && userRating) {
+    highlightStars(userRating);
+} else {
+    // For visitors or users who haven't rated, don't highlight any stars
+    // Just show the average rating as a number without highlighting stars
+    const stars = document.querySelectorAll('.star');
+    stars.forEach(function(star) {
+        star.classList.remove('active');
+    });
+}
         } else {
             // No ratings yet
             console.log("No ratings found for this donor");
