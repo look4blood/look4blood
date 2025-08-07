@@ -1514,42 +1514,39 @@
 
         // Load requests
         async function loadRequests() {
-            const loading = document.getElementById('loadingRequests');
-            const requestsList = document.getElementById('requestsList');
-
-            loading.classList.add('show');
-            requestsList.innerHTML = '';
-
-            try {
-                const { data, error } = await supabase
-                    .from('blood_requests')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                displayRequests(data);
-            } catch (error) {
-                console.error('Error loading requests:', error);
-                showToast('Error loading requests', 'error');
-            } finally {
-                loading.classList.remove('show');
-            }
-        }
-
+    const loading = document.getElementById('loadingRequests');
+    const requestsList = document.getElementById('requestsList');
+    loading.classList.add('show');
+    requestsList.innerHTML = '';
+    try {
+        const { data, error } = await supabase
+            .from('blood_requests')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        console.log("Retrieved requests:", data); // Add this line
+        displayRequests(data);
+    } catch (error) {
+        console.error('Error loading requests:', error);
+        showToast('Error loading requests', 'error');
+    } finally {
+        loading.classList.remove('show');
+    }
+}
         // Display requests
         function displayRequests(requests) {
-            const requestsList = document.getElementById('requestsList');
-
-            if (requests.length === 0) {
-                requestsList.innerHTML = `
-                    <div style="text-align: center; padding: 3rem; color: var(--text-light);">
-                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                        <h3>No blood requests found</h3>
-                        <p>Be the first to request blood</p>
-                    </div>
-                `;
-                return;
+    const requestsList = document.getElementById('requestsList');
+    console.log("Displaying requests:", requests); // Add this line
+    
+    if (requests.length === 0) {
+        requestsList.innerHTML = `
+            <div style="text-align: center; padding: 3rem; color: var(--text-light);">
+                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <h3>No blood requests found</h3>
+                <p>Be the first to request blood</p>
+            </div>
+        `;
+        return;
             }
 
             requestsList.innerHTML = requests.map(request => {
@@ -1845,7 +1842,7 @@ function getTimeLeft(requiredDate) {
                     .select('*')
                     .eq('blood_group', request.blood_group)
                     .eq('division', request.division)
-                    .eq('state', request.district)
+                    .eq('state', request.state)
 
                 if (donorError) throw donorError;
 
