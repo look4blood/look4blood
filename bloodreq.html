@@ -1512,33 +1512,92 @@
             }
         }
 
-        // Load requests
-        async function loadRequests() {
+        // Enhanced loadRequests function with detailed debugging
+async function loadRequests() {
+    console.log("=== Starting loadRequests function ===");
+    
     const loading = document.getElementById('loadingRequests');
     const requestsList = document.getElementById('requestsList');
+    
+    // Show loading indicator
     loading.classList.add('show');
     requestsList.innerHTML = '';
+    
     try {
+        console.log("Attempting to fetch data from Supabase...");
+        
+        // Test basic connection first
+        const { data: testData, error: testError } = await supabase
+            .from('blood_requests')
+            .select('count', { count: 'exact', head: true });
+            
+        if (testError) {
+            console.error("Connection test failed:", testError);
+            throw testError;
+        }
+        
+        console.log("Connection successful. Total records:", testData);
+        
+        // Now fetch the actual data
         const { data, error } = await supabase
             .from('blood_requests')
             .select('*')
             .order('created_at', { ascending: false });
-        if (error) throw error;
-        console.log("Retrieved requests:", data); // Add this line
+            
+        if (error) {
+            console.error("Error fetching requests:", error);
+            throw error;
+        }
+        
+        console.log("Data retrieved successfully:", data);
+        console.log("Number of requests:", data ? data.length : 0);
+        
+        // Check if we have data
+        if (!data || data.length === 0) {
+            console.log("No requests found in database");
+            requestsList.innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: var(--text-light);">
+                    <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <h3>No blood requests found</h3>
+                    <p>Be the first to request blood</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // If we have data, display it
+        console.log("Calling displayRequests with data:", data);
         displayRequests(data);
+        
     } catch (error) {
-        console.error('Error loading requests:', error);
-        showToast('Error loading requests', 'error');
+        console.error("Error in loadRequests:", error);
+        
+        // Show detailed error message
+        requestsList.innerHTML = `
+            <div style="text-align: center; padding: 3rem; color: var(--danger-color);">
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <h3>Error Loading Requests</h3>
+                <p>${error.message || 'Unknown error occurred'}</p>
+                <p>Please check the console for more details.</p>
+            </div>
+        `;
+        
+        showToast('Error loading requests: ' + (error.message || 'Unknown error'), 'error');
     } finally {
         loading.classList.remove('show');
+        console.log("=== loadRequests function completed ===");
     }
 }
-        // Display requests
-        function displayRequests(requests) {
-    const requestsList = document.getElementById('requestsList');
-    console.log("Displaying requests:", requests); // Add this line
+        
+       // Enhanced displayRequests function with detailed debugging
+function displayRequests(requests) {
+    console.log("=== Starting displayRequests function ===");
+    console.log("Requests to display:", requests);
     
-    if (requests.length === 0) {
+    const requestsList = document.getElementById('requestsList');
+    
+    if (!requests || requests.length === 0) {
+        console.log("No requests to display");
         requestsList.innerHTML = `
             <div style="text-align: center; padding: 3rem; color: var(--text-light);">
                 <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
@@ -1547,96 +1606,126 @@
             </div>
         `;
         return;
-            }
-
-            requestsList.innerHTML = requests.map(request => {
-                const isEmergency = isRequestEmergency(request);
-                const timeLeft = getTimeLeft(request.required_date);
-                const isOwner = currentUser && request.requester_id === currentUser.id;
-                
-                return `
-                    <div class="request-card ${request.urgency.toLowerCase()} ${isEmergency ? 'emergency' : ''}" data-request-id="${request.id}">
-                        <div class="request-header">
-                            <div class="request-info">
-                                <h3>${request.anonymous ? 'Anonymous Patient' : request.patient_name}</h3>
-                                <div class="request-meta">
-                                    <div class="request-meta-item">
-                                        <i class="fas fa-tint"></i>
-                                        <span>${request.blood_group}</span>
-                                    </div>
-                                    <div class="request-meta-item">
-                                        <i class="fas fa-hospital"></i>
-                                        <span>${request.hospital_name}</span>
-                                    </div>
-                                    <div class="request-meta-item">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span>${request.city}, ${request.district}</span>
-                                    </div>
+    }
+    
+    console.log(Displaying ${requests.length} requests);
+    
+    try {
+        requestsList.innerHTML = requests.map(request => {
+            console.log("Processing request:", request);
+            
+            const isEmergency = isRequestEmergency(request);
+            const timeLeft = getTimeLeft(request.required_date);
+            const isOwner = currentUser && request.requester_id === currentUser.id;
+            
+            console.log(Request ${request.id}: Emergency=${isEmergency}, TimeLeft=${timeLeft}, IsOwner=${isOwner});
+            
+            return `
+                <div class="request-card ${request.urgency.toLowerCase()} ${isEmergency ? 'emergency' : ''}" data-request-id="${request.id}">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <h3>${request.anonymous ? 'Anonymous Patient' : request.patient_name}</h3>
+                            <div class="request-meta">
+                                <div class="request-meta-item">
+                                    <i class="fas fa-tint"></i>
+                                    <span>${request.blood_group}</span>
+                                </div>
+                                <div class="request-meta-item">
+                                    <i class="fas fa-hospital"></i>
+                                    <span>${request.hospital_name}</span>
+                                </div>
+                                <div class="request-meta-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${request.city}, ${request.district}</span>
                                 </div>
                             </div>
-                            <div>
-                                <span class="urgency-badge ${request.urgency.toLowerCase()}">${request.urgency}</span>
-                                <span class="status-badge ${request.status.toLowerCase()}">${request.status}</span>
-                            </div>
                         </div>
-                        
-                        <div class="request-details">
-                            <p><strong>Units Needed:</strong> ${request.units_needed}</p>
-                            <p><strong>Contact:</strong> ${request.contact_number}</p>
-                            ${request.additional_notes ? `<p><strong>Notes:</strong> ${request.additional_notes}</p>` : ''}
-                            ${timeLeft ? `<p class="countdown"><i class="fas fa-clock"></i> ${timeLeft}</p>` : ''}
+                        <div>
+                            <span class="urgency-badge ${request.urgency.toLowerCase()}">${request.urgency}</span>
+                            <span class="status-badge ${request.status.toLowerCase()}">${request.status}</span>
                         </div>
-                        
-                        <div class="request-actions">
-                            <div class="action-buttons">
-                                ${request.status === 'Pending' && currentDonorProfile ? `
-                                    <button class="btn btn-primary" onclick="respondToRequest('${request.id}')">
-                                        <i class="fas fa-hand-holding-heart"></i>
-                                        I Want to Donate
-                                    </button>
-                                ` : ''}
-                                
-                                <button class="btn btn-secondary" onclick="showMatchingDonors('${request.id}')">
-                                    <i class="fas fa-users"></i>
-                                    See Matching Donors
-                                </button>
-                            </div>
-                            <div class="share-buttons">
-                                <button class="share-btn" onclick="openShareModal('${request.id}')" title="Share">
-                                    <i class="fas fa-share-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="donor-response" id="response-${request.id}">
-                            <!-- Donor response will be shown here -->
-                        </div>
-                        
-                        <div class="matching-donors" id="donors-${request.id}">
-                            <!-- Matching donors will be shown here -->
-                        </div>
-                        
-                        ${isOwner ? `
-                            <div class="requester-actions" id="requester-actions-${request.id}">
-                                ${request.status === 'Pending' || request.status === 'Accepted' ? `
-                                    <button class="btn btn-success" onclick="fulfillRequest('${request.id}')">
-                                        <i class="fas fa-check"></i>
-                                        Mark as Fulfilled
-                                    </button>
-                                ` : ''}
-                                
-                                ${request.status !== 'Fulfilled' && request.status !== 'Canceled' && request.status !== 'Expired' ? `
-                                    <button class="btn btn-warning" onclick="cancelRequest('${request.id}')">
-                                        <i class="fas fa-times"></i>
-                                        Cancel Request
-                                    </button>
-                                ` : ''}
-                            </div>
-                        ` : ''}
                     </div>
-                `;
-            }).join('');
-
+                    
+                    <div class="request-details">
+                        <p><strong>Units Needed:</strong> ${request.units_needed}</p>
+                        <p><strong>Contact:</strong> ${request.contact_number}</p>
+                        ${request.additional_notes ? <p><strong>Notes:</strong> ${request.additional_notes}</p> : ''}
+                        ${timeLeft ? <p class="countdown"><i class="fas fa-clock"></i> ${timeLeft}</p> : ''}
+                    </div>
+                    
+                    <div class="request-actions">
+                        <div class="action-buttons">
+                            ${request.status === 'Pending' && currentDonorProfile ? `
+                                <button class="btn btn-primary" onclick="respondToRequest('${request.id}')">
+                                    <i class="fas fa-hand-holding-heart"></i>
+                                    I Want to Donate
+                                </button>
+                            ` : ''}
+                            
+                            <button class="btn btn-secondary" onclick="showMatchingDonors('${request.id}')">
+                                <i class="fas fa-users"></i>
+                                See Matching Donors
+                            </button>
+                        </div>
+                        <div class="share-buttons">
+                            <button class="share-btn" onclick="openShareModal('${request.id}')" title="Share">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="donor-response" id="response-${request.id}">
+                        <!-- Donor response will be shown here -->
+                    </div>
+                    
+                    <div class="matching-donors" id="donors-${request.id}">
+                        <!-- Matching donors will be shown here -->
+                    </div>
+                    
+                    ${isOwner ? `
+                        <div class="requester-actions" id="requester-actions-${request.id}">
+                            ${request.status === 'Pending' || request.status === 'Accepted' ? `
+                                <button class="btn btn-success" onclick="fulfillRequest('${request.id}')">
+                                    <i class="fas fa-check"></i>
+                                    Mark as Fulfilled
+                                </button>
+                            ` : ''}
+                            
+                            ${request.status !== 'Fulfilled' && request.status !== 'Canceled' && request.status !== 'Expired' ? `
+                                <button class="btn btn-warning" onclick="cancelRequest('${request.id}')">
+                                    <i class="fas fa-times"></i>
+                                    Cancel Request
+                                </button>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }).join('');
+        
+        console.log("Requests HTML generated successfully");
+        
+        // Update countdown timers
+        updateCountdowns();
+        
+        // Restore "I Want to Donate" button visibility
+        restoreDonateButtons();
+        
+        console.log("=== displayRequests function completed successfully ===");
+        
+    } catch (error) {
+        console.error("Error in displayRequests:", error);
+        requestsList.innerHTML = `
+            <div style="text-align: center; padding: 3rem; color: var(--danger-color);">
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <h3>Error Displaying Requests</h3>
+                <p>${error.message || 'Unknown error occurred'}</p>
+                <p>Please check the console for more details.</p>
+            </div>
+        `;
+    }
+}
+        
             // Update countdown timers
             updateCountdowns();
             
