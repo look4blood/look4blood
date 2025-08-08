@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Look4Blood - সচেতনতা ও রক্তদান ব্লগ</title>
+    <meta name="description" content="Look4Blood - সচেতনতা ও রক্তদান ব্লগ">
+    <meta name="keywords" content="রক্তদান, blood donation, স্বাস্থ্যসেবা, health awareness">
+    <meta name="author" content="Look4Blood">
+    
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
+    
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        
+        /* Bangla Font */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&display=swap');
+        
+        body.english {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Header Styles */
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e63946;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo::before {
+            content: "🩸";
+            margin-right: 8px;
+            font-size: 32px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin-left: 30px;
+            position: relative;
+        }
+        
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #e63946;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-menu a:hover {
+            color: #e63946;
+        }
+        
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+        
+        /* Language Toggle */
+        .lang-toggle {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        
+        .lang-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn.active {
+            background-color: #e63946;
+            color: white;
+        }
+        
+        .lang-divider {
+            margin: 0 5px;
+            color: #999;
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #e63946;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(230, 57, 70, 0.85), rgba(166, 30, 41, 0.85)), url('https://images.unsplash.com/photo-1588484568585-89c35d7c6c4a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            padding: 120px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></svg>');
+            background-size: 50px 50px;
+            opacity: 0.3;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease;
+        }
+        
+        .hero p {
+            font-size: 1.6rem;
+            opacity: 0.95;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease 0.3s;
+            animation-fill-mode: both;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: white;
+            color: #e63946;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 1s ease 0.6s;
+            animation-fill-mode: both;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Blog Section */
+        .blog-section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+            font-size: 2.8rem;
+            color: #333;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background-color: #e63946;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 50px;
+        }
+        
+        .filter-btn {
+            padding: 12px 25px;
+            background-color: #f1f1f1;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: #e63946;
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+        
+        .filter-btn.active, .filter-btn:hover {
+            color: white;
+        }
+        
+        .filter-btn.active::before, .filter-btn:hover::before {
+            width: 100%;
+        }
+        
+        /* Search Bar */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 50px;
+            position: relative;
+        }
+        
+        .search-bar {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border-radius: 30px;
+            border: 2px solid #e0e0e0;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-bar:focus {
+            outline: none;
+            border-color: #e63946;
+            box-shadow: 0 6px 12px rgba(230, 57, 70, 0.15);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        /* Blog Grid */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 40px;
+        }
+        
+        .blog-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .blog-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .blog-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .blog-content {
+            padding: 25px;
+        }
+        
+        .blog-category {
+            display: inline-block;
+            padding: 6px 15px;
+            background-color: #f8f8f8;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            color: #e63946;
+            font-weight: 500;
+        }
+        
+        .blog-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        
+        .blog-excerpt {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .read-more-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #e63946;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .read-more-btn::after {
+            content: '→';
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .read-more-btn:hover {
+            background-color: #d62828;
+        }
+        
+        .read-more-btn:hover::after {
+            transform: translateX(3px);
+        }
+        
+        /* Educational Card Styles */
+        .educational-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-left: 5px solid #e63946;
+        }
+        
+        .educational-card .blog-category {
+            background-color: rgba(230, 57, 70, 0.1);
+        }
+        
+        /* Blood Type Compatibility Chart */
+        .compatibility-chart {
+            margin: 40px 0;
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+        
+        .compatibility-chart h3 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 1.8rem;
+        }
+        
+        .chart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            font-size: 0.95rem;
+        }
+        
+        .chart-table th, .chart-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .chart-table th {
+            background-color: #e63946;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .chart-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .chart-table .blood-type {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .chart-table .compatible {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .chart-table .not-compatible {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .chart-table .universal-donor {
+            background-color: #cce5ff;
+            color: #004085;
+            font-weight: 600;
+        }
+        
+        .chart-table .universal-recipient {
+            background-color: #fff3cd;
+            color: #856404;
+            font-weight: 600;
+        }
+        
+        /* Image Carousel */
+        .carousel-container {
+            position: relative;
+            max-width: 1000px;
+            margin: 60px auto;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            height: 500px;
+            position: relative;
+        }
+        
+        .carousel-slide.active {
+            display: block;
+        }
+        
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .carousel-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            color: white;
+            padding: 30px 20px 20px;
+            text-align: center;
+        }
+        
+        .carousel-caption h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .carousel-caption p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .carousel-prev, .carousel-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #333;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .carousel-prev:hover, .carousel-next:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .carousel-prev {
+            left: 20px;
+        }
+        
+        .carousel-next {
+            right: 20px;
+        }
+        
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .carousel-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-indicator.active {
+            background-color: white;
+            transform: scale(1.2);
+        }
+        
+        /* Running Message */
+        .running-message {
+            background-color: #e63946;
+            color: white;
+            padding: 15px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+        
+        .running-message-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: running-text 30s linear infinite;
+            font-weight: 500;
+        }
+        
+        @keyframes running-text {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(-100%, 0);
+            }
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            z-index: 2000;
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background-color: white;
+            max-width: 850px;
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.4s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 32px;
+            cursor: pointer;
+            color: #999;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+            transform: rotate(90deg);
+        }
+        
+        .modal-title {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .modal-category {
+            display: inline-block;
+            padding: 6px 15px;
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            color: #e63946;
+            font-weight: 500;
+        }
+        
+        .modal-body {
+            line-height: 1.8;
+            color: #444;
+        }
+        
+        .modal-body p {
+            margin-bottom: 20px;
+        }
+        
+        .modal-body h3 {
+            margin: 25px 0 15px;
+            color: #333;
+        }
+        
+        .modal-body ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-body li {
+            margin-bottom: 8px;
+        }
+        
+        /* Loading Spinner */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #e63946;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #2d3436;
+            color: white;
+            padding: 60px 20px 25px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 25px;
+            font-size: 1.6rem;
+            color: #e63946;
+            position: relative;
+        }
+        
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 3px;
+            background-color: #e63946;
+            bottom: -10px;
+            left: 0;
+        }
+        
+        .footer-section p, .footer-section a {
+            color: #ddd;
+            text-decoration: none;
+            margin-bottom: 12px;
+            display: block;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-section a:hover {
+            color: #e63946;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background-color: #444;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 45px;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .social-links a:hover {
+            background-color: #e63946;
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 25px;
+            border-top: 1px solid #444;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background-color: white;
+                width: 100%;
+                text-align: center;
+                transition: 0.4s ease;
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+                padding: 20px 0;
+                z-index: 999;
+            }
+            
+            .nav-menu.active {
+                left: 0;
+            }
+            
+            .nav-menu li {
+                margin: 12px 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .lang-toggle {
+                margin-left: 0;
+                margin-top: 15px;
+                justify-content: center;
+            }
+            
+            .hero {
+                padding: 80px 15px;
+                background-attachment: scroll;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.3rem;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+            
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .carousel-slide {
+                height: 300px;
+            }
+            
+            .carousel-caption h3 {
+                font-size: 1.4rem;
+            }
+            
+            .carousel-caption p {
+                font-size: 1rem;
+            }
+            
+            .modal-content {
+                margin: 20px;
+                padding: 25px;
+            }
+            
+            .modal-title {
+                font-size: 1.8rem;
+            }
+            
+            .chart-table {
+                font-size: 0.8rem;
+            }
+            
+            .chart-table th, .chart-table td {
+                padding: 8px 5px;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .blog-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="#" class="logo">Look4Blood</a>
+            <ul class="nav-menu">
+                <li><a href="#" data-bn="হোম" data-en="Home">হোম</a></li>
+                <li><a href="#" data-bn="দাতা খুঁজুন" data-en="Find Donors">দাতা খুঁজুন</a></li>
+                <li><a href="#" data-bn="রক্তের অনুরোধ" data-en="Blood Request">রক্তের অনুরোধ</a></li>
+                <li><a href="#" data-bn="ব্লগ" data-en="Blog">ব্লগ</a></li>
+                <li><a href="#" data-bn="যোগাযোগ" data-en="Contact">যোগাযোগ</a></li>
+                <li class="lang-toggle">
+                    <button class="lang-btn" id="enBtn">EN</button>
+                    <span class="lang-divider">|</span>
+                    <button class="lang-btn active" id="bnBtn">BN</button>
+                </li>
+            </ul>
+            <button class="mobile-menu-btn" aria-label="Toggle navigation menu">☰</button>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 data-bn="সচেতনতা ও রক্তদান ব্লগ" data-en="Awareness & Blood Donation Blog">সচেতনতা ও রক্তদান ব্লগ</h1>
+            <p data-bn="শিখুন। অনুপ্রাণিত করুন। রক্ত দিন।" data-en="Learn. Inspire. Donate.">শিখুন। অনুপ্রাণিত করুন। রক্ত দিন।</p>
+            <a href="#blog-section" class="cta-button" data-bn="আর্টিকেল পড়ুন" data-en="Read Articles">আর্টিকেল পড়ুন</a>
+        </div>
+    </section>
+    
+    <!-- Running Message -->
+    <div class="running-message">
+        <div class="running-message-content" data-bn="আপনি জানেন কি? একটি রক্তদান তিনটি জীবন বাঁচাতে পারে। * " data-en="Did you know? One blood donation could save up to three lives. * ">
+            আপনি জানেন কি? একটি রক্তদান তিনটি জীবন বাঁচাতে পারে। * 
+        </div>
+    </div>
+    
+    <!-- Image Carousel -->
+    <div class="carousel-container">
+        <div class="carousel-slide active">
+            <img src="https://images.unsplash.com/photo-1615461065157-867b1897ce60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Donation">
+            <div class="carousel-caption">
+                <h3 data-bn="রক্তদান জীবন বাঁচায়" data-en="Blood Donation Saves Lives">রক্তদান জীবন বাঁচায়</h3>
+                <p data-bn="প্রতিটি দান একটি জীবন পরিবর্তনকারী অভিজ্ঞতা হতে পারে" data-en="Every donation can be a life-changing experience">প্রতিটি দান একটি জীবন পরিবর্তনকারী অভিজ্ঞতা হতে পারে</p>
+            </div>
+        </div>
+        
+        <div class="carousel-slide">
+            <img src="https://images.unsplash.com/photo-1584362917165-526a968579e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Types">
+            <div class="carousel-caption">
+                <h3 data-bn="রক্তের গ্রুপ বোঝা" data-en="Understanding Blood Types">রক্তের গ্রুপ বোঝা</h3>
+                <p data-bn="জানুন কোন রক্তের গ্রুপ কাকে দান করতে পারে" data-en="Learn which blood types can donate to whom">জানুন কোন রক্তের গ্রুপ কাকে দান করতে পারে</p>
+            </div>
+        </div>
+        
+        <div class="carousel-slide">
+            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Donation Process">
+            <div class="carousel-caption">
+                <h3 data-bn="দান প্রক্রিয়া" data-en="Donation Process">দান প্রক্রিয়া</h3>
+                <p data-bn="রক্তদান একটি সহজ, নিরাপদ এবং ব্যথাহীন প্রক্রিয়া" data-en="Blood donation is a simple, safe, and painless procedure">রক্তদান একটি সহজ, নিরাপদ এবং ব্যথাহীন প্রক্রিয়া</p>
+            </div>
+        </div>
+        
+        <div class="carousel-slide">
+            <img src="https://images.unsplash.com/photo-1616247996575-1f0b14d7b9cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Bank">
+            <div class="carousel-caption">
+                <h3 data-bn="রক্ত ব্যাঙ্ক" data-en="Blood Bank">রক্ত ব্যাঙ্ক</h3>
+                <p data-bn="রক্ত ব্যাঙ্কগুলি জরুরি পরিস্থিতিতে জীবন বাঁচাতে সাহায্য করে" data-en="Blood banks help save lives in emergency situations">রক্ত ব্যাঙ্কগুলি জরুরি পরিস্থিতিতে জীবন বাঁচাতে সাহায্য করে</p>
+            </div>
+        </div>
+        
+        <div class="carousel-slide">
+            <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Donors">
+            <div class="carousel-caption">
+                <h3 data-bn="দাতা হওয়া" data-en="Being a Donor">দাতা হওয়া</h3>
+                <p data-bn="একজন দাতা হওয়া একটি সম্মাননার বিষয়" data-en="Being a donor is a matter of pride">একজন দাতা হওয়া একটি সম্মাননার বিষয়</p>
+            </div>
+        </div>
+        
+        <button class="carousel-prev" aria-label="Previous slide">❮</button>
+        <button class="carousel-next" aria-label="Next slide">❯</button>
+        
+        <div class="carousel-indicators">
+            <span class="carousel-indicator active" data-slide="0"></span>
+            <span class="carousel-indicator" data-slide="1"></span>
+            <span class="carousel-indicator" data-slide="2"></span>
+            <span class="carousel-indicator" data-slide="3"></span>
+            <span class="carousel-indicator" data-slide="4"></span>
+        </div>
+    </div>
+    
+    <!-- Blog Section -->
+    <section class="blog-section" id="blog-section">
+        <h2 class="section-title" data-bn="সর্বশেষ নিবন্ধ" data-en="Latest Articles">সর্বশেষ নিবন্ধ</h2>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" class="search-bar" data-bn-placeholder="নিবন্ধ অনুসন্ধান করুন..." data-en-placeholder="Search articles..." placeholder="নিবন্ধ অনুসন্ধান করুন..." id="searchBar">
+            <span class="search-icon">🔍</span>
+        </div>
+        
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-btn active" data-filter="all" data-bn="সব" data-en="All">সব</button>
+            <button class="filter-btn" data-filter="myths" data-bn="ভুল ধারণা" data-en="Myths">ভুল ধারণা</button>
+            <button class="filter-btn" data-filter="tips" data-bn="পরামর্শ" data-en="Tips">পরামর্শ</button>
+            <button class="filter-btn" data-filter="stories" data-bn="গল্প" data-en="Stories">গল্প</button>
+            <button class="filter-btn" data-filter="facts" data-bn="তথ্য" data-en="Facts">তথ্য</button>
+            <button class="filter-btn" data-filter="educational" data-bn="শিক্ষামূলক" data-en="Educational">শিক্ষামূলক</button>
+        </div>
+        
+        <!-- Loading Spinner -->
+        <div class="loading" id="loadingSpinner">
+            <div class="spinner"></div>
+        </div>
+        
+        <!-- Blog Grid -->
+        <div class="blog-grid" id="blogGrid" style="display: none;">
+            <!-- Blog cards will be dynamically loaded here -->
+        </div>
+        
+        <!-- Blood Type Compatibility Chart -->
+        <div class="compatibility-chart">
+            <h3 data-bn="রক্তের গ্রুপের সামঞ্জস্যতা চার্ট" data-en="Blood Type Compatibility Chart">রক্তের গ্রুপের সামঞ্জস্যতা চার্ট</h3>
+            <div class="chart-table-container">
+                <table class="chart-table">
+                    <thead>
+                        <tr>
+                            <th data-bn="দাতার রক্তের গ্রুপ" data-en="Donor Blood Type">দাতার রক্তের গ্রুপ</th>
+                            <th data-bn="O-" data-en="O-">O-</th>
+                            <th data-bn="O+" data-en="O+">O+</th>
+                            <th data-bn="A-" data-en="A-">A-</th>
+                            <th data-bn="A+" data-en="A+">A+</th>
+                            <th data-bn="B-" data-en="B-">B-</th>
+                            <th data-bn="B+" data-en="B+">B+</th>
+                            <th data-bn="AB-" data-en="AB-">AB-</th>
+                            <th data-bn="AB+" data-en="AB+">AB+</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="blood-type universal-donor" data-bn="O- (সার্বজনীন দাতা)" data-en="O- (Universal Donor)">O- (সার্বজনীন দাতা)</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                        </tr>
+                        <tr>
+                            <td class="blood-type" data-bn="O+" data-en="O+">O+</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                        </tr>
+                        <tr>
+                            <td class="blood-type" data-bn="A-" data-en="A-">A-</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                        </tr>
+                        <tr>
+                            <td class="blood-type" data-bn="A+" data-en="A+">A+</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                        </tr>
+                        <tr>
+                            <td class="blood-type" data-bn="B-" data-en="B-">B-</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                        </tr>
+                        <tr>
+                            <td class="blood-type" data-bn="B+" data-en="B+">B+</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                        </tr>
+                        <tr>
+                            <td class="blood-type" data-bn="AB-" data-en="AB-">AB-</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                            <td class="compatible">✓</td>
+                        </tr>
+                        <tr>
+                            <td class="blood-type universal-recipient" data-bn="AB+ (সার্বজনীন প্রাপক)" data-en="AB+ (Universal Recipient)">AB+ (সার্বজনীন প্রাপক)</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="not-compatible">✗</td>
+                            <td class="compatible">✓</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="margin-top: 20px; text-align: center; color: #666;" data-bn="✓ = সামঞ্জস্যপূর্ণ, ✗ = অসামঞ্জস্যপূর্ণ" data-en="✓ = Compatible, ✗ = Not Compatible">✓ = সামঞ্জস্যপূর্ণ, ✗ = অসামঞ্জস্যপূর্ণ</p>
+        </div>
+    </section>
+    
+    <!-- Modal -->
+    <div class="modal" id="articleModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <span class="modal-category" id="modalCategory"></span>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 data-bn="লুকফোরব্লাড সম্পর্কে" data-en="About Look4Blood">লুকফোরব্লাড সম্পর্কে</h3>
+                <p data-bn="লুকফোরব্লাড একটি প্ল্যাটফর্ম যা রক্তদাতাদের প্রাপকদের সাথে সংযুক্ত করে, সম্প্রদায় এবং প্রযুক্তির শক্তির মাধ্যমে জীবন বাঁচায়।" data-en="Look4Blood is a platform connecting blood donors with recipients, saving lives through the power of community and technology.">লুকফোরব্লাড একটি প্ল্যাটফর্ম যা রক্তদাতাদের প্রাপকদের সাথে সংযুক্ত করে, সম্প্রদায় এবং প্রযুক্তির শক্তির মাধ্যমে জীবন বাঁচায়।</p>
+            </div>
+            <div class="footer-section">
+                <h3 data-bn="যোগাযোগ করুন" data-en="Contact Us">যোগাযোগ করুন</h3>
+                <p data-bn="ইমেল: info@look4blood.com" data-en="Email: info@look4blood.com">ইমেল: info@look4blood.com</p>
+                <p data-bn="ফোন: +১ (৫৫৫) ১২৩-৪৫৬৭" data-en="Phone: +1 (555) 123-4567">ফোন: +১ (৫৫৫) ১২৩-৪৫৬৭</p>
+                <p data-bn="ঠিকানা: ১২৩ হেলথ স্ট্রিট, মেডিকেল সিটি" data-en="Address: 123 Health Street, Medical City">ঠিকানা: ১২৩ হেলথ স্ট্রিট, মেডিকেল সিটি</p>
+            </div>
+            <div class="footer-section">
+                <h3 data-bn="আমাদের অনুসরণ করুন" data-en="Follow Us">আমাদের অনুসরণ করুন</h3>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook">f</a>
+                    <a href="#" aria-label="Twitter">t</a>
+                    <a href="#" aria-label="LinkedIn">in</a>
+                    <a href="#" aria-label="Instagram">ig</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p data-bn="&copy; ২০২৫ লুকফোরব্লাড। সর্বস্বত্ব সংরক্ষিত।" data-en="&copy; 2025 Look4Blood. All rights reserved.">&copy; ২০২৫ লুকফোরব্লাড। সর্বস্বত্ব সংরক্ষিত।</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Language toggle functionality
+        const enBtn = document.getElementById('enBtn');
+        const bnBtn = document.getElementById('bnBtn');
+        const body = document.body;
+        
+        // Set default language to Bangla
+        let currentLang = 'bn';
+        
+        enBtn.addEventListener('click', () => {
+            if (currentLang !== 'en') {
+                currentLang = 'en';
+                enBtn.classList.add('active');
+                bnBtn.classList.remove('active');
+                body.classList.add('english');
+                updateLanguage();
+            }
+        });
+        
+        bnBtn.addEventListener('click', () => {
+            if (currentLang !== 'bn') {
+                currentLang = 'bn';
+                bnBtn.classList.add('active');
+                enBtn.classList.remove('active');
+                body.classList.remove('english');
+                updateLanguage();
+            }
+        });
+        
+        // Function to update language
+        function updateLanguage() {
+            // Update all elements with data-bn and data-en attributes
+            document.querySelectorAll('[data-bn]').forEach(element => {
+                if (currentLang === 'en' && element.getAttribute('data-en')) {
+                    element.textContent = element.getAttribute('data-en');
+                } else {
+                    element.textContent = element.getAttribute('data-bn');
+                }
+            });
+            
+            // Update placeholder attributes
+            document.querySelectorAll('[data-bn-placeholder]').forEach(element => {
+                if (currentLang === 'en' && element.getAttribute('data-en-placeholder')) {
+                    element.placeholder = element.getAttribute('data-en-placeholder');
+                } else {
+                    element.placeholder = element.getAttribute('data-bn-placeholder');
+                }
+            });
+        }
+        
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+        
+        // Smooth scrolling for CTA button
+        document.querySelector('.cta-button').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelector('#blog-section').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+        
+        // Fetch articles from Supabase
+        async function fetchArticles() {
+            try {
+                const { data, error } = await supabase
+                    .from('articles')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Error fetching articles:', error);
+                    // Fallback to local data if Supabase fails
+                    loadLocalArticles();
+                    return;
+                }
+                
+                displayArticles(data);
+            } catch (err) {
+                console.error('Error:', err);
+                // Fallback to local data if Supabase fails
+                loadLocalArticles();
+            }
+        }
+        
+        // Load local articles as fallback
+        function loadLocalArticles() {
+            const localArticles = [
+                {
+                    id: 1,
+                    title_bn: "রক্তদান সম্পর্কে শীর্ষ ৫টি ভুল ধারণা",
+                    title_en: "Top 5 Myths About Blood Donation",
+                    category_bn: "ভুল ধারণা",
+                    category_en: "Myths",
+                    excerpt_bn: "রক্তদান সম্পর্কে সাধারণ ভুল ধারণাগুলি দূর করা যা মানুষকে জীবন বাঁচাতে বাধা দেয়।",
+                    excerpt_en: "Debunking common misconceptions about blood donation that prevent people from saving lives.",
+                    image_url: "https://images.unsplash.com/photo-1615461065157-867b1897ce60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+                    content_bn: `রক্তদান একটি জীবন বাঁচানোর কাজ, তবুও অনেক মানুষ ভুল ধারণা এবং মিথের কারণে দ্বিধাগ্রস্ত হয়। আসুন রক্তদান সম্পর্কে শীর্ষ ৫টি মিথ ভেঙ্গে দেখি যা আপনাকে দাতা হতে বাধা দিতে পারে।`,
+                    content_en: `Blood donation is a life-saving act, yet many people hesitate due to misconceptions and myths. Let's debunk the top 5 myths about blood donation that might be preventing you from becoming a donor.`,
+                    category: "myths"
+                },
+                {
+                    id: 2,
+                    title_bn: "রক্তদানের আগে এবং পরে কী খাবেন",
+                    title_en: "What To Eat Before and After Donating Blood",
+                    category_bn: "পরামর্শ",
+                    category_en: "Tips",
+                    excerpt_bn: "রক্তদানের জন্য প্রস্তুতি এবং পুনরুদ্ধারে সহায়তা করার জন্য পুষ্টি নির্দেশিকা।",
+                    excerpt_en: "Nutritional guidelines to help you prepare for and recover from blood donation.",
+                    image_url: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+                    content_bn: `রক্তদানের আগে এবং পরে সঠিক পুষ্টি অভিজ্ঞতাটিকে আরও আরামদায়ক করতে পারে এবং আপনার শরীরকে দ্রুত পুনরুদ্ধার করতে সাহায্য করতে পারে।`,
+                    content_en: `Proper nutrition before and after blood donation can make the experience more comfortable and help your body recover faster.`,
+                    category: "tips"
+                },
+                {
+                    id: 3,
+                    title_bn: "একজন অপরিচিত ব্যক্তি আমার জীবন বাঁচাল - প্রকৃত দাতার গল্প",
+                    title_en: "A Stranger Saved My Life – Real Donor Story",
+                    category_bn: "গল্প",
+                    category_en: "Stories",
+                    excerpt_bn: "কীভাবে একটি রক্তদান একটি জীবন বাঁচিয়েছে এবং দুটি পরিবারকে চিরতরে পরিবর্তন করেছে তার হৃদয় স্পর্শকারী গল্প।",
+                    excerpt_en: "Heartwarming story of how a blood donation saved a life and changed two families forever.",
+                    image_url: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+                    content_bn: `সারাহ জনসন কখনো ভাবেননি যে তার রক্ত লাগবে। ৩২ বছর বয়সে, তিনি সুস্থ, সক্রিয় ছিলেন এবং একজন শিক্ষক হিসাবে সফল কর্মজীবন ছিল।`,
+                    content_en: `Sarah Johnson never thought she would need blood. At 32, she was healthy, active, and had a successful career as a teacher.`,
+                    category: "stories"
+                },
+                {
+                    id: 4,
+                    title_bn: "আপনি কত ঘন ঘন রক্ত দিতে পারেন?",
+                    title_en: "How Often Can You Donate Blood?",
+                    category_bn: "তথ্য",
+                    category_en: "Facts",
+                    excerpt_bn: "রক্তদানের জন্য সুপারিশকৃত ফ্রিকোয়েন্সি এবং নির্দেশিকা বোঝা।",
+                    excerpt_en: "Understanding the recommended frequency and guidelines for blood donation.",
+                    image_url: "https://images.unsplash.com/photo-1584362917165-526a968579e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+                    content_bn: `রক্তদান একটি উদার কাজ যা জীবন বাঁচায়, কিন্তু অনেক দাতা আশ্চর্য হন যে তারা কত ঘন ঘন নিরাপদে রক্ত দিতে পারেন।`,
+                    content_en: `Blood donation is a generous act that saves lives, but many donors wonder how frequently they can safely give blood.`,
+                    category: "facts"
+                },
+                {
+                    id: 5,
+                    title_bn: "নারী এবং রক্তদান - পক্ষপাত ভাঙা",
+                    title_en: "Women and Blood Donation – Breaking the Bias",
+                    category_bn: "ভুল ধারণা",
+                    category_en: "Myths",
+                    excerpt_bn: "লিঙ্গ-নির্দিষ্ট উদ্বেগ সমাধান এবং আরও মহিলাদের নিয়মিত দাতা হতে উৎসাহিত করা।",
+                    excerpt_en: "Addressing gender-specific concerns and encouraging more women to become regular donors.",
+                    image_url: "https://images.unsplash.com/photo-1616247996575-1f0b14d7b9cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+                    content_bn: `জনসংখ্যার প্রায় অর্ধেক হওয়া সত্ত্বেও, রক্তদাতাদের মধ্যে মহিলারা কম প্রতিনিধিত্ব করে।`,
+                    content_en: `Despite making up roughly half of the population, women are underrepresented among blood donors.`,
+                    category: "myths"
+                },
+                {
+                    id: 6,
+                    title_bn: "রক্তের গ্রুপের সামঞ্জস্যতা বোঝা",
+                    title_en: "Understanding Blood Type Compatibility",
+                    category_bn: "তথ্য",
+                    category_en: "Facts",
+                    excerpt_bn: "রক্তের গ্রুপ এবং কে কাকে রক্ত দিতে পারে তার একটি বিস্তৃত নির্দেশিকা।",
+                    excerpt_en: "A comprehensive guide to blood types and who can donate to whom.",
+                    image_url: "https://images.unsplash.com/photo-1615461065157-867b1897ce60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+                    content_bn: `রক্তের গ্রুপের সামঞ্জস্যতা রক্ত সঞ্চালন এবং অঙ্গ প্রতিস্থাপনের একটি গুরুত্বপূর্ণ দিক।`,
+                    content_en: `Blood type compatibility is a crucial aspect of blood transfusions and organ transplants.`,
+                    category: "facts"
+                },
+                {
+                    id: 7,
+                    title_bn: "রক্ত দান কেন গুরুত্বপূর্ণ?",
+                    title_en: "Why Donate Blood?",
+                    category_bn: "শিক্ষামূলক",
+                    category_en: "Educational",
+                    excerpt_bn: "রক্তদানের উপকারিতা এবং কীভাবে এটি দাতা এবং প্রাপক উভয়ের জন্য জীবন বাঁচায়।",
+                    excerpt_en: "The benefits of blood donation and how it saves lives for both donors and recipients.",
+                    image_url: "https://images.unsplash.com/photo-1584362917165-526a968579e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+                    content_bn: `রক্তদান একটি সহজ কিন্তু শক্তিশালী উপায় যা আপনি অন্যের জীবন বাঁচাতে ব্যবহার করতে পারেন।`,
+                    content_en: `Blood donation is a simple yet powerful way you can help save lives.`,
+                    category: "educational"
+                },
+                {
+                    id: 8,
+                    title_bn: "কে রক্ত দিতে পারে?",
+                    title_en: "Who Can Donate Blood?",
+                    category_bn: "শিক্ষামূলক",
+                    category_en: "Educational",
+                    excerpt_bn: "রক্তদানের যোগ্যতার মানদণ্ড এবং নির্দেশিকা জানুন।",
+                    excerpt_en: "Learn about the eligibility criteria and guidelines for blood donation.",
+                    image_url: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+                    content_bn: `রক্তদান একটি উদার কাজ, কিন্তু সবাই দাতা হতে পারে না।`,
+                    content_en: `Blood donation is a generous act, but not everyone can be a donor.`,
+                    category: "educational"
+                },
+                {
+                    id: 9,
+                    title_bn: "রক্ত দেওয়ার পরে কী হয়?",
+                    title_en: "What Happens After You Donate Blood?",
+                    category_bn: "শিক্ষামূলক",
+                    category_en: "Educational",
+                    excerpt_bn: "রক্তদান প্রক্রিয়া শেষে আপনার দান করা রক্তের যাত্রা এবং পুনরুদ্ধার প্রক্রিয়া।",
+                    excerpt_en: "The journey of your donated blood and the recovery process after donation.",
+                    image_url: "https://images.unsplash.com/photo-1616247996575-1f0b14d7b9cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+                    content_bn: `রক্তদান প্রক্রিয়া শেষ হওয়ার পরে, আপনার দান করা রক্তের একটি যাত্রা শুরু হয়।`,
+                    content_en: `After the blood donation process is complete, your donated blood begins a journey.`,
+                    category: "educational"
+                }
+            ];
+            
+            displayArticles(localArticles);
+        }
+        
+        // Display articles in the blog grid
+        function displayArticles(articles) {
+            const blogGrid = document.getElementById('blogGrid');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            // Clear loading spinner and show blog grid
+            loadingSpinner.style.display = 'none';
+            blogGrid.style.display = 'grid';
+            blogGrid.innerHTML = '';
+            
+            articles.forEach(article => {
+                const card = document.createElement('div');
+                card.className = 'blog-card';
+                card.setAttribute('data-category', article.category);
+                
+                const title = currentLang === 'bn' ? article.title_bn : article.title_en;
+                const category = currentLang === 'bn' ? article.category_bn : article.category_en;
+                const excerpt = currentLang === 'bn' ? article.excerpt_bn : article.excerpt_en;
+                const content = currentLang === 'bn' ? article.content_bn : article.content_en;
+                
+                card.innerHTML = `
+                    <img src="${article.image_url}" alt="${title}">
+                    <div class="blog-content">
+                        <span class="blog-category">${category}</span>
+                        <h3 class="blog-title">${title}</h3>
+                        <p class="blog-excerpt">${excerpt}</p>
+                        <button class="read-more-btn" data-id="${article.id}" data-bn="আরও পড়ুন" data-en="Read More">${currentLang === 'bn' ? 'আরও পড়ুন' : 'Read More'}</button>
+                    </div>
+                `;
+                
+                // Store article content for modal
+                if (!window.blogArticles) {
+                    window.blogArticles = {};
+                }
+                
+                window.blogArticles[article.id] = {
+                    title: {
+                        bn: article.title_bn,
+                        en: article.title_en
+                    },
+                    category: {
+                        bn: article.category_bn,
+                        en: article.category_en
+                    },
+                    content: {
+                        bn: article.content_bn,
+                        en: article.content_en
+                    }
+                };
+                
+                blogGrid.appendChild(card);
+            });
+        }
+        
+        // Filter functionality
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                const filter = btn.getAttribute('data-filter');
+                const blogCards = document.querySelectorAll('.blog-card');
+                
+                blogCards.forEach(card => {
+                    if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Search functionality with debounce
+        const searchBar = document.getElementById('searchBar');
+        
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+        
+        const searchFunction = debounce(() => {
+            const searchTerm = searchBar.value.toLowerCase();
+            const blogCards = document.querySelectorAll('.blog-card');
+            
+            blogCards.forEach(card => {
+                const title = card.querySelector('.blog-title').textContent.toLowerCase();
+                const excerpt = card.querySelector('.blog-excerpt').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || excerpt.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }, 300);
+        
+        searchBar.addEventListener('input', searchFunction);
+        
+        // Modal functionality
+        const modal = document.getElementById('articleModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalBody = document.getElementById('modalBody');
+        const closeModal = document.querySelector('.close-modal');
+        
+        // Event delegation for read more buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('read-more-btn')) {
+                const articleId = e.target.getAttribute('data-id');
+                const article = window.blogArticles[articleId];
+                
+                if (article) {
+                    modalTitle.textContent = article.title[currentLang];
+                    modalCategory.textContent = article.category[currentLang];
+                    modalBody.innerHTML = article.content[currentLang];
+                    
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+                }
+            }
+        });
+        
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Enable scrolling again
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Image Carousel functionality
+        const slides = document.querySelectorAll('.carousel-slide');
+        const prevBtn = document.querySelector('.carousel-prev');
+        const nextBtn = document.querySelector('.carousel-next');
+        const indicators = document.querySelectorAll('.carousel-indicator');
+        
+        let currentSlide = 0;
+        let slideInterval;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            indicators.forEach(indicator => indicator.classList.remove('active'));
+            
+            slides[index].classList.add('active');
+            indicators[index].classList.add('active');
+            
+            currentSlide = index;
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+        
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+        
+        function startSlideShow() {
+            slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+        }
+        
+        function stopSlideShow() {
+            clearInterval(slideInterval);
+        }
+        
+        nextBtn.addEventListener('click', () => {
+            stopSlideShow();
+            nextSlide();
+            startSlideShow();
+        });
+        
+        prevBtn.addEventListener('click', () => {
+            stopSlideShow();
+            prevSlide();
+            startSlideShow();
+        });
+        
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                stopSlideShow();
+                showSlide(index);
+                startSlideShow();
+            });
+        });
+        
+        // Start the slideshow
+        startSlideShow();
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchArticles();
+        });
+    </script>
+</body>
+</html>
