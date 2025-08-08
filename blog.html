@@ -7,10 +7,6 @@
     <meta name="description" content="Look4Blood - সচেতনতা ও রক্তদান ব্লগ">
     <meta name="keywords" content="রক্তদান, blood donation, স্বাস্থ্যসেবা, health awareness">
     <meta name="author" content="Look4Blood">
-    
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
-    
     <style>
         /* Reset CSS */
         * {
@@ -221,16 +217,36 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
         
-        /* Blog Section */
-        .blog-section {
-            padding: 100px 20px;
+        /* Blood Type Compatibility Chart */
+        .compatibility-section {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .compatibility-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="rgba(230, 57, 70, 0.05)" stroke-width="1"/></svg>');
+            background-size: 50px 50px;
+            z-index: 1;
+        }
+        
+        .compatibility-container {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 2;
         }
         
         .section-title {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 50px;
             font-size: 2.8rem;
             color: #333;
             position: relative;
@@ -247,6 +263,313 @@
             bottom: -15px;
             left: 50%;
             transform: translateX(-50%);
+        }
+        
+        .compatibility-chart {
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 1s ease;
+            margin-bottom: 40px;
+        }
+        
+        .chart-header {
+            background-color: #e63946;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .chart-content {
+            padding: 30px;
+        }
+        
+        .blood-types-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .blood-type-cell {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .blood-type-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(230, 57, 70, 0.1), rgba(230, 57, 70, 0.3));
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+            z-index: 1;
+        }
+        
+        .blood-type-cell:hover::before {
+            transform: translateX(0);
+        }
+        
+        .blood-type-cell:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .blood-type-cell.donor {
+            background-color: #e63946;
+            color: white;
+        }
+        
+        .blood-type-cell.recipient {
+            background-color: #1d3557;
+            color: white;
+        }
+        
+        .blood-type-cell.universal-donor {
+            background-color: #e63946;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(230, 57, 70, 0.5);
+        }
+        
+        .blood-type-cell.universal-recipient {
+            background-color: #1d3557;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(29, 53, 87, 0.5);
+        }
+        
+        .compatibility-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .compatibility-table th, .compatibility-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        .compatibility-table th {
+            background-color: #e63946;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .compatibility-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .compatibility-table tr:hover {
+            background-color: #f1f1f1;
+            transition: background-color 0.3s ease;
+        }
+        
+        .compatible {
+            background-color: rgba(40, 167, 69, 0.2);
+            position: relative;
+        }
+        
+        .compatible::after {
+            content: '✓';
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .incompatible {
+            background-color: rgba(220, 53, 69, 0.1);
+            position: relative;
+        }
+        
+        .incompatible::after {
+            content: '✗';
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .legend-color.compatible {
+            background-color: rgba(40, 167, 69, 0.2);
+            border: 2px solid #28a745;
+        }
+        
+        .legend-color.incompatible {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 2px solid #dc3545;
+        }
+        
+        /* Image Carousel */
+        .carousel-section {
+            padding: 80px 20px;
+            background-color: #fff;
+            position: relative;
+        }
+        
+        .carousel-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        
+        .carousel-slide {
+            min-width: 100%;
+            position: relative;
+        }
+        
+        .carousel-slide img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+        }
+        
+        .carousel-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            color: white;
+            padding: 30px 20px 20px;
+            text-align: center;
+        }
+        
+        .carousel-caption h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10;
+        }
+        
+        .carousel-btn {
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #333;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .carousel-btn:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            transform: scale(1.1);
+        }
+        
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .indicator.active {
+            background-color: white;
+            transform: scale(1.2);
+        }
+        
+        /* Running Message */
+        .running-message {
+            background-color: #e63946;
+            color: white;
+            padding: 15px 0;
+            overflow: hidden;
+            position: relative;
+            white-space: nowrap;
+        }
+        
+        .running-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: run 20s linear infinite;
+        }
+        
+        @keyframes run {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        /* Blog Section */
+        .blog-section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
         /* Filter Tabs */
@@ -419,201 +742,6 @@
             background-color: rgba(230, 57, 70, 0.1);
         }
         
-        /* Blood Type Compatibility Chart */
-        .compatibility-chart {
-            margin: 40px 0;
-            background-color: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-            overflow-x: auto;
-        }
-        
-        .compatibility-chart h3 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #333;
-            font-size: 1.8rem;
-        }
-        
-        .chart-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 0 auto;
-            font-size: 0.95rem;
-        }
-        
-        .chart-table th, .chart-table td {
-            padding: 12px 15px;
-            text-align: center;
-            border: 1px solid #e0e0e0;
-        }
-        
-        .chart-table th {
-            background-color: #e63946;
-            color: white;
-            font-weight: 600;
-        }
-        
-        .chart-table tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        
-        .chart-table .blood-type {
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .chart-table .compatible {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        
-        .chart-table .not-compatible {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
-        .chart-table .universal-donor {
-            background-color: #cce5ff;
-            color: #004085;
-            font-weight: 600;
-        }
-        
-        .chart-table .universal-recipient {
-            background-color: #fff3cd;
-            color: #856404;
-            font-weight: 600;
-        }
-        
-        /* Image Carousel */
-        .carousel-container {
-            position: relative;
-            max-width: 1000px;
-            margin: 60px auto;
-            overflow: hidden;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-        
-        .carousel-slide {
-            display: none;
-            width: 100%;
-            height: 500px;
-            position: relative;
-        }
-        
-        .carousel-slide.active {
-            display: block;
-        }
-        
-        .carousel-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .carousel-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-            color: white;
-            padding: 30px 20px 20px;
-            text-align: center;
-        }
-        
-        .carousel-caption h3 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-        
-        .carousel-caption p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        .carousel-prev, .carousel-next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(255, 255, 255, 0.7);
-            color: #333;
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-        
-        .carousel-prev:hover, .carousel-next:hover {
-            background-color: rgba(255, 255, 255, 0.9);
-        }
-        
-        .carousel-prev {
-            left: 20px;
-        }
-        
-        .carousel-next {
-            right: 20px;
-        }
-        
-        .carousel-indicators {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-        }
-        
-        .carousel-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .carousel-indicator.active {
-            background-color: white;
-            transform: scale(1.2);
-        }
-        
-        /* Running Message */
-        .running-message {
-            background-color: #e63946;
-            color: white;
-            padding: 15px 0;
-            overflow: hidden;
-            white-space: nowrap;
-            position: relative;
-        }
-        
-        .running-message-content {
-            display: inline-block;
-            padding-left: 100%;
-            animation: running-text 30s linear infinite;
-            font-weight: 500;
-        }
-        
-        @keyframes running-text {
-            0% {
-                transform: translate(0, 0);
-            }
-            100% {
-                transform: translate(-100%, 0);
-            }
-        }
-        
         /* Modal Styles */
         .modal {
             display: none;
@@ -704,40 +832,6 @@
         
         .modal-body li {
             margin-bottom: 8px;
-        }
-        
-        /* Loading Spinner */
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 200px;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #e63946;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Error Message */
-        .error-message {
-            display: none;
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px auto;
-            max-width: 600px;
-            text-align: center;
         }
         
         /* Footer */
@@ -881,20 +975,24 @@
                 font-size: 2.2rem;
             }
             
-            .blog-grid {
-                grid-template-columns: 1fr;
+            .blood-types-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
             
-            .carousel-slide {
+            .compatibility-table {
+                font-size: 0.9rem;
+            }
+            
+            .compatibility-table th, .compatibility-table td {
+                padding: 10px 5px;
+            }
+            
+            .carousel-slide img {
                 height: 300px;
             }
             
-            .carousel-caption h3 {
-                font-size: 1.4rem;
-            }
-            
-            .carousel-caption p {
-                font-size: 1rem;
+            .blog-grid {
+                grid-template-columns: 1fr;
             }
             
             .modal-content {
@@ -905,19 +1003,15 @@
             .modal-title {
                 font-size: 1.8rem;
             }
-            
-            .chart-table {
-                font-size: 0.8rem;
-            }
-            
-            .chart-table th, .chart-table td {
-                padding: 8px 5px;
-            }
         }
         
         @media (min-width: 769px) and (max-width: 1024px) {
             .blog-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .blood-types-grid {
+                grid-template-columns: repeat(4, 1fr);
             }
         }
     </style>
@@ -952,75 +1046,70 @@
         </div>
     </section>
     
+    <!-- Image Carousel -->
+    <section class="carousel-section">
+        <div class="carousel-container">
+            <div class="carousel-track">
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1584362917165-526a968579e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Donation">
+                    <div class="carousel-caption">
+                        <h3 data-bn="রক্তদান জীবন বাঁচায়" data-en="Blood Donation Saves Lives">রক্তদান জীবন বাঁচায়</h3>
+                        <p data-bn="প্রতি দান একটি জীবন বাঁচাতে পারে" data-en="Every donation can save a life">প্রতি দান একটি জীবন বাঁচাতে পারে</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1615461065157-867b1897ce60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Donors">
+                    <div class="carousel-caption">
+                        <h3 data-bn="হিরো হওয়ার সময়" data-en="Time to Be a Hero">হিরো হওয়ার সময়</h3>
+                        <p data-bn="রক্ত দিন, জীবন বাঁচান" data-en="Donate Blood, Save Lives">রক্ত দিন, জীবন বাঁচান</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Donation Process">
+                    <div class="carousel-caption">
+                        <h3 data-bn="সহজ এবং নিরাপদ প্রক্রিয়া" data-en="Easy and Safe Process">সহজ এবং নিরাপদ প্রক্রিয়া</h3>
+                        <p data-bn="মাত্র 30 মিনিটে একজনের জীবন বাঁচান" data-en="Save a life in just 30 minutes">মাত্র 30 মিনিটে একজনের জীবন বাঁচান</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Donation Benefits">
+                    <div class="carousel-caption">
+                        <h3 data-bn="দাতার স্বাস্থ্য উপকারিতা" data-en="Health Benefits for Donors">দাতার স্বাস্থ্য উপকারিতা</h3>
+                        <p data-bn="রক্তদান আপনার স্বাস্থ্যের জন্যও ভালো" data-en="Blood donation is also good for your health">রক্তদান আপনার স্বাস্থ্যের জন্যও ভালো</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1616247996575-1f0b14d7b9cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Donation Camp">
+                    <div class="carousel-caption">
+                        <h3 data-bn="যোগ দিন, পার্থক্য তৈরি করুন" data-en="Join, Make a Difference">যোগ দিন, পার্থক্য তৈরি করুন</h3>
+                        <p data-bn="আপনার সম্প্রদায়ের জন্য রক্ত দান করুন" data-en="Donate blood for your community">আপনার সম্প্রদায়ের জন্য রক্ত দান করুন</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-nav">
+                <button class="carousel-btn prev-btn">&#10094;</button>
+                <button class="carousel-btn next-btn">&#10095;</button>
+            </div>
+            
+            <div class="carousel-indicators">
+                <div class="indicator active"></div>
+                <div class="indicator"></div>
+                <div class="indicator"></div>
+                <div class="indicator"></div>
+                <div class="indicator"></div>
+            </div>
+        </div>
+    </section>
+    
     <!-- Running Message -->
     <div class="running-message">
-        <div class="running-message-content" data-bn="আপনি জানেন কি? একটি রক্তদান তিনটি জীবন বাঁচাতে পারে। * " data-en="Did you know? One blood donation could save up to three lives. * ">
-            আপনি জানেন কি? একটি রক্তদান তিনটি জীবন বাঁচাতে পারে। * 
-        </div>
-    </div>
-    
-    <!-- Image Carousel -->
-    <div class="carousel-container">
-        <div class="carousel-slide active">
-            <img src="https://images.unsplash.com/photo-1615461065157-867b1897ce60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Donation">
-            <div class="carousel-caption">
-                <h3 data-bn="রক্তদান জীবন বাঁচায়" data-en="Blood Donation Saves Lives">রক্তদান জীবন বাঁচায়</h3>
-                <p data-bn="প্রতিটি দান একটি জীবন পরিবর্তনকারী অভিজ্ঞতা হতে পারে" data-en="Every donation can be a life-changing experience">প্রতিটি দান একটি জীবন পরিবর্তনকারী অভিজ্ঞতা হতে পারে</p>
-            </div>
-        </div>
-        
-        <div class="carousel-slide">
-            <img src="https://images.unsplash.com/photo-1584362917165-526a968579e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Types">
-            <div class="carousel-caption">
-                <h3 data-bn="রক্তের গ্রুপ বোঝা" data-en="Understanding Blood Types">রক্তের গ্রুপ বোঝা</h3>
-                <p data-bn="জানুন কোন রক্তের গ্রুপ কাকে দান করতে পারে" data-en="Learn which blood types can donate to whom">জানুন কোন রক্তের গ্রুপ কাকে দান করতে পারে</p>
-            </div>
-        </div>
-        
-        <div class="carousel-slide">
-            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Donation Process">
-            <div class="carousel-caption">
-                <h3 data-bn="দান প্রক্রিয়া" data-en="Donation Process">দান প্রক্রিয়া</h3>
-                <p data-bn="রক্তদান একটি সহজ, নিরাপদ এবং ব্যথাহীন প্রক্রিয়া" data-en="Blood donation is a simple, safe, and painless procedure">রক্তদান একটি সহজ, নিরাপদ এবং ব্যথাহীন প্রক্রিয়া</p>
-            </div>
-        </div>
-        
-        <div class="carousel-slide">
-            <img src="https://images.unsplash.com/photo-1616247996575-1f0b14d7b9cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Bank">
-            <div class="carousel-caption">
-                <h3 data-bn="রক্ত ব্যাঙ্ক" data-en="Blood Bank">রক্ত ব্যাঙ্ক</h3>
-                <p data-bn="রক্ত ব্যাঙ্কগুলি জরুরি পরিস্থিতিতে জীবন বাঁচাতে সাহায্য করে" data-en="Blood banks help save lives in emergency situations">রক্ত ব্যাঙ্কগুলি জরুরি পরিস্থিতিতে জীবন বাঁচাতে সাহায্য করে</p>
-            </div>
-        </div>
-        
-        <div class="carousel-slide">
-            <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Donors">
-            <div class="carousel-caption">
-                <h3 data-bn="দাতা হওয়া" data-en="Being a Donor">দাতা হওয়া</h3>
-                <p data-bn="একজন দাতা হওয়া একটি সম্মাননার বিষয়" data-en="Being a donor is a matter of pride">একজন দাতা হওয়া একটি সম্মাননার বিষয়</p>
-            </div>
-        </div>
-        
-        <button class="carousel-prev" aria-label="Previous slide">❮</button>
-        <button class="carousel-next" aria-label="Next slide">❯</button>
-        
-        <div class="carousel-indicators">
-            <span class="carousel-indicator active" data-slide="0"></span>
-            <span class="carousel-indicator" data-slide="1"></span>
-            <span class="carousel-indicator" data-slide="2"></span>
-            <span class="carousel-indicator" data-slide="3"></span>
-            <span class="carousel-indicator" data-slide="4"></span>
-        </div>
+        <div class="running-text" data-bn="আপনি জানেন কি? একটি রক্তদান তিনটি জীবন বাঁচাতে পারে * আপনি জানেন কি? একটি রক্তদান তিনটি জীবন বাঁচাতে পারে * আপনি জানেন কি? একটি রক্তদান তিনটি জীবন বাঁচাতে পারে * " data-en="Did you know? One blood donation could save up to three lives * Did you know? One blood donation could save up to three lives * Did you know? One blood donation could save up to three lives * ">আপনি জানেন কি? একটি রক্তদান তিনটি জীবন বাঁচাতে পারে * আপনি জানেন কি? একটি রক্তদান তিনটি জীবন বাঁচাতে পারে * আপনি জানেন কি? একটি রক্তদান তিনটি জীবন বাঁচাতে পারে * </div>
     </div>
     
     <!-- Blog Section -->
     <section class="blog-section" id="blog-section">
         <h2 class="section-title" data-bn="সর্বশেষ নিবন্ধ" data-en="Latest Articles">সর্বশেষ নিবন্ধ</h2>
-        
-        <!-- Error Message -->
-        <div class="error-message" id="errorMessage">
-            <p data-bn="ডাটাবেস থেকে আর্টিকেল লোড করতে সমস্যা হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।" data-en="Failed to load articles from the database. Please try again later.">ডাটাবেস থেকে আর্টিকেল লোড করতে সমস্যা হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।</p>
-        </div>
         
         <!-- Search Bar -->
         <div class="search-container">
@@ -1038,127 +1127,243 @@
             <button class="filter-btn" data-filter="educational" data-bn="শিক্ষামূলক" data-en="Educational">শিক্ষামূলক</button>
         </div>
         
-        <!-- Loading Spinner -->
-        <div class="loading" id="loadingSpinner">
-            <div class="spinner"></div>
-        </div>
-        
         <!-- Blog Grid -->
-        <div class="blog-grid" id="blogGrid" style="display: none;">
-            <!-- Blog cards will be dynamically loaded here -->
-        </div>
-        
-        <!-- Blood Type Compatibility Chart -->
-        <div class="compatibility-chart">
-            <h3 data-bn="রক্তের গ্রুপের সামঞ্জস্যতা চার্ট" data-en="Blood Type Compatibility Chart">রক্তের গ্রুপের সামঞ্জস্যতা চার্ট</h3>
-            <div class="chart-table-container">
-                <table class="chart-table">
-                    <thead>
-                        <tr>
-                            <th data-bn="দাতার রক্তের গ্রুপ" data-en="Donor Blood Type">দাতার রক্তের গ্রুপ</th>
-                            <th data-bn="O-" data-en="O-">O-</th>
-                            <th data-bn="O+" data-en="O+">O+</th>
-                            <th data-bn="A-" data-en="A-">A-</th>
-                            <th data-bn="A+" data-en="A+">A+</th>
-                            <th data-bn="B-" data-en="B-">B-</th>
-                            <th data-bn="B+" data-en="B+">B+</th>
-                            <th data-bn="AB-" data-en="AB-">AB-</th>
-                            <th data-bn="AB+" data-en="AB+">AB+</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="blood-type universal-donor" data-bn="O- (সার্বজনীন দাতা)" data-en="O- (Universal Donor)">O- (সার্বজনীন দাতা)</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                        </tr>
-                        <tr>
-                            <td class="blood-type" data-bn="O+" data-en="O+">O+</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                        </tr>
-                        <tr>
-                            <td class="blood-type" data-bn="A-" data-en="A-">A-</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                        </tr>
-                        <tr>
-                            <td class="blood-type" data-bn="A+" data-en="A+">A+</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                        </tr>
-                        <tr>
-                            <td class="blood-type" data-bn="B-" data-en="B-">B-</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                        </tr>
-                        <tr>
-                            <td class="blood-type" data-bn="B+" data-en="B+">B+</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                        </tr>
-                        <tr>
-                            <td class="blood-type" data-bn="AB-" data-en="AB-">AB-</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                            <td class="compatible">✓</td>
-                        </tr>
-                        <tr>
-                            <td class="blood-type universal-recipient" data-bn="AB+ (সার্বজনীন প্রাপক)" data-en="AB+ (Universal Recipient)">AB+ (সার্বজনীন প্রাপক)</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="not-compatible">✗</td>
-                            <td class="compatible">✓</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="blog-grid" id="blogGrid">
+            <!-- Blog Card 1 -->
+            <div class="blog-card" data-category="myths">
+                <img src="https://images.unsplash.com/photo-1615461065157-867b1897ce60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Donation Myths">
+                <div class="blog-content">
+                    <span class="blog-category" data-bn="ভুল ধারণা" data-en="Myths">ভুল ধারণা</span>
+                    <h3 class="blog-title" data-bn="রক্তদান সম্পর্কে শীর্ষ ৫টি ভুল ধারণা" data-en="Top 5 Myths About Blood Donation">রক্তদান সম্পর্কে শীর্ষ ৫টি ভুল ধারণা</h3>
+                    <p class="blog-excerpt" data-bn="রক্তদান সম্পর্কে সাধারণ ভুল ধারণাগুলি দূর করা যা মানুষকে জীবন বাঁচাতে বাধা দেয়।" data-en="Debunking common misconceptions about blood donation that prevent people from saving lives.">রক্তদান সম্পর্কে সাধারণ ভুল ধারণাগুলি দূর করা যা মানুষকে জীবন বাঁচাতে বাধা দেয়।</p>
+                    <button class="read-more-btn" data-id="1" data-bn="আরও পড়ুন" data-en="Read More">আরও পড়ুন</button>
+                </div>
             </div>
-            <p style="margin-top: 20px; text-align: center; color: #666;" data-bn="✓ = সামঞ্জস্যপূর্ণ, ✗ = অসামঞ্জস্যপূর্ণ" data-en="✓ = Compatible, ✗ = Not Compatible">✓ = সামঞ্জস্যপূর্ণ, ✗ = অসামঞ্জস্যপূর্ণ</p>
+            
+            <!-- Blog Card 2 -->
+            <div class="blog-card" data-category="tips">
+                <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Donation Diet">
+                <div class="blog-content">
+                    <span class="blog-category" data-bn="পরামর্শ" data-en="Tips">পরামর্শ</span>
+                    <h3 class="blog-title" data-bn="রক্তদানের আগে এবং পরে কী খাবেন" data-en="What To Eat Before and After Donating Blood">রক্তদানের আগে এবং পরে কী খাবেন</h3>
+                    <p class="blog-excerpt" data-bn="রক্তদানের জন্য প্রস্তুতি এবং পুনরুদ্ধারে সহায়তা করার জন্য পুষ্টি নির্দেশিকা।" data-en="Nutritional guidelines to help you prepare for and recover from blood donation.">রক্তদানের জন্য প্রস্তুতি এবং পুনরুদ্ধারে সহায়তা করার জন্য পুষ্টি নির্দেশিকা।</p>
+                    <button class="read-more-btn" data-id="2" data-bn="আরও পড়ুন" data-en="Read More">আরও পড়ুন</button>
+                </div>
+            </div>
+            
+            <!-- Blog Card 3 -->
+            <div class="blog-card" data-category="stories">
+                <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Donation Story">
+                <div class="blog-content">
+                    <span class="blog-category" data-bn="গল্প" data-en="Stories">গল্প</span>
+                    <h3 class="blog-title" data-bn="একজন অপরিচিত ব্যক্তি আমার জীবন বাঁচাল - প্রকৃত দাতার গল্প" data-en="A Stranger Saved My Life – Real Donor Story">একজন অপরিচিত ব্যক্তি আমার জীবন বাঁচাল - প্রকৃত দাতার গল্প</h3>
+                    <p class="blog-excerpt" data-bn="কীভাবে একটি রক্তদান একটি জীবন বাঁচিয়েছে এবং দুটি পরিবারকে চিরতরে পরিবর্তন করেছে তার হৃদয় স্পর্শকারী গল্প।" data-en="Heartwarming story of how a blood donation saved a life and changed two families forever.">কীভাবে একটি রক্তদান একটি জীবন বাঁচিয়েছে এবং দুটি পরিবারকে চিরতরে পরিবর্তন করেছে তার হৃদয় স্পর্শকারী গল্প।</p>
+                    <button class="read-more-btn" data-id="3" data-bn="আরও পড়ুন" data-en="Read More">আরও পড়ুন</button>
+                </div>
+            </div>
+            
+            <!-- Blog Card 4 -->
+            <div class="blog-card" data-category="facts">
+                <img src="https://images.unsplash.com/photo-1584362917165-526a968579e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Donation Frequency">
+                <div class="blog-content">
+                    <span class="blog-category" data-bn="তথ্য" data-en="Facts">তথ্য</span>
+                    <h3 class="blog-title" data-bn="আপনি কত ঘন ঘন রক্ত দিতে পারেন?" data-en="How Often Can You Donate Blood?">আপনি কত ঘন ঘন রক্ত দিতে পারেন?</h3>
+                    <p class="blog-excerpt" data-bn="রক্তদানের জন্য সুপারিশকৃত ফ্রিকোয়েন্সি এবং নির্দেশিকা বোঝা।" data-en="Understanding the recommended frequency and guidelines for blood donation.">রক্তদানের জন্য সুপারিশকৃত ফ্রিকোয়েন্সি এবং নির্দেশিকা বোঝা।</p>
+                    <button class="read-more-btn" data-id="4" data-bn="আরও পড়ুন" data-en="Read More">আরও পড়ুন</button>
+                </div>
+            </div>
+            
+            <!-- Blog Card 5 -->
+            <div class="blog-card" data-category="myths">
+                <img src="https://images.unsplash.com/photo-1616247996575-1f0b14d7b9cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Women and Blood Donation">
+                <div class="blog-content">
+                    <span class="blog-category" data-bn="ভুল ধারণা" data-en="Myths">ভুল ধারণা</span>
+                    <h3 class="blog-title" data-bn="নারী এবং রক্তদান - পক্ষপাত ভাঙা" data-en="Women and Blood Donation – Breaking the Bias">নারী এবং রক্তদান - পক্ষপাত ভাঙা</h3>
+                    <p class="blog-excerpt" data-bn="লিঙ্গ-নির্দিষ্ট উদ্বেগ সমাধান এবং আরও মহিলাদের নিয়মিত দাতা হতে উৎসাহিত করা।" data-en="Addressing gender-specific concerns and encouraging more women to become regular donors.">লিঙ্গ-নির্দিষ্ট উদ্বেগ সমাধান এবং আরও মহিলাদের নিয়মিত দাতা হতে উৎসাহিত করা।</p>
+                    <button class="read-more-btn" data-id="5" data-bn="আরও পড়ুন" data-en="Read More">আরও পড়ুন</button>
+                </div>
+            </div>
+            
+            <!-- Blog Card 6 -->
+            <div class="blog-card" data-category="facts">
+                <img src="https://images.unsplash.com/photo-1615461065157-867b1897ce60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Blood Type Compatibility">
+                <div class="blog-content">
+                    <span class="blog-category" data-bn="তথ্য" data-en="Facts">তথ্য</span>
+                    <h3 class="blog-title" data-bn="রক্তের গ্রুপের সামঞ্জস্যতা বোঝা" data-en="Understanding Blood Type Compatibility">রক্তের গ্রুপের সামঞ্জস্যতা বোঝা</h3>
+                    <p class="blog-excerpt" data-bn="রক্তের গ্রুপ এবং কে কাকে রক্ত দিতে পারে তার একটি বিস্তৃত নির্দেশিকা।" data-en="A comprehensive guide to blood types and who can donate to whom.">রক্তের গ্রুপ এবং কে কাকে রক্ত দিতে পারে তার একটি বিস্তৃত নির্দেশিকা।</p>
+                    <button class="read-more-btn" data-id="6" data-bn="আরও পড়ুন" data-en="Read More">আরও পড়ুন</button>
+                </div>
+            </div>
+            
+            <!-- Blog Card 7 - Educational -->
+            <div class="blog-card educational-card" data-category="educational">
+                <img src="https://images.unsplash.com/photo-1584362917165-526a968579e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Why Donate Blood?">
+                <div class="blog-content">
+                    <span class="blog-category" data-bn="শিক্ষামূলক" data-en="Educational">শিক্ষামূলক</span>
+                    <h3 class="blog-title" data-bn="রক্ত দান কেন গুরুত্বপূর্ণ?" data-en="Why Donate Blood?">রক্ত দান কেন গুরুত্বপূর্ণ?</h3>
+                    <p class="blog-excerpt" data-bn="রক্তদানের উপকারিতা এবং কীভাবে এটি দাতা এবং প্রাপক উভয়ের জন্য জীবন বাঁচায়।" data-en="The benefits of blood donation and how it saves lives for both donors and recipients.">রক্তদানের উপকারিতা এবং কীভাবে এটি দাতা এবং প্রাপক উভয়ের জন্য জীবন বাঁচায়।</p>
+                    <button class="read-more-btn" data-id="7" data-bn="আরও পড়ুন" data-en="Read More">আরও পড়ুন</button>
+                </div>
+            </div>
+            
+            <!-- Blog Card 8 - Educational -->
+            <div class="blog-card educational-card" data-category="educational">
+                <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Who Can Donate Blood?">
+                <div class="blog-content">
+                    <span class="blog-category" data-bn="শিক্ষামূলক" data-en="Educational">শিক্ষামূলক</span>
+                    <h3 class="blog-title" data-bn="কে রক্ত দিতে পারে?" data-en="Who Can Donate Blood?">কে রক্ত দিতে পারে?</h3>
+                    <p class="blog-excerpt" data-bn="রক্তদানের যোগ্যতার মানদণ্ড এবং নির্দেশিকা জানুন।" data-en="Learn about the eligibility criteria and guidelines for blood donation.">রক্তদানের যোগ্যতার মানদণ্ড এবং নির্দেশিকা জানুন।</p>
+                    <button class="read-more-btn" data-id="8" data-bn="আরও পড়ুন" data-en="Read More">আরও পড়ুন</button>
+                </div>
+            </div>
+            
+            <!-- Blog Card 9 - Educational -->
+            <div class="blog-card educational-card" data-category="educational">
+                <img src="https://images.unsplash.com/photo-1615461065157-867b1897ce60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="What Happens After Donation">
+                <div class="blog-content">
+                    <span class="blog-category" data-bn="শিক্ষামূলক" data-en="Educational">শিক্ষামূলক</span>
+                    <h3 class="blog-title" data-bn="রক্ত দেওয়ার পরে কী হয়?" data-en="What Happens After You Donate Blood?">রক্ত দেওয়ার পরে কী হয়?</h3>
+                    <p class="blog-excerpt" data-bn="রক্তদান প্রক্রিয়া শেষে আপনার দান করা রক্তের যাত্রা এবং পুনরুদ্ধার প্রক্রিয়া।" data-en="The journey of your donated blood and the recovery process after donation.">রক্তদান প্রক্রিয়া শেষে আপনার দান করা রক্তের যাত্রা এবং পুনরুদ্ধার প্রক্রিয়া।</p>
+                    <button class="read-more-btn" data-id="9" data-bn="আরও পড়ুন" data-en="Read More">আরও পড়ুন</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blood Type Compatibility Chart -->
+    <section class="compatibility-section">
+        <div class="compatibility-container">
+            <h2 class="section-title" data-bn="রক্তের গ্রুপের সামঞ্জস্যতা" data-en="Blood Type Compatibility">রক্তের গ্রুপের সামঞ্জস্যতা</h2>
+            
+            <div class="compatibility-chart">
+                <div class="chart-header" data-bn="রক্তের গ্রুপের সামঞ্জস্যতা চার্ট" data-en="Blood Type Compatibility Chart">রক্তের গ্রুপের সামঞ্জস্যতা চার্ট</div>
+                <div class="chart-content">
+                    <div class="blood-types-grid">
+                        <div class="blood-type-cell universal-donor" data-bn="O- সার্বজনীন দাতা" data-en="O- Universal Donor">O-<br><small data-bn="সার্বজনীন দাতা" data-en="Universal Donor">সার্বজনীন দাতা</small></div>
+                        <div class="blood-type-cell donor" data-bn="O+ দাতা" data-en="O+ Donor">O+<br><small data-bn="দাতা" data-en="Donor">দাতা</small></div>
+                        <div class="blood-type-cell donor" data-bn="A- দাতা" data-en="A- Donor">A-<br><small data-bn="দাতা" data-en="Donor">দাতা</small></div>
+                        <div class="blood-type-cell donor" data-bn="B- দাতা" data-en="B- Donor">B-<br><small data-bn="দাতা" data-en="Donor">দাতা</small></div>
+                        <div class="blood-type-cell donor" data-bn="AB- দাতা" data-en="AB- Donor">AB-<br><small data-bn="দাতা" data-en="Donor">দাতা</small></div>
+                    </div>
+                    
+                    <table class="compatibility-table">
+                        <thead>
+                            <tr>
+                                <th data-bn="দাতা/প্রাপক" data-en="Donor/Recipient">দাতা/প্রাপক</th>
+                                <th>O-</th>
+                                <th>O+</th>
+                                <th>A-</th>
+                                <th>A+</th>
+                                <th>B-</th>
+                                <th>B+</th>
+                                <th>AB-</th>
+                                <th class="universal-recipient" data-bn="AB+ সার্বজনীন প্রাপক" data-en="AB+ Universal Recipient">AB+</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="universal-donor" data-bn="O- সার্বজনীন দাতা" data-en="O- Universal Donor">O- সার্বজনীন দাতা</td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                            </tr>
+                            <tr>
+                                <td class="donor" data-bn="O+ দাতা" data-en="O+ Donor">O+ দাতা</td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                            </tr>
+                            <tr>
+                                <td class="donor" data-bn="A- দাতা" data-en="A- Donor">A- দাতা</td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                            </tr>
+                            <tr>
+                                <td class="donor" data-bn="A+ দাতা" data-en="A+ Donor">A+ দাতা</td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                            </tr>
+                            <tr>
+                                <td class="donor" data-bn="B- দাতা" data-en="B- Donor">B- দাতা</td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                            </tr>
+                            <tr>
+                                <td class="donor" data-bn="B+ দাতা" data-en="B+ Donor">B+ দাতা</td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                            </tr>
+                            <tr>
+                                <td class="donor" data-bn="AB- দাতা" data-en="AB- Donor">AB- দাতা</td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                                <td class="compatible"></td>
+                            </tr>
+                            <tr>
+                                <td class="universal-recipient" data-bn="AB+ সার্বজনীন প্রাপক" data-en="AB+ Universal Recipient">AB+ সার্বজনীন প্রাপক</td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="incompatible"></td>
+                                <td class="compatible"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color compatible"></div>
+                            <span data-bn="সামঞ্জস্যপূর্ণ" data-en="Compatible">সামঞ্জস্যপূর্ণ</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color incompatible"></div>
+                            <span data-bn="অসামঞ্জস্যপূর্ণ" data-en="Incompatible">অসামঞ্জস্যপূর্ণ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
     
@@ -1201,29 +1406,6 @@
     </footer>
     
     <script>
-        // Initialize Supabase only when the script is loaded
-        let supabase;
-        
-        // Function to initialize Supabase
-        function initializeSupabase() {
-            if (typeof supabaseJs !== 'undefined') {
-                // Use the global supabaseJs if available
-                supabase = supabaseJs.createClient(
-                    'YOUR_SUPABASE_URL',
-                    'YOUR_SUPABASE_KEY'
-                );
-                return true;
-            } else if (window.supabase) {
-                // Use the window.supabase if available
-                supabase = window.supabase.createClient(
-                    'https://bbvyjeljeyofswuijlyg.supabase.co',
-                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'
-                );
-                return true;
-            }
-            return false;
-        }
-        
         // Language toggle functionality
         const enBtn = document.getElementById('enBtn');
         const bnBtn = document.getElementById('bnBtn');
@@ -1271,6 +1453,15 @@
                     element.placeholder = element.getAttribute('data-bn-placeholder');
                 }
             });
+            
+            // Update alt attributes
+            document.querySelectorAll('[data-bn-alt]').forEach(element => {
+                if (currentLang === 'en' && element.getAttribute('data-en-alt')) {
+                    element.alt = element.getAttribute('data-en-alt');
+                } else {
+                    element.alt = element.getAttribute('data-bn-alt');
+                }
+            });
         }
         
         // Mobile menu toggle
@@ -1289,229 +1480,924 @@
             });
         });
         
-        // Fetch articles from Supabase
-        async function fetchArticles() {
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            const blogGrid = document.getElementById('blogGrid');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            try {
-                // Try to initialize Supabase
-                const supabaseInitialized = initializeSupabase();
-                
-                if (supabaseInitialized) {
-                    const { data, error } = await supabase
-                        .from('articles')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-                    
-                    if (error) {
-                        console.error('Error fetching articles:', error);
-                        throw error;
-                    }
-                    
-                    displayArticles(data);
-                } else {
-                    // If Supabase is not available, use local data
-                    console.warn('Supabase not available, using local data');
-                    loadLocalArticles();
-                }
-            } catch (err) {
-                console.error('Error:', err);
-                // Show error message
-                loadingSpinner.style.display = 'none';
-                errorMessage.style.display = 'block';
-                
-                // Try to load local data as fallback
-                setTimeout(() => {
-                    loadLocalArticles();
-                }, 3000);
-            }
-        }
+        // Carousel functionality
+        const carouselTrack = document.querySelector('.carousel-track');
+        const slides = document.querySelectorAll('.carousel-slide');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        const indicators = document.querySelectorAll('.indicator');
         
-        // Load local articles as fallback
-        function loadLocalArticles() {
-            const localArticles = [
-                {
-                    id: 1,
-                    title_bn: "রক্তদান সম্পর্কে শীর্ষ ৫টি ভুল ধারণা",
-                    title_en: "Top 5 Myths About Blood Donation",
-                    category_bn: "ভুল ধারণা",
-                    category_en: "Myths",
-                    excerpt_bn: "রক্তদান সম্পর্কে সাধারণ ভুল ধারণাগুলি দূর করা যা মানুষকে জীবন বাঁচাতে বাধা দেয়।",
-                    excerpt_en: "Debunking common misconceptions about blood donation that prevent people from saving lives.",
-                    image_url: "https://images.unsplash.com/photo-1615461065157-867b1897ce60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-                    content_bn: `রক্তদান একটি জীবন বাঁচানোর কাজ, তবুও অনেক মানুষ ভুল ধারণা এবং মিথের কারণে দ্বিধাগ্রস্ত হয়। আসুন রক্তদান সম্পর্কে শীর্ষ ৫টি মিথ ভেঙ্গে দেখি যা আপনাকে দাতা হতে বাধা দিতে পারে।`,
-                    content_en: `Blood donation is a life-saving act, yet many people hesitate due to misconceptions and myths. Let's debunk the top 5 myths about blood donation that might be preventing you from becoming a donor.`,
-                    category: "myths"
-                },
-                {
-                    id: 2,
-                    title_bn: "রক্তদানের আগে এবং পরে কী খাবেন",
-                    title_en: "What To Eat Before and After Donating Blood",
-                    category_bn: "পরামর্শ",
-                    category_en: "Tips",
-                    excerpt_bn: "রক্তদানের জন্য প্রস্তুতি এবং পুনরুদ্ধারে সহায়তা করার জন্য পুষ্টি নির্দেশিকা।",
-                    excerpt_en: "Nutritional guidelines to help you prepare for and recover from blood donation.",
-                    image_url: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-                    content_bn: `রক্তদানের আগে এবং পরে সঠিক পুষ্টি অভিজ্ঞতাটিকে আরও আরামদায়ক করতে পারে এবং আপনার শরীরকে দ্রুত পুনরুদ্ধার করতে সাহায্য করতে পারে।`,
-                    content_en: `Proper nutrition before and after blood donation can make the experience more comfortable and help your body recover faster.`,
-                    category: "tips"
-                },
-                {
-                    id: 3,
-                    title_bn: "একজন অপরিচিত ব্যক্তি আমার জীবন বাঁচাল - প্রকৃত দাতার গল্প",
-                    title_en: "A Stranger Saved My Life – Real Donor Story",
-                    category_bn: "গল্প",
-                    category_en: "Stories",
-                    excerpt_bn: "কীভাবে একটি রক্তদান একটি জীবন বাঁচিয়েছে এবং দুটি পরিবারকে চিরতরে পরিবর্তন করেছে তার হৃদয় স্পর্শকারী গল্প।",
-                    excerpt_en: "Heartwarming story of how a blood donation saved a life and changed two families forever.",
-                    image_url: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-                    content_bn: `সারাহ জনসন কখনো ভাবেননি যে তার রক্ত লাগবে। ৩২ বছর বয়সে, তিনি সুস্থ, সক্রিয় ছিলেন এবং একজন শিক্ষক হিসাবে সফল কর্মজীবন ছিল।`,
-                    content_en: `Sarah Johnson never thought she would need blood. At 32, she was healthy, active, and had a successful career as a teacher.`,
-                    category: "stories"
-                },
-                {
-                    id: 4,
-                    title_bn: "আপনি কত ঘন ঘন রক্ত দিতে পারেন?",
-                    title_en: "How Often Can You Donate Blood?",
-                    category_bn: "তথ্য",
-                    category_en: "Facts",
-                    excerpt_bn: "রক্তদানের জন্য সুপারিশকৃত ফ্রিকোয়েন্সি এবং নির্দেশিকা বোঝা।",
-                    excerpt_en: "Understanding the recommended frequency and guidelines for blood donation.",
-                    image_url: "https://images.unsplash.com/photo-1584362917165-526a968579e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-                    content_bn: `রক্তদান একটি উদার কাজ যা জীবন বাঁচায়, কিন্তু অনেক দাতা আশ্চর্য হন যে তারা কত ঘন ঘন নিরাপদে রক্ত দিতে পারেন।`,
-                    content_en: `Blood donation is a generous act that saves lives, but many donors wonder how frequently they can safely give blood.`,
-                    category: "facts"
-                },
-                {
-                    id: 5,
-                    title_bn: "নারী এবং রক্তদান - পক্ষপাত ভাঙা",
-                    title_en: "Women and Blood Donation – Breaking the Bias",
-                    category_bn: "ভুল ধারণা",
-                    category_en: "Myths",
-                    excerpt_bn: "লিঙ্গ-নির্দিষ্ট উদ্বেগ সমাধান এবং আরও মহিলাদের নিয়মিত দাতা হতে উৎসাহিত করা।",
-                    excerpt_en: "Addressing gender-specific concerns and encouraging more women to become regular donors.",
-                    image_url: "https://images.unsplash.com/photo-1616247996575-1f0b14d7b9cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-                    content_bn: `জনসংখ্যার প্রায় অর্ধেক হওয়া সত্ত্বেও, রক্তদাতাদের মধ্যে মহিলারা কম প্রতিনিধিত্ব করে।`,
-                    content_en: `Despite making up roughly half of the population, women are underrepresented among blood donors.`,
-                    category: "myths"
-                },
-                {
-                    id: 6,
-                    title_bn: "রক্তের গ্রুপের সামঞ্জস্যতা বোঝা",
-                    title_en: "Understanding Blood Type Compatibility",
-                    category_bn: "তথ্য",
-                    category_en: "Facts",
-                    excerpt_bn: "রক্তের গ্রুপ এবং কে কাকে রক্ত দিতে পারে তার একটি বিস্তৃত নির্দেশিকা।",
-                    excerpt_en: "A comprehensive guide to blood types and who can donate to whom.",
-                    image_url: "https://images.unsplash.com/photo-1615461065157-867b1897ce60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-                    content_bn: `রক্তের গ্রুপের সামঞ্জস্যতা রক্ত সঞ্চালন এবং অঙ্গ প্রতিস্থাপনের একটি গুরুত্বপূর্ণ দিক।`,
-                    content_en: `Blood type compatibility is a crucial aspect of blood transfusions and organ transplants.`,
-                    category: "facts"
-                },
-                {
-                    id: 7,
-                    title_bn: "রক্ত দান কেন গুরুত্বপূর্ণ?",
-                    title_en: "Why Donate Blood?",
-                    category_bn: "শিক্ষামূলক",
-                    category_en: "Educational",
-                    excerpt_bn: "রক্তদানের উপকারিতা এবং কীভাবে এটি দাতা এবং প্রাপক উভয়ের জন্য জীবন বাঁচায়।",
-                    excerpt_en: "The benefits of blood donation and how it saves lives for both donors and recipients.",
-                    image_url: "https://images.unsplash.com/photo-1584362917165-526a968579e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-                    content_bn: `রক্তদান একটি সহজ কিন্তু শক্তিশালী উপায় যা আপনি অন্যের জীবন বাঁচাতে ব্যবহার করতে পারেন।`,
-                    content_en: `Blood donation is a simple yet powerful way you can help save lives.`,
-                    category: "educational"
-                },
-                {
-                    id: 8,
-                    title_bn: "কে রক্ত দিতে পারে?",
-                    title_en: "Who Can Donate Blood?",
-                    category_bn: "শিক্ষামূলক",
-                    category_en: "Educational",
-                    excerpt_bn: "রক্তদানের যোগ্যতার মানদণ্ড এবং নির্দেশিকা জানুন।",
-                    excerpt_en: "Learn about the eligibility criteria and guidelines for blood donation.",
-                    image_url: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-                    content_bn: `রক্তদান একটি উদার কাজ, কিন্তু সবাই দাতা হতে পারে না।`,
-                    content_en: `Blood donation is a generous act, but not everyone can be a donor.`,
-                    category: "educational"
-                },
-                {
-                    id: 9,
-                    title_bn: "রক্ত দেওয়ার পরে কী হয়?",
-                    title_en: "What Happens After You Donate Blood?",
-                    category_bn: "শিক্ষামূলক",
-                    category_en: "Educational",
-                    excerpt_bn: "রক্তদান প্রক্রিয়া শেষে আপনার দান করা রক্তের যাত্রা এবং পুনরুদ্ধার প্রক্রিয়া।",
-                    excerpt_en: "The journey of your donated blood and the recovery process after donation.",
-                    image_url: "https://images.unsplash.com/photo-1616247996575-1f0b14d7b9cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-                    content_bn: `রক্তদান প্রক্রিয়া শেষ হওয়ার পরে, আপনার দান করা রক্তের একটি যাত্রা শুরু হয়।`,
-                    content_en: `After the blood donation process is complete, your donated blood begins a journey.`,
-                    category: "educational"
-                }
-            ];
-            
-            displayArticles(localArticles);
-        }
+        let currentSlide = 0;
+        const slideWidth = 100; // 100% width
+        let autoSlideInterval;
         
-        // Display articles in the blog grid
-        function displayArticles(articles) {
-            const blogGrid = document.getElementById('blogGrid');
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            const errorMessage = document.getElementById('errorMessage');
+        // Function to update carousel position
+        function updateCarousel() {
+            carouselTrack.style.transform = `translateX(-${currentSlide * slideWidth}%)`;
             
-            // Clear loading spinner and error message, show blog grid
-            loadingSpinner.style.display = 'none';
-            errorMessage.style.display = 'none';
-            blogGrid.style.display = 'grid';
-            blogGrid.innerHTML = '';
-            
-            articles.forEach(article => {
-                const card = document.createElement('div');
-                card.className = 'blog-card';
-                card.setAttribute('data-category', article.category);
-                
-                const title = currentLang === 'bn' ? article.title_bn : article.title_en;
-                const category = currentLang === 'bn' ? article.category_bn : article.category_en;
-                const excerpt = currentLang === 'bn' ? article.excerpt_bn : article.excerpt_en;
-                const content = currentLang === 'bn' ? article.content_bn : article.content_en;
-                
-                card.innerHTML = `
-                    <img src="${article.image_url}" alt="${title}">
-                    <div class="blog-content">
-                        <span class="blog-category">${category}</span>
-                        <h3 class="blog-title">${title}</h3>
-                        <p class="blog-excerpt">${excerpt}</p>
-                        <button class="read-more-btn" data-id="${article.id}" data-bn="আরও পড়ুন" data-en="Read More">${currentLang === 'bn' ? 'আরও পড়ুন' : 'Read More'}</button>
-                    </div>
-                `;
-                
-                // Store article content for modal
-                if (!window.blogArticles) {
-                    window.blogArticles = {};
-                }
-                
-                window.blogArticles[article.id] = {
-                    title: {
-                        bn: article.title_bn,
-                        en: article.title_en
-                    },
-                    category: {
-                        bn: article.category_bn,
-                        en: article.category_en
-                    },
-                    content: {
-                        bn: article.content_bn,
-                        en: article.content_en
-                    }
-                };
-                
-                blogGrid.appendChild(card);
+            // Update indicators
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentSlide);
             });
         }
         
+        // Function to go to next slide
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateCarousel();
+        }
+        
+        // Function to go to previous slide
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateCarousel();
+        }
+        
+        // Function to go to specific slide
+        function goToSlide(slideIndex) {
+            currentSlide = slideIndex;
+            updateCarousel();
+        }
+        
+        // Event listeners for carousel buttons
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+        
+        // Event listeners for indicators
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => goToSlide(index));
+        });
+        
+        // Auto slide functionality
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+        }
+        
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+        
+        // Start auto slide
+        startAutoSlide();
+        
+        // Pause auto slide on hover
+        const carouselContainer = document.querySelector('.carousel-container');
+        carouselContainer.addEventListener('mouseenter', stopAutoSlide);
+        carouselContainer.addEventListener('mouseleave', startAutoSlide);
+        
+        // Blog articles data in both languages
+        const blogArticles = {
+            1: {
+                title: {
+                    bn: "রক্তদান সম্পর্কে শীর্ষ ৫টি ভুল ধারণা",
+                    en: "Top 5 Myths About Blood Donation"
+                },
+                category: {
+                    bn: "ভুল ধারণা",
+                    en: "Myths"
+                },
+                content: {
+                    bn: `
+                        <p>রক্তদান একটি জীবন বাঁচানোর কাজ, তবুও অনেক মানুষ ভুল ধারণা এবং মিথের কারণে দ্বিধাগ্রস্ত হয়। আসুন রক্তদান সম্পর্কে শীর্ষ ৫টি মিথ ভেঙ্গে দেখি যা আপনাকে দাতা হতে বাধা দিতে পারে।</p>
+                        
+                        <p><strong>মিথ ১: রক্ত দেওয়া বেদনাদায়ক।</strong><br>
+                        বাস্তবতা: অস্বস্তি ন্যূনতম এবং সংক্ষিপ্ত, হালকা চিমটির মতো। বেশিরভাগ দাতা রিপোর্ট করেন যে সুই ঢোকানোর সময় শুধুমাত্র একটি সামান্য কামড় অনুভব করেন, যা মাত্র এক সেকেন্ড স্থায়ী হয়।</p>
+                        
+                        <p><strong>মিথ ২: রক্ত দেওয়ার মাধ্যমে আপনি রোগে আক্রান্ত হতে পারেন।</strong><br>
+                        বাস্তবতা: রক্তদানে ব্যবহৃত সমস্ত সরঞ্জাম জীবাণুমুক্ত, শুধুমাত্র একবার ব্যবহার করা হয়, এবং তারপর ফেলে দেওয়া হয়। প্রক্রিয়াটি সম্পূর্ণ নিরাপদ, এবং দাতারা দানের মাধ্যমে কোনও রোগে আক্রান্ত হতে পারেন না।</p>
+                        
+                        <p><strong>মিথ ৩: নিরামিষাশী এবং ভেগানরা রক্ত দিতে পারে না।</strong><br>
+                        বাস্তবতা: আপনার খাদ্যাভ্যাস আপনার রক্ত দেওয়ার ক্ষমতাকে প্রভাবিত করে না যতক্ষণ না আপনি স্বাস্থ্যকর আয়রন স্তর বজায় রাখেন। নিরামিষাশী এবং ভেগানরা অন্য যে কারও মতো রক্ত দিতে পারে।</p>
+                        
+                        <p><strong>মিথ ৪: বয়স্ক মানুষ রক্ত দিতে পারে না।</strong><br>
+                        বাস্তবতা: অনেক দেশে রক্তদানের জন্য কোনো উচ্চ বয়সসীমা নেই। যতক্ষণ আপনি সুস্থ আছেন এবং অন্যান্য যোগ্যতার মানদণ্ড পূরণ করেন, আপনি বয়স নির্বিশেষে রক্ত দিতে পারেন।</p>
+                        
+                        <p><strong>মিথ ৫: ওষুধ গ্রহণ আপনাকে দান থেকে অযোগ্য করে তোলে।</strong><br>
+                        বাস্তবতা: সমস্ত ওষুধ আপনাকে রক্ত দিতে বাধা দেয় না। অনেক সাধারণ ওষুধ গ্রহণযোগ্য। সেরা পদ্ধতি হল রক্তদান কেন্দ্রের কর্মীদের সাথে আপনার ওষুধ নিয়ে আলোচনা করা।</p>
+                        
+                        <p>তথ্যগুলি বোঝার মাধ্যমে, আমরা এই মিথগুলি কাটিয়ে উঠতে পারি এবং আরও মানুষকে নিয়মিত রক্তদাতা হতে উৎসাহিত করতে পারি, সম্ভাব্যভাবে অসংখ্য জীবন বাঁচাতে পারি।</p>
+                    `,
+                    en: `
+                        <p>Blood donation is a life-saving act, yet many people hesitate due to misconceptions and myths. Let's debunk the top 5 myths about blood donation that might be preventing you from becoming a donor.</p>
+                        
+                        <p><strong>Myth 1: Donating blood is painful.</strong><br>
+                        Reality: The discomfort is minimal and brief, similar to a mild pinch. Most donors report feeling only a slight sting when the needle is inserted, which lasts for just a second.</p>
+                        
+                        <p><strong>Myth 2: You can contract diseases from donating blood.</strong><br>
+                        Reality: All equipment used for blood donation is sterile, used only once, and then discarded. The process is completely safe, and donors cannot contract any diseases through donation.</p>
+                        
+                        <p><strong>Myth 3: Vegetarians and vegans cannot donate blood.</strong><br>
+                        Reality: Your diet doesn't affect your ability to donate blood as long as you maintain healthy iron levels. Vegetarians and vegans can donate blood just like anyone else.</p>
+                        
+                        <p><strong>Myth 4: Elderly people cannot donate blood.</strong><br>
+                        Reality: There is no upper age limit for blood donation in many countries. As long as you're in good health and meet other eligibility criteria, you can donate blood regardless of age.</p>
+                        
+                        <p><strong>Myth 5: Taking medication disqualifies you from donating.</strong><br>
+                        Reality: Not all medications prevent you from donating blood. Many common medications are acceptable. The best approach is to discuss your medications with the blood donation center staff.</p>
+                        
+                        <p>By understanding the facts, we can overcome these myths and encourage more people to become regular blood donors, potentially saving countless lives.</p>
+                    `
+                }
+            },
+            2: {
+                title: {
+                    bn: "রক্তদানের আগে এবং পরে কী খাবেন",
+                    en: "What To Eat Before and After Donating Blood"
+                },
+                category: {
+                    bn: "পরামর্শ",
+                    en: "Tips"
+                },
+                content: {
+                    bn: `
+                        <p>রক্তদানের আগে এবং পরে সঠিক পুষ্টি অভিজ্ঞতাটিকে আরও আরামদায়ক করতে পারে এবং আপনার শরীরকে দ্রুত পুনরুদ্ধার করতে সাহায্য করতে পারে। রক্ত দেওয়ার সময় কী খাবেন তার একটি বিস্তৃত নির্দেশিকা এখানে দেওয়া হল।</p>
+                        
+                        <p><strong>দানের আগে:</strong></p>
+                        <p>১. <strong>আয়রন-সমৃদ্ধ খাবার:</strong> আপনার দানের কয়েক দিন আগে আয়রন-সমৃদ্ধ খাবার খান। এর মধ্যে রয়েছে লাল মাংস, হাঁস-মুরগি, মাছ, শিম, পালং শাক, কেল এবং ফোর্টিফায়েড সিরিয়াল।</p>
+                        
+                        <p>২. <strong>ভিটামিন সি:</strong> আয়রন শোষণ বাড়াতে আয়রন-সমৃদ্ধ খাবারের সাথে ভিটামিন সি যোগ করুন। সাইট্রাস ফল, টমেটো এবং বেল মরিচ চমৎকার উৎস।</p>
+                        
+                        <p>৩. <strong>হাইড্রেশন:</strong> দানের ২৪ ঘন্টা আগে প্রচুর পরিমাণে জল বা অ্যালকোহলবিহীন পানীয় পান করুন। সঠিক হাইড্রেশন আপনার রক্তের আয়তন বজায় রাখতে সাহায্য করে।</p>
+                        
+                        <p>৪. <strong>চর্বিযুক্ত খাবার এড়িয়ে চলুন:</strong> দানের দিন চর্বিযুক্ত খাবার এড়িয়ে চলুন, কারণ এগুলি আপনার রক্তে করা পরীক্ষাগুলিকে প্রভাবিত করতে পারে।</p>
+                        
+                        <p>৫. <strong>হালকা খাবার:</strong> দান করার ২-৩ ঘন্টা আগে একটি হালকা খাবার খান। খাবার এড়িয়ে চলবেন না, কারণ এটি মাথা ঘোরার কারণ হতে পারে।</p>
+                        
+                        <p><strong>দানের পরে:</strong></p>
+                        <p>১. <strong>তরল পূরণ করুন:</strong> পরবর্তী ২৪-৪৮ ঘন্টার জন্য আরও তরল পান করুন যাতে আপনার শরীর দানের সময় হারিয়ে যাওয়া তরল পূরণ করতে সাহায্য করে।</p>
+                        
+                        <p>২. <strong>আয়রন-সমৃদ্ধ স্ন্যাকস:</strong> বাদাম, বীজ, শুকনো ফল, বা চর্বিহীন মাংসের একটি ছোট অংশের মতো আয়রন-সমৃদ্ধ স্ন্যাকস উপভোগ করুন।</p>
+                        
+                        <p>৩. <strong>প্রোটিন:</strong> আপনার শরীরকে রক্ত কোষ পুনর্নির্মাণে সাহায্য করার জন্য আপনার দান-পরবর্তী খাবারে প্রোটিন অন্তর্ভুক্ত করুন।</p>
+                        
+                        <p>৪. <strong>অ্যালকোহল এড়িয়ে চলুন:</strong> দানের পরে অন্তত ২৪ ঘন্টার জন্য অ্যালকোহলযুক্ত পানীয় থেকে বিরত থাকুন।</p>
+                        
+                        <p>৫. <strong>বিশ্রাম:</strong> দান করার পরে দিনের বাকি সময়ের জন্য কঠোর কার্যকলাপ এড়িয়ে চলুন।</p>
+                        
+                        <p>এই পুষ্টি নির্দেশিকাগুলি অনুসরণ করা একটি ইতিবাচক দান অভিজ্ঞতা এবং দ্রুত পুনরুদ্ধার নিশ্চিত করতে সাহায্য করবে, যা আপনাকে আবার শীঘ্রই দান করতে দেবে।</p>
+                    `,
+                    en: `
+                        <p>Proper nutrition before and after blood donation can make the experience more comfortable and help your body recover faster. Here's a comprehensive guide on what to eat when donating blood.</p>
+                        
+                        <p><strong>Before Donation:</strong></p>
+                        <p>1. <strong>Iron-Rich Foods:</strong> Eat iron-rich foods for a few days leading up to your donation. This includes red meat, poultry, fish, beans, spinach, kale, and fortified cereals.</p>
+                        
+                        <p>2. <strong>Vitamin C:</strong> Pair iron-rich foods with vitamin C to enhance absorption. Citrus fruits, tomatoes, and bell peppers are excellent sources.</p>
+                        
+                        <p>3. <strong>Hydration:</strong> Drink plenty of water or non-alcoholic beverages in the 24 hours before donation. Proper hydration helps maintain your blood volume.</p>
+                        
+                        <p>4. <strong>Avoid Fatty Foods:</strong> Skip fatty foods on the day of donation, as they can affect the tests performed on your blood.</p>
+                        
+                        <p>5. <strong>Light Meal:</strong> Eat a light meal 2-3 hours before donating. Avoid skipping meals, as this can lead to lightheadedness.</p>
+                        
+                        <p><strong>After Donation:</strong></p>
+                        <p>1. <strong>Replenish Fluids:</strong> Drink more liquids for the next 24-48 hours to help your body replenish the fluids lost during donation.</p>
+                        
+                        <p>2. <strong>Iron-Rich Snacks:</strong> Enjoy iron-rich snacks like nuts, seeds, dried fruits, or a small portion of lean meat.</p>
+                        
+                        <p>3. <strong>Protein:</strong> Include protein in your post-donation meals to help your body rebuild blood cells.</p>
+                        
+                        <p>4. <strong>Avoid Alcohol:</strong> Refrain from alcoholic beverages for at least 24 hours after donation.</p>
+                        
+                        <p>5. <strong>Rest:</strong> Avoid strenuous activities for the rest of the day after donating.</p>
+                        
+                        <p>Following these nutritional guidelines will help ensure a positive donation experience and a quick recovery, allowing you to donate again sooner.</p>
+                    `
+                }
+            },
+            3: {
+                title: {
+                    bn: "একজন অপরিচিত ব্যক্তি আমার জীবন বাঁচাল - প্রকৃত দাতার গল্প",
+                    en: "A Stranger Saved My Life – Real Donor Story"
+                },
+                category: {
+                    bn: "গল্প",
+                    en: "Stories"
+                },
+                content: {
+                    bn: `
+                        <p>সারাহ জনসন কখনো ভাবেননি যে তার রক্ত লাগবে। ৩২ বছর বয়সে, তিনি সুস্থ, সক্রিয় ছিলেন এবং একজন শিক্ষক হিসাবে সফল কর্মজীবন ছিল। কিন্তু একটি নিয়মিত চেকআপ সবকিছু পাল্টে দেয়।</p>
+                        
+                        <p>"ডাক্তার আমার রক্ত পরীক্ষায় কিছু অস্বাভাবিকতা পেয়েছেন," সারাহ স্মরণ করেন। "আরও পরীক্ষায় দেখা গেছে আমার একটি বিরল রক্ত ব্যাধি আছে যার জন্য বেঁচে থাকতে নিয়মিত রক্ত সঞ্চালনের প্রয়োজন হবে।"</p>
+                        
+                        <p>পরবর্তী কয়েক মাস ধরে, সারাহর অবস্থার অবনতি হয়। তিনি দুর্বল হয়ে পড়েন, কাজ করতে অক্ষম হন, এবং তার বেশিরভাগ দিন হাসপাতালে এবং বাইরে কাটান। তার ডাক্তাররা তাকে বলেছিলেন যে তার অবস্থা স্থিতিশীল করার জন্য তার উল্লেখযোগ্য পরিমাণে রক্তের প্রয়োজন হবে।</p>
+                        
+                        <p>"আমি ভীত ছিলাম," সারাহ বলেন। "আমি কখনও ভাবিনি যে প্রয়োজনের সময় রক্ত কোথা থেকে আসে। আমি শুধু ধরে নিয়েছিলাম যে এটি সেখানে থাকবে।"</p>
+                        
+                        <p>যা সারাহ জানতেন না তা হল শহরের অন্য প্রান্তে, মাইকেল রদ্রিগেজ প্রথমবারের মতো রক্ত দান করার প্রস্তুতি নিচ্ছিলেন। "আমার সহকর্মীর স্ত্রী অসুস্থ ছিলেন এবং রক্তের প্রয়োজন ছিল," মাইকেল ব্যাখ্যা করেন। "আমাদের অফিস একটি রক্তদান কর্মসূচির আয়োজন করেছিল, এবং আমি অংশগ্রহণ করার সিদ্ধান্ত নিয়েছি।"</p>
+                        
+                        <p>মাইকেলের দানটি সারাহর বিরল রক্তের গ্রুপের জন্য একটি নিখুঁত মিল ছিল। "ডাক্তাররা আমাকে বলেছিলেন যে একজন অপরিচিত ব্যক্তির রক্ত আমার জীবন বাঁচিয়েছে," সারাহ বলেন, তার চোখে অশ্রু ভরে ওঠে। "আমি বিশ্বাস করতে পারিনি যে কেউ এমন কিছু করবে যাকে সে এমনকি চিনতেও পারে না।"</p>
+                        
+                        <p>তার সুস্থ হওয়ার পর, সারাহ সেই ব্যক্তির সাথে দেখা করার দৃঢ়প্রতিজ্ঞ ছিলেন যিনি তার জীবন বাঁচিয়েছিলেন। রক্ত ব্যাঙ্কের বেনামী যোগাযোগ ব্যবস্থার মাধ্যমে, তিনি মাইকেলকে একটি চিঠি পাঠাতে সক্ষম হন।</p>
+                        
+                        <p>"যখন আমি সেই চিঠিটি পেয়েছিলাম, তখন তা অভিভূত করেছিল," মাইকেল বলেন। "আমার কোনো ধারণা ছিল না যে আমার দান এত বড় প্রভাব ফেলবে। এটি আমাকে বুঝতে সাহায্য করেছে যে রক্তদান আসলে কতটা গুরুত্বপূর্ণ।"</p>
+                        
+                        <p>অবশেষে তারা দেখা করে, এবং একটি অপ্রত্যাশিত বন্ধুত্ব গড়ে ওঠে। আজ, উভয়েই রক্তদানের জন্য উত্সাহী সমর্থক, ইভেন্টগুলিতে তাদের গল্প শেয়ার করছে এবং অন্যদের দান করতে উৎসাহিত করছে।</p>
+                        
+                        <p>"আমি আগে সূঁচ থেকে ভয় পেতাম," সারাহ স্বীকার করেন। "কিন্তু এখন আমি নিয়মিত রক্ত দান করি। আমি অন্য কাউকে সেই জীবনের সুযোগ দিতে চাই যা মাইকেল আমাকে দিয়েছে।"</p>
+                        
+                        <p>মাইকেলও একজন নিয়মিত দাতা হয়েছেন। "জেনে রাখা যে আমি সারাহর মতো কাউকে সাহায্য করতে পারি তা প্রতিটি দানকে মূল্যবান করে তোলে," তিনি বলেন। "এটি জীবন বাঁচানোর সবচেয়ে সহজ উপায়।"</p>
+                        
+                        <p>তাদের গল্পটি রক্তদানের প্রভাব এবং অপরিচিতদের মধ্যে এটি যে সংযোগ তৈরি করতে পারে তার একটি শক্তিশালী স্মরণ করিয়ে দেয়। যেমনটি সারাহ বলেন, "রক্তদান শুধু জীবন বাঁচায় না—এটি নায়কদের একটি সম্প্রদায় তৈরি করে।"</p>
+                    `,
+                    en: `
+                        <p>Sarah Johnson never thought she would need blood. At 32, she was healthy, active, and had a successful career as a teacher. But a routine check-up changed everything.</p>
+                        
+                        <p>"The doctor found some abnormalities in my blood work," Sarah recalls. "Further tests revealed I had a rare blood disorder that would require regular transfusions to survive."</p>
+                        
+                        <p>Over the next few months, Sarah's condition worsened. She became weak, unable to work, and spent most of her days in and out of hospitals. Her doctors told her she would need a significant amount of blood to stabilize her condition.</p>
+                        
+                        <p>"I was scared," Sarah says. "I had never really thought about where blood comes from when you need it. I just assumed it would be there."</p>
+                        
+                        <p>What Sarah didn't know was that across town, Michael Rodriguez was preparing to donate blood for the first time. "My coworker's wife was sick and needed blood," Michael explains. "Our office organized a blood drive, and I decided to participate."</p>
+                        
+                        <p>Michael's donation was a perfect match for Sarah's rare blood type. "The doctors told me that a stranger's blood had saved my life," Sarah says, tears welling in her eyes. "I couldn't believe someone would do that for someone they didn't even know."</p>
+                        
+                        <p>After her recovery, Sarah was determined to meet the person who had saved her life. Through the blood bank's anonymous contact system, she was able to send a letter to Michael.</p>
+                        
+                        <p>"When I received that letter, it was overwhelming," Michael says. "I had no idea my donation would have such an impact. It made me realize how important blood donation really is."</p>
+                        
+                        <p>The two eventually met, and an unexpected friendship formed. Today, both are passionate advocates for blood donation, sharing their story at events and encouraging others to donate.</p>
+                        
+                        <p>"I used to be afraid of needles," Sarah admits. "But now I donate regularly. I want to give someone else the chance at life that Michael gave me."</p>
+                        
+                        <p>Michael has become a regular donor as well. "Knowing that I can help someone like Sarah makes every donation worthwhile," he says. "It's the easiest way to save a life."</p>
+                        
+                        <p>Their story is a powerful reminder of the impact of blood donation and the connections it can create between strangers. As Sarah puts it, "Blood donation doesn't just save lives—it creates a community of heroes."</p>
+                    `
+                }
+            },
+            4: {
+                title: {
+                    bn: "আপনি কত ঘন ঘন রক্ত দিতে পারেন?",
+                    en: "How Often Can You Donate Blood?"
+                },
+                category: {
+                    bn: "তথ্য",
+                    en: "Facts"
+                },
+                content: {
+                    bn: `
+                        <p>রক্তদান একটি উদার কাজ যা জীবন বাঁচায়, কিন্তু অনেক দাতা আশ্চর্য হন যে তারা কত ঘন ঘন নিরাপদে রক্ত দিতে পারেন। উত্তরটি বেশ কয়েকটি কারণের উপর নির্ভর করে, যার মধ্যে রয়েছে দানের ধরণ এবং আপনার ব্যক্তিগত স্বাস্থ্য।</p>
+                        
+                        <p><strong>সম্পূর্ণ রক্ত দান:</strong></p>
+                        <p>সম্পূর্ণ রক্ত দানের জন্য (সবচেয়ে সাধারণ ধরন), দানের মধ্যে মানসম্মত অপেক্ষার সময়কাল ৮ সপ্তাহ (৫৬ দিন)। এই ব্যবধানটি আপনার শরীরকে দানের সময় হারিয়ে যাওয়া লোহিত রক্তকণিকা পুনরুদ্ধার করার জন্য পর্যাপ্ত সময় দেয়।</p>
+                        
+                        <p>লোহিত রক্তকণিকার আয়ুকাল প্রায় ১২০ দিন, এবং আপনার শরীর ক্রমাগত নতুন কণিকা তৈরি করে। এক ইউনিট রক্ত দান করার পরে (প্রায় ৪৫০ মিলি), আপনার শরীর সাধারণত ২৪ ঘন্টার মধ্যে হারিয়ে যাওয়া প্লাজমা প্রতিস্থাপন করে, কিন্তু লোহিত রক্তকণিকা সম্পূর্ণরূপে পুনরুদ্ধার করতে প্রায় ৪-৬ সপ্তাহ সময় লাগে।</p>
+                        
+                        <p><strong>প্লেটলেট দান:</strong></p>
+                        <p>প্লেটলেট দাতারা আরও ঘন ঘন দিতে পারেন কারণ দান প্রক্রিয়ার সময় শুধুমাত্র প্লেটলেট সংগ্রহ করা হয়, এবং আপনার শরীর দ্রুত সেগুলি পূরণ করে। আপনি প্রতি ৭ দিনে প্লেটলেট দান করতে পারেন, বছরে সর্বোচ্চ ২৪ বার।</p>
+                        
+                        <p><strong>প্লাজমা দান:</strong></p>
+                        <p>প্লাজমা দাতারা সাধারণত প্রতি ২৮ দিনে (বছরে সর্বোচ্চ ১৩ বার) দান করতে পারেন। প্লাজমা হল আপনার রক্তের তরল অংশ এবং ২৪ ঘন্টার মধ্যে প্রতিস্থাপিত হয়।</p>
+                        
+                        <p><strong>ডাবল রেড সেল দান:</strong></p>
+                        <p>ডাবল রেড সেল দান (অ্যাফেরেসিস নামেও পরিচিত) সম্পূর্ণ রক্ত দানের চেয়ে দ্বিগুণ পরিমাণে লোহিত রক্তকণিকা সংগ্রহ করে। এর কারণে, অপেক্ষার সময়কাল দীর্ঘ হয়—সাধারণত দানের মধ্যে ১৬ সপ্তাহ (১১২ দিন)।</p>
+                        
+                        <p><strong>দানের ফ্রিকোয়েন্সিকে প্রভাবিত কারণগুলি:</strong></p>
+                        <p>বেশ কয়েকটি কারণ আপনি কত ঘন ঘন রক্ত দিতে পারেন তা প্রভাবিত করতে পারে:</p>
+                        
+                        <p>১. <strong>স্বাস্থ্য অবস্থা:</strong> আপনার সামগ্রিক স্বাস্থ্য একটি উল্লেখযোগ্য ভূমিকা পালন করে। আপনি যদি কোনো অসুস্থতা থেকে সেরে উঠছেন বা নির্দিষ্ট চিকিৎসা অবস্থায় আছেন, তাহলে আপনাকে দানের মধ্যে আরও বেশি সময় অপেক্ষা করতে হতে পারে।</p>
+                        
+                        <p>২. <strong>আয়রন স্তর:</strong> কম আয়রন স্তর সাময়িকভাবে আপনাকে দান থেকে বিরত রাখতে পারে। আপনার ডাক্তারের সুপারিশ অনুসারে ডায়েট বা সম্পূরকের মাধ্যমে স্বাস্থ্যকর আয়রন স্তর বজায় রাখা অত্যন্ত গুরুত্বপূর্ণ।</p>
+                        
+                        <p>৩. <strong>বয়স:</strong> যদিও অনেক দেশে দানের জন্য কোনো ঊর্ধ্ব বয়সসীমা নেই, তরুণ দাতাদের (সাধারণত ১৬-১৮ বছর বয়সী) অতিরিক্ত বিধিনিষেধ বা প্রয়োজনীয়তা থাকতে পারে।</p>
+                        
+                        <p>৪. <strong>গর্ভাবস্থা এবং ভ্রমণ:</strong> সম্প্রতি গর্ভাবস্থা বা নির্দিষ্ট দেশে ভ্রমণ সাময়িকভাবে আপনাকে দান থেকে বিরত রাখতে পারে।</p>
+                        
+                        <p><strong>আপনার দানের প্রভাব সর্বাধিক করা:</strong></p>
+                        <p>যতটা সম্ভব নিরাপদে ঘন ঘন দান করতে:</p>
+                        
+                        <p>১. আয়রন এবং ভিটামিন সমৃদ্ধ স্বাস্থ্যকর ডায়েট বজায় রাখুন।</p>
+                        <p>২. ভালভাবে হাইড্রেটেড থাকুন, বিশেষ করে দানের আগে এবং পরে।</p>
+                        <p>৩. পর্যাপ্ত বিশ্রাম নিন এবং দান করার পরে কঠোর কার্যকলাপ এড়িয়ে চলুন।</p>
+                        <p>৪. রক্ত কেন্দ্র দ্বারা প্রদত্ত দান-পরবর্তী নির্দেশিকা অনুসরণ করুন।</p>
+                        
+                        <p>মনে রাখবেন, দানের ফ্রিকোয়েন্সির নির্দেশিকাগুলি উভয় দাতা এবং প্রাপকের রক্ষা করার জন্য প্রতিষ্ঠিত। সর্বদা আপনার রক্তদান কেন্দ্র এবং স্বাস্থ্যসেবা প্রদানকারীর সুপারিশ অনুসরণ করুন।</p>
+                        
+                        <p>সুপারিশকৃত নির্দেশিকার মধ্যে নিয়মিত দান করে, আপনি রক্ত পণ্যের প্রয়োজনীয় ব্যক্তিদের জীবনে একটি উল্লেখযোগ্য প্রভাব ফেলতে পারেন।</p>
+                    `,
+                    en: `
+                        <p>Blood donation is a generous act that saves lives, but many donors wonder how frequently they can safely give blood. The answer depends on several factors, including the type of donation and your individual health.</p>
+                        
+                        <p><strong>Whole Blood Donation:</strong></p>
+                        <p>For whole blood donation (the most common type), the standard waiting period between donations is 8 weeks (56 days). This interval allows your body enough time to replenish the red blood cells lost during donation.</p>
+                        
+                        <p>Red blood cells have a lifespan of about 120 days, and your body continuously produces new ones. After donating a unit of blood (approximately 450 ml), your body typically replaces the lost plasma within 24 hours, but it takes about 4-6 weeks to completely restore the red blood cells.</p>
+                        
+                        <p><strong>Platelet Donation:</strong></p>
+                        <p>Platelet donors can give more frequently because only platelets are collected during the donation process, and your body replenishes them quickly. You can donate platelets every 7 days, up to 24 times a year.</p>
+                        
+                        <p><strong>Plasma Donation:</strong></p>
+                        <p>Plasma donors can typically donate every 28 days (up to 13 times a year). Plasma is the liquid portion of your blood and is replaced within 24 hours.</p>
+                        
+                        <p><strong>Double Red Cell Donation:</strong></p>
+                        <p>Double red cell donation (also known as apheresis) collects twice the amount of red cells as a whole blood donation. Because of this, the waiting period is longer—typically 16 weeks (112 days) between donations.</p>
+                        
+                        <p><strong>Factors Affecting Donation Frequency:</strong></p>
+                        <p>Several factors can influence how often you can donate blood:</p>
+                        
+                        <p>1. <strong>Health Status:</strong> Your overall health plays a significant role. If you're recovering from an illness or have certain medical conditions, you may need to wait longer between donations.</p>
+                        
+                        <p>2. <strong>Iron Levels:</strong> Low iron levels can temporarily defer you from donating. It's essential to maintain healthy iron levels through diet or supplements if recommended by your doctor.</p>
+                        
+                        <p>3. <strong>Age:</strong> While there's no upper age limit for donation in many countries, younger donors (typically 16-18 years old) may have additional restrictions or requirements.</p>
+                        
+                        <p>4. <strong>Pregnancy and Travel:</strong> Recent pregnancy or travel to certain countries may temporarily defer you from donation.</p>
+                        
+                        <p><strong>Maximizing Your Donation Impact:</strong></p>
+                        <p>To donate as frequently as safely possible:</p>
+                        
+                        <p>1. Maintain a healthy diet rich in iron and vitamins.</p>
+                        <p>2. Stay well-hydrated, especially before and after donation.</p>
+                        <p>3. Get adequate rest and avoid strenuous activity after donating.</p>
+                        <p>4. Follow the post-donation guidelines provided by the blood center.</p>
+                        
+                        <p>Remember, the guidelines for donation frequency are established to protect both donors and recipients. Always follow the recommendations of your blood donation center and healthcare provider.</p>
+                        
+                        <p>By donating regularly within the recommended guidelines, you can make a significant impact on the lives of those in need of blood products.</p>
+                    `
+                }
+            },
+            5: {
+                title: {
+                    bn: "নারী এবং রক্তদান - পক্ষপাত ভাঙা",
+                    en: "Women and Blood Donation – Breaking the Bias"
+                },
+                category: {
+                    bn: "ভুল ধারণা",
+                    en: "Myths"
+                },
+                content: {
+                    bn: `
+                        <p>জনসংখ্যার প্রায় অর্ধেক হওয়া সত্ত্বেও, রক্তদাতাদের মধ্যে মহিলারা কম প্রতিনিধিত্ব করে। এই বৈষম্য প্রায়শই ভুল ধারণা এবং লিঙ্গ-নির্দিষ্ট উদ্বেগের কারণে হয় যা মহিলাদের দান করতে নিরুৎসাহিত করে। আসুন এই পক্ষপাতগুলি ভেঙে ফেলি এবং আরও মহিলাদের নিয়মিত রক্তদাতা হতে উৎসাহিত করি।</p>
+                        
+                        <p><strong>নারী এবং রক্তদান সম্পর্কে সাধারণ ভুল ধারণা:</strong></p>
+                        
+                        <p><strong>মিথ ১: মহিলারা তাদের ঋতুস্রাবের সময় রক্ত দিতে পারে না।</strong><br>
+                        বাস্তবতা: ঋতুস্রাব স্বয়ংক্রিয়ভাবে মহিলাদের রক্ত দান থেকে অযোগ্য করে না। যতক্ষণ আপনি ভাল বোধ করেন এবং হিমোগ্লোবিনের প্রয়োজনীয়তা পূরণ করেন, আপনি আপনার ঋতুস্রাবের সময় দান করতে পারেন। যাইহোক, কিছু মহিলা ঋতুস্রাবের সময় কম আয়রন স্তর অনুভব করতে পারেন, তাই ভাল পুষ্টি বজায় রাখা অত্যন্ত গুরুত্বপূর্ণ।</p>
+                        
+                        <p><strong>মিথ ২: গর্ভবতী মহিলা বা নতুন মায়েরা রক্ত দিতে পারে না।</strong><br>
+                        বাস্তবতা: যদিও গর্ভবতী মহিলারা রক্ত দিতে পারে না এটি সত্য, এটি নিরাপত্তার কারণে একটি সাময়িক বিলম্ব। সন্তান প্রসবের পরে, মহিলাদের সাধারণত ৬ মাস থেকে এক বছরের জন্য বিলম্বিত করা হয়, দেশের বিধিনিষেধ এবং তারা স্তন্যপান করাচ্ছে কিনা তার উপর নির্ভর করে। এই সময়কালের পরে, তারা অন্যান্য সমস্ত যোগ্যতার মানদণ্ড পূরণ করলে দান পুনরায় শুরু করতে পারে।</p>
+                        
+                        <p><strong>মিথ ৩: জন্মনিয়ন্ত্রণে থাকা মহিলারা রক্ত দিতে পারে না।</strong><br>
+                        বাস্তবতা: জন্মনিয়ন্ত্রণের বেশিরভাগ ফর্ম রক্তদানের যোগ্যতাকে প্রভাবিত করে না। যাইহোক, নির্দিষ্ট ওষুধের বিলম্বিত সময়কাল থাকতে পারে। আপনার নির্দিষ্ট ওষুধ নিয়ে রক্তদান কেন্দ্রের কর্মীদের সাথে আলোচনা করা সর্বোত্তম।</p>
+                        
+                        <p><strong>মিথ ৪: রক্তদান প্রজনন ক্ষমতাকে প্রভাবিত করে।</strong><br>
+                        বাস্তবতা: রক্তদান এবং প্রজনন সমস্যার মধ্যে সংযোগ স্থাপনকারী কোনো বৈজ্ঞানিক প্রমাণ নেই। শরীর দ্রুত দান করা রক্তের আয়তন প্রতিস্থাপন করে, এবং প্রক্রিয়াটি প্রজনন স্বাস্থ্যকে প্রভাবিত করে না।</p>
+                        
+                        <p><strong>প্রকৃত উদ্বেগগুলি সমাধান করা:</strong></p>
+                        
+                        <p>যদিও অনেক উদ্বেগ মিথের উপর ভিত্তি করে, রক্তদানের ক্ষেত্রে মহিলারা কিছু বৈধ চ্যালেঞ্জের সম্মুখীন হন:</p>
+                        
+                        <p><strong>আয়রন স্তর:</strong> মহিলারা, বিশেষ করে প্রজননক্ষম বয়সীরা, ঋতুস্রাবের কারণে কম আয়রন স্তরের সম্ভাবনা বেশি। যদি হিমোগ্লোবিনের স্তর প্রয়োজনীয় সীমার নিচে থাকে তবে এটি কখনও কখনও বিলম্বের কারণ হতে পারে। এটি সমাধান করতে, মহিলারা আয়রন-সমৃদ্ধ ডায়েটের উপর ফোকাস করতে পারে এবং স্বাস্থ্যসেবা প্রদানকারীর সাথে পরামর্শ করে আয়রন সম্পূরক বিবেচনা করতে পারে।</p>
+                        
+                        <p><strong>ওজন এবং উচ্চতার প্রয়োজনীয়তা:</strong> রক্তদান কেন্দ্রগুলিতে দাতার নিরাপত্তা নিশ্চিত করার জন্য ন্যূনতম ওজন এবং উচ্চতার প্রয়োজনীয়তা রয়েছে। কিছু মহিলা এই সীমার নিচে পড়তে পারে, বিশেষ করে যদি তাদের ছোট শরীরের কাঠামো থাকে।</p>
+                        
+                        <p><strong>সময়ের সীমাবদ্ধতা:</strong> মহিলারা প্রায়শই একাধিক দায়িত্ব পালন করে, যার মধ্যে কাজ, শিশুর যত্ন এবং গৃহস্থালীর দায়িত্ব অন্তর্ভুক্ত, যা দানের জন্য সময় খুঁজে পেতে চ্যালেঞ্জিং করে তোলে।</p>
+                        
+                        <p><strong>মহিলাদের দান করতে উৎসাহিত করা:</strong></p>
+                        
+                        <p>১. <strong>শিক্ষা:</strong> যোগ্যতা এবং দান প্রক্রিয়া সম্পর্কে সঠিক তথ্য সরবরাহ করা মিথগুলি দূর করতে এবং উদ্বেগগুলি সমাধান করতে সাহায্য করতে পারে।</p>
+                        
+                        <p>২. <strong>সুবিধাজনক অবস্থান এবং সময়সূচী:</strong> কর্মক্ষেত্র, স্কুল এবং সম্প্রদায় কেন্দ্রগুলিতে মোবাইল রক্তদান কর্মসূচী অফার করা ব্যস্ত মহিলাদের জন্য দানকে আরও অ্যাক্সেসযোগ্য করে তুলতে পারে।</p>
+                        
+                        <p>৩. <strong>সহায়ক পরিবেশ:</strong> দান কেন্দ্রগুলিতে স্বাগত, আরামদায়ক পরিবেশ তৈরি করা উদ্বেগ কমাতে এবং প্রথমবারের দাতাদের উৎসাহিত করতে সাহায্য করতে পারে।</p>
+                        
+                        <p>৪. <strong>স্বীকৃতি এবং প্রশংসা:</strong> মহিলা দাতাদের অবদান স্বীকার করা অন্যদের তাদের উদাহরণ অনুসরণ করতে অনুপ্রাণিত করতে পারে।</p>
+                        
+                        <p>রক্তদানের মাধ্যমে ব্যাপক প্রভাব ফেলার ক্ষমতা মহিলাদের রয়েছে। পক্ষপাতগুলি ভেঙে এবং প্রকৃত উদ্বেগগুলি সমাধান করে, আমরা আরও মহিলাদের নিয়মিত দাতা হতে উৎসাহিত করতে পারি, যা শেষ পর্যন্ত আমাদের সম্প্রদায়ের আরও বেশি জীবন বাঁচাবে।</p>
+                    `,
+                    en: `
+                        <p>Despite making up roughly half of the population, women are underrepresented among blood donors. This disparity is often due to misconceptions and gender-specific concerns that discourage women from donating. Let's break these biases and encourage more women to become regular blood donors.</p>
+                        
+                        <p><strong>Common Myths About Women and Blood Donation:</strong></p>
+                        
+                        <p><strong>Myth 1: Women cannot donate blood during their menstrual period.</strong><br>
+                        Reality: Menstruation does not automatically disqualify women from donating blood. As long as you feel well and meet the hemoglobin requirements, you can donate during your period. However, some women may experience lower iron levels during menstruation, so it's essential to maintain good nutrition.</p>
+                        
+                        <p><strong>Myth 2: Pregnant women or new mothers cannot donate blood.</strong><br>
+                        Reality: While it's true that pregnant women cannot donate blood, this is a temporary deferral for safety reasons. After giving birth, women are typically deferred for 6 months to a year, depending on the country's regulations and whether they're breastfeeding. After this period, they can resume donation if they meet all other eligibility criteria.</p>
+                        
+                        <p><strong>Myth 3: Women on birth control cannot donate blood.</strong><br>
+                        Reality: Most forms of birth control do not affect eligibility for blood donation. However, certain medications may have deferral periods. It's best to discuss your specific medications with the blood donation center staff.</p>
+                        
+                        <p><strong>Myth 4: Blood donation affects fertility.</strong><br>
+                        Reality: There is no scientific evidence linking blood donation to fertility issues. The body quickly replaces the blood volume donated, and the process does not impact reproductive health.</p>
+                        
+                        <p><strong>Addressing Real Concerns:</strong></p>
+                        
+                        <p>While many concerns are based on myths, women do face some legitimate challenges when it comes to blood donation:</p>
+                        
+                        <p><strong>Iron Levels:</strong> Women, particularly those of childbearing age, are more likely to have lower iron levels due to menstruation. This can sometimes lead to deferral if hemoglobin levels are below the required threshold. To address this, women can focus on iron-rich diets and consider iron supplements after consulting with a healthcare provider.</p>
+                        
+                        <p><strong>Weight and Height Requirements:</strong> Blood donation centers have minimum weight and height requirements to ensure donor safety. Some women may fall below these thresholds, particularly if they have smaller body frames.</p>
+                        
+                        <p><strong>Time Constraints:</strong> Women often juggle multiple responsibilities, including work, childcare, and household duties, which can make finding time for donation challenging.</p>
+                        
+                        <p><strong>Encouraging Women to Donate:</strong></p>
+                        
+                        <p>1. <strong>Education:</strong> Providing accurate information about eligibility and the donation process can help dispel myths and address concerns.</p>
+                        
+                        <p>2. <strong>Convenient Locations and Hours:</strong> Offering mobile blood drives at workplaces, schools, and community centers can make donation more accessible for busy women.</p>
+                        
+                        <p>3. <strong>Supportive Environment:</strong> Creating a welcoming, comfortable atmosphere at donation centers can help alleviate anxiety and encourage first-time donors.</p>
+                        
+                        <p>4. <strong>Recognition and Appreciation:</strong> Acknowledging the contribution of women donors can inspire others to follow their example.</p>
+                        
+                        <p>Women have the power to make a tremendous impact through blood donation. By breaking the biases and addressing real concerns, we can encourage more women to become regular donors, ultimately saving more lives in our communities.</p>
+                    `
+                }
+            },
+            6: {
+                title: {
+                    bn: "রক্তের গ্রুপের সামঞ্জস্যতা বোঝা",
+                    en: "Understanding Blood Type Compatibility"
+                },
+                category: {
+                    bn: "তথ্য",
+                    en: "Facts"
+                },
+                content: {
+                    bn: `
+                        <p>রক্তের গ্রুপের সামঞ্জস্যতা রক্ত সঞ্চালন এবং অঙ্গ প্রতিস্থাপনের একটি গুরুত্বপূর্ণ দিক। বিভিন্ন রক্তের গ্রুপ কীভাবে ইন্টারঅ্যাক্ট করে তা বোঝা আপনাকে আরও অবহিত দাতা হতে এবং সম্ভাব্যভাবে আরও বেশি জীবন বাঁচাতে সাহায্য করতে পারে। আসুন রক্তের গ্রুপ এবং সামঞ্জস্যতার আকর্ষণীয় বিশ্ব অন্বেষণ করি।</p>
+                        
+                        <p><strong>রক্তের গ্রুপের মৌলিক বিষয়গুলি:</strong></p>
+                        
+                        <p>মানব রক্ত লোহিত রক্তকণিকার পৃষ্ঠে অ্যান্টিজেনের উপস্থিতি বা অনুপস্থিতির উপর ভিত্তি করে চারটি প্রধান ধরনে শ্রেণীবদ্ধ করা হয়:</p>
+                        
+                        <p>১. <strong>টাইপ A:</strong> লোহিত কোষে A অ্যান্টিজেন এবং প্লাজমায় B অ্যান্টিবডি রয়েছে</p>
+                        <p>২. <strong>টাইপ B:</strong> লোহিত কোষে B অ্যান্টিজেন এবং প্লাজমায় A অ্যান্টিবডি রয়েছে</p>
+                        <p>৩. <strong>টাইপ AB:</strong> লোহিত কোষে A এবং B উভয় অ্যান্টিজেন রয়েছে এবং প্লাজমায় কোনো অ্যান্টিবডি নেই</p>
+                        <p>৪. <strong>টাইপ O:</strong> লোহিত কোষে কোনো অ্যান্টিজেন নেই এবং প্লাজমায় A এবং B উভয় অ্যান্টিবডি রয়েছে</p>
+                        
+                        <p>এই ABO প্রকারগুলি ছাড়াও, রক্ত Rh ফ্যাক্টর দ্বারাও শ্রেণীবদ্ধ করা হয়, যা পজিটিভ (+) বা নেগেটিভ (-) হতে পারে। এটি আটটি সম্ভাব্য রক্তের গ্রুপ তৈরি করে: A+, A-, B+, B-, AB+, AB-, O+, এবং O-।</p>
+                        
+                        <p><strong>সামঞ্জস্যতার নিয়ম:</strong></p>
+                        
+                        <p>রক্ত সঞ্চালনের মৌলিক নিয়ম হল যে দাতার রক্ত প্রাপকের রক্তের সাথে সামঞ্জস্যপূর্ণ হতে হবে যাতে ইমিউন প্রতিক্রিয়া এড়ানো যায়। এখানে সামঞ্জস্যতা কীভাবে কাজ করে:</p>
+                        
+                        <p><strong>টাইপ O-</strong> হল সার্বজনীন দাতা, যার অর্থ তাদের লোহিত রক্তকণিকা যেকোনো রক্তের গ্রুপের রোগীদের কাছে সঞ্চালিত করা যেতে পারে। এর কারণ হল টাইপ O- রক্তে A, B, এবং Rh অ্যান্টিজেন থাকে না, যা ইমিউন প্রতিক্রিয়া ট্রিগার করার সম্ভাবনা কমিয়ে দেয়।</p>
+                        
+                        <p><strong>টাইপ AB+</strong> হল সার্বজনীন প্রাপক, যার অর্থ তারা যেকোনো রক্তের গ্রুপ থেকে লোহিত রক্তকণিকা গ্রহণ করতে পারে। এর কারণ হল তাদের সমস্ত অ্যান্টিজেন (A, B, এবং Rh) রয়েছে এবং তাই তারা সেগুলির বিরুদ্ধে অ্যান্টিবডি তৈরি করে না।</p>
+                        
+                        <p>লোহিত রক্তকণিকা সঞ্চালনের জন্য একটি সরলীকৃত সামঞ্জস্যতা চার্ট এখানে দেওয়া হল:</p>
+                        
+                        <p>• <strong>O-</strong> সব ধরনের গ্রুপে দান করতে পারে (সার্বজনীন দাতা)</p>
+                        <p>• <strong>O+</strong> O+, A+, B+, AB+ গ্রুপে দান করতে পারে</p>
+                        <p>• <strong>A-</strong> A-, A+, AB-, AB+ গ্রুপে দান করতে পারে</p>
+                        <p>• <strong>A+</strong> A+, AB+ গ্রুপে দান করতে পারে</p>
+                        <p>• <strong>B-</strong> B-, B+, AB-, AB+ গ্রুপে দান করতে পারে</p>
+                        <p>• <strong>B+</strong> B+, AB+ গ্রুপে দান করতে পারে</p>
+                        <p>• <strong>AB-</strong> AB-, AB+ গ্রুপে দান করতে পারে</p>
+                        <p>• <strong>AB+</strong> শুধুমাত্র AB+ গ্রুপে দান করতে পারে (সার্বজনীন প্রাপক)</p>
+                        
+                        <p><strong>প্লাজমা সামঞ্জস্যতা:</strong></p>
+                        
+                        <p>আকর্ষণীয়ভাবে, প্লাজমা সামঞ্জস্যতা লোহিত রক্তকণিকা সামঞ্জস্যতার বিপরীত। এর কারণ হল প্লাজমায় বিদেশী অ্যান্টিজেন আক্রমণ করবে এমন অ্যান্টিবডি থাকে:</p>
+                        
+                        <p>• <strong>AB</strong> প্লাজমা প্লাজমার জন্য সার্বজনীন দাতা</p>
+                        <p>• <strong>O</strong> প্লাজমা প্লাজমার জন্য সার্বজনীন প্রাপক</p>
+                        
+                        <p><strong>রক্তের গ্রুপ কেন গুরুত্বপূর্ণ:</strong></p>
+                        
+                        <p>রক্তের গ্রুপের সামঞ্জস্যতা বোঝা বেশ কয়েকটি কারণে সমালোচনামূলক:</p>
+                        
+                        <p>১. <strong>রোগীর নিরাপত্তা:</strong> অসামঞ্জস্যপূর্ণ রক্ত সঞ্চালন একটি গুরুতর ইমিউন প্রতিক্রিয়া সৃষ্টি করতে পারে, যা জটিলতার কারণ হতে পারে এবং সম্ভাব্যভাবে মৃত্যু ঘটাতে পারে।</p>
+                        
+                        <p>২. <strong>রক্ত সরবরাহ ব্যবস্থাপনা:</strong> রোগীদের চাহিদা পূরণের জন্য রক্ত ব্যাঙ্কগুলিকে সমস্ত রক্তের গ্রুপের পর্যাপ্ত সরবরাহ বজায় রাখতে হবে। কিছু গ্রুপ, যেমন O-, তাদের সার্বজনীন সামঞ্জস্যতার কারণে উচ্চ চাহিদায় থাকে।</p>
+                        
+                        <p>৩. <strong>জরুরি প্রস্তুতি:</strong> জরুরি অবস্থায় যখন রোগীর রক্তের গ্রুপ নির্ধারণ করার সময় থাকে না, তখন O- রক্ত ব্যবহার করা হয় কারণ এর সার্বজনীন সামঞ্জস্যতা রয়েছে।</p>
+                        
+                        <p><strong>আপনার রক্তের গ্রুপ জানা:</strong></p>
+                        
+                        <p>আপনার রক্তের গ্রুপ জানা আপনাকে বুঝতে সাহায্য করতে পারে যে আপনি দানের মাধ্যমে কাকে সাহায্য করতে পারেন:</p>
+                        
+                        <p>• যদি আপনি <strong>O-</strong> হন, তাহলে আপনার রক্ত জরুরি অবস্থায় এবং নবজাতকদের জন্য বিশেষভাবে মূল্যবান।</p>
+                        <p>• যদি আপনি <strong>O+</strong> হন, তাহলে আপনার রক্ত সবচেয়ে সাধারণ ধরনের এবং সর্বদা উচ্চ চাহিদায় থাকে।</p>
+                        <p>• যদি আপনি <strong>A-</strong> বা <strong>B-</strong> হন, তাহলে আপনার রক্ত একই রক্তের গ্রুপের রোগীদের বা নির্দিষ্ট পরিস্থিতিতে গুরুত্বপূর্ণ।</p>
+                        <p>• যদি আপনি <strong>AB+</strong> হন, যদিও আপনি শুধুমাত্র অন্য AB+ রোগীদের দান করতে পারেন, আপনি প্লাজমা দানের জন্য একটি আদর্শ প্রার্থী, যা সর্বদা প্রয়োজনীয়।</p>
+                        
+                        <p>রক্তের গ্রুপের সামঞ্জস্যতা বোঝার মাধ্যমে, আপনি আপনার দানের গুরুত্ব আরও ভালভাবে উপলব্ধি করতে পারেন এবং এটি কীভাবে সরাসরি আপনার সম্প্রদায়ের জীবন বাঁচাতে অবদান রাখে।</p>
+                    `,
+                    en: `
+                        <p>Blood type compatibility is a crucial aspect of blood transfusions and organ transplants. Understanding how different blood types interact can help you become a more informed donor and potentially save more lives. Let's explore the fascinating world of blood types and compatibility.</p>
+                        
+                        <p><strong>The Basics of Blood Types:</strong></p>
+                        
+                        <p>Human blood is classified into four main types based on the presence or absence of antigens on the surface of red blood cells:</p>
+                        
+                        <p>1. <strong>Type A:</strong> Has A antigens on red cells and B antibodies in plasma</p>
+                        <p>2. <strong>Type B:</strong> Has B antigens on red cells and A antibodies in plasma</p>
+                        <p>3. <strong>Type AB:</strong> Has both A and B antigens on red cells and no antibodies in plasma</p>
+                        <p>4. <strong>Type O:</strong> Has no antigens on red cells and both A and B antibodies in plasma</p>
+                        
+                        <p>In addition to these ABO types, blood is also classified by the Rh factor, which can be positive (+) or negative (-). This creates eight possible blood types: A+, A-, B+, B-, AB+, AB-, O+, and O-.</p>
+                        
+                        <p><strong>Compatibility Rules:</strong></p>
+                        
+                        <p>The basic rule of blood transfusion is that donor blood must be compatible with the recipient's blood to avoid an immune reaction. Here's how compatibility works:</p>
+                        
+                        <p><strong>Type O-</strong> is the universal donor, meaning their red blood cells can be transfused to patients of any blood type. This is because Type O- blood lacks A, B, and Rh antigens, making it less likely to trigger an immune response.</p>
+                        
+                        <p><strong>Type AB+</strong> is the universal recipient, meaning they can receive red blood cells from any blood type. This is because they have all the antigens (A, B, and Rh) and therefore don't produce antibodies against them.</p>
+                        
+                        <p>Here's a simplified compatibility chart for red blood cell transfusions:</p>
+                        
+                        <p>• <strong>O-</strong> can donate to all types (universal donor)</p>
+                        <p>• <strong>O+</strong> can donate to O+, A+, B+, AB+</p>
+                        <p>• <strong>A-</strong> can donate to A-, A+, AB-, AB+</p>
+                        <p>• <strong>A+</strong> can donate to A+, AB+</p>
+                        <p>• <strong>B-</strong> can donate to B-, B+, AB-, AB+</p>
+                        <p>• <strong>B+</strong> can donate to B+, AB+</p>
+                        <p>• <strong>AB-</strong> can donate to AB-, AB+</p>
+                        <p>• <strong>AB+</strong> can donate only to AB+ (universal recipient)</p>
+                        
+                        <p><strong>Plasma Compatibility:</strong></p>
+                        
+                        <p>Interestingly, plasma compatibility is the reverse of red blood cell compatibility. This is because plasma contains antibodies that would attack foreign antigens:</p>
+                        
+                        <p>• <strong>AB</strong> plasma is the universal donor for plasma</p>
+                        <p>• <strong>O</strong> plasma is the universal recipient for plasma</p>
+                        
+                        <p><strong>Why Blood Type Matters:</strong></p>
+                        
+                        <p>Understanding blood type compatibility is critical for several reasons:</p>
+                        
+                        <p>1. <strong>Patient Safety:</strong> Transfusing incompatible blood can cause a severe immune reaction, leading to complications and potentially death.</p>
+                        
+                        <p>2. <strong>Blood Supply Management:</strong> Blood banks need to maintain adequate supplies of all blood types to meet patient needs. Some types, like O-, are in higher demand due to their universal compatibility.</p>
+                        
+                        <p>3. <strong>Emergency Preparedness:</strong> In emergencies when there's no time to determine a patient's blood type, O- blood is used because of its universal compatibility.</p>
+                        
+                        <p><strong>Knowing Your Blood Type:</strong></p>
+                        
+                        <p>Knowing your blood type can help you understand who you can help through donation:</p>
+                        
+                        <p>• If you're <strong>O-</strong>, your blood is especially valuable in emergencies and for newborns.</p>
+                        <p>• If you're <strong>O+</strong>, your blood is the most common type and is always in high demand.</p>
+                        <p>• If you're <strong>A-</strong> or <strong>B-</strong>, your blood is important for patients with the same blood type or in specific situations.</p>
+                        <p>• If you're <strong>AB+</strong>, while you can only donate to other AB+ patients, you're an ideal candidate for plasma donation, which is always needed.</p>
+                        
+                        <p>By understanding blood type compatibility, you can better appreciate the importance of your donation and how it directly contributes to saving lives in your community.</p>
+                    `
+                }
+            },
+            7: {
+                title: {
+                    bn: "রক্ত দান কেন গুরুত্বপূর্ণ?",
+                    en: "Why Donate Blood?"
+                },
+                category: {
+                    bn: "শিক্ষামূলক",
+                    en: "Educational"
+                },
+                content: {
+                    bn: `
+                        <p>রক্তদান একটি সহজ কিন্তু শক্তিশালী উপায় যা আপনি অন্যের জীবন বাঁচাতে ব্যবহার করতে পারেন। প্রতি বছর, লক্ষ লক্ষ মানুষ দুর্ঘটনা, অস্ত্রোপচার, ক্যান্সার চিকিৎসা এবং অন্যান্য চিকিৎসা অবস্থার কারণে রক্ত সঞ্চালনের প্রয়োজন হয়। আসুন রক্তদানের গুরুত্ব এবং এর উপকারিতা সম্পর্কে জাই।</p>
+                        
+                        <h3>প্রাপকের জন্য উপকারিতা</h3>
+                        
+                        <p><strong>জীবন বাঁচানো:</strong> একক রক্ত দান একাধিক জীবন বাঁচাতে পারে। রক্তের উপাদানগুলি আলাদাভাবে ব্যবহার করা যেতে পারে, যার অর্থ একজন দাতা একাধিক রোগীকে সাহায্য করতে পারে।</p>
+                        
+                        <p><strong>চিকিৎসা পদ্ধতি সমর্থন:</strong> অস্ত্রোপচার, ক্যান্সার চিকিৎসা, অঙ্গ প্রতিস্থাপন এবং দীর্ঘস্থায়ী অবস্থার চিকিৎসার জন্য রক্ত সঞ্চালন অপরিহার্য।</p>
+                        
+                        <p><strong>জরুরি পরিস্থিতি:</strong> দুর্ঘটনা এবং প্রাকৃতিক দুর্যোগের সময়, রক্তের প্রাপ্যতা জীবন এবং মৃত্যুর পার্থক্য তৈরি করতে পারে।</p>
+                        
+                        <h3>দাতার জন্য উপকারিতা</h3>
+                        
+                        <p><strong>স্বাস্থ্য পরীক্ষা:</strong> দানের আগে, আপনি একটি বিনামূল্যে মিনি-চিকিৎসা পরীক্ষা পান, যা আপনার হিমোগ্লোবিন স্তর, রক্তচাপ এবং সামগ্রিক স্বাস্থ্য পরীক্ষা করে।</p>
+                        
+                        <p><strong>স্বাস্থ্য সুবিধা:</strong> রক্তদান হৃদয় রোগের ঝুঁকি কমাতে এবং ক্যান্সারের ঝুঁকি হ্রাস করতে সাহায্য করতে পারে। এটি দেহে লোহিত রক্তকণিকার উৎপাদন বৃদ্ধি করে, যা সামগ্রিক স্বাস্থ্যের উন্নতি করে।</p>
+                        
+                        <p><strong>মানসিক সুবিধা:</strong> অন্যকে সাহায্য করার জন্য একটি অর্থপূর্ণ উপায়, রক্তদান আত্মবিশ্বাস বৃদ্ধি করে এবং সামাজিক সংযোগের অনুভূতি প্রদান করে।</p>
+                        
+                        <h3>সম্প্রদায়ের প্রভাব</h3>
+                        
+                        <p><strong>রক্তের ঘাটতি মোকাবেলা:</strong> অনেক অঞ্চলে রক্তের ঘাটতি রয়েছে, বিশেষ করে বিরল রক্তের গ্রুপের ক্ষেত্রে। নিয়মিত দান এই ঘাটতি পূরণ করতে সাহায্য করে।</p>
+                        
+                        <p><strong>সচেতনতা বৃদ্ধি:</strong> রক্তদান সম্প্রদায়ের মধ্যে স্বাস্থ্য সচেতনতা বাড়ায় এবং অন্যদের দান করতে অনুপ্রাণিত করে।</p>
+                        
+                        <p><strong>সংহতি তৈরি:</strong> রক্তদান শিবির এবং ইভেন্টগুলি সম্প্রদায়ের সদস্যদের একত্রিত করে এবং সামাজিক বন্ধন তৈরি করে।</p>
+                        
+                        <h3>রক্তদানের প্রক্রিয়া</h3>
+                        
+                        <p>রক্তদান প্রক্রিয়া সহজ এবং নিরাপদ:</p>
+                        
+                        <ol>
+                            <li><strong>নিবন্ধন:</strong> আপনি একটি ফর্ম পূরণ করেন এবং আপনার চিকিৎসা ইতিহাস সম্পর্কে তথ্য প্রদান করেন।</li>
+                            <li><strong>স্বাস্থ্য পরীক্ষা:</strong> আপনার তাপমাত্রা, হিমোগ্লোবিন স্তর এবং রক্তচাপ পরীক্ষা করা হয়।</li>
+                            <li><strong>দান:</strong> প্রক্রিয়াটি প্রায় ১০ মিনিট সময় নেয়, যার সময় প্রায় এক পিন্ট রক্ত সংগ্রহ করা হয়।</li>
+                            <li><strong>বিশ্রাম এবং রিফ্রেশমেন্ট:</strong> দানের পরে, আপনাকে সংক্ষিপ্তভাবে বিশ্রাম নিতে এবং রিফ্রেশমেন্ট গ্রহণ করতে বলা হয়।</li>
+                        </ol>
+                        
+                        <p>মনে রাখবেন, রক্তদান একটি মূল্যবান উপহার যা আপনি দিতে পারেন। এটি কোনো খরচ ছাড়াই জীবন বাঁচাতে পারে এবং আপনার সম্প্রদায়ের উপর একটি স্থায়ী প্রভাব ফেলতে পারে।</p>
+                    `,
+                    en: `
+                        <p>Blood donation is a simple yet powerful way you can help save lives. Every year, millions of people need blood transfusions due to accidents, surgeries, cancer treatments, and other medical conditions. Let's explore the importance of blood donation and its benefits.</p>
+                        
+                        <h3>Benefits for Recipients</h3>
+                        
+                        <p><strong>Saving Lives:</strong> A single blood donation can save multiple lives. Blood components can be used separately, meaning one donor can help multiple patients.</p>
+                        
+                        <p><strong>Supporting Medical Procedures:</strong> Blood transfusions are essential for surgeries, cancer treatments, organ transplants, and managing chronic conditions.</p>
+                        
+                        <p><strong>Emergency Situations:</strong> In accidents and natural disasters, blood availability can mean the difference between life and death.</p>
+                        
+                        <h3>Benefits for Donors</h3>
+                        
+                        <p><strong>Health Check-up:</strong> Before donation, you receive a free mini-medical examination that checks your hemoglobin levels, blood pressure, and overall health.</p>
+                        
+                        <p><strong>Health Benefits:</strong> Blood donation may reduce the risk of heart disease and help reduce the risk of cancer. It stimulates the production of new red blood cells, improving overall health.</p>
+                        
+                        <p><strong>Psychological Benefits:</strong> As a meaningful way to help others, blood donation boosts self-esteem and provides a sense of social connection.</p>
+                        
+                        <h3>Community Impact</h3>
+                        
+                        <p><strong>Addressing Blood Shortages:</strong> Many regions face blood shortages, especially for rare blood types. Regular donations help fill these gaps.</p>
+                        
+                        <p><strong>Raising Awareness:</strong> Blood donation increases health awareness in the community and inspires others to donate.</p>
+                        
+                        <p><strong>Building Solidarity:</strong> Blood drives and events bring community members together and create social bonds.</p>
+                        
+                        <h3>The Donation Process</h3>
+                        
+                        <p>The blood donation process is simple and safe:</p>
+                        
+                        <ol>
+                            <li><strong>Registration:</strong> You fill out a form and provide information about your medical history.</li>
+                            <li><strong>Health Check:</strong> Your temperature, hemoglobin level, and blood pressure are checked.</li>
+                            <li><strong>Donation:</strong> The process takes about 10 minutes, during which about a pint of blood is collected.</li>
+                            <li><strong>Rest and Refreshments:</strong> After donation, you're asked to rest briefly and have refreshments.</li>
+                        </ol>
+                        
+                        <p>Remember, blood donation is a valuable gift you can give. It can save lives at no cost and leave a lasting impact on your community.</p>
+                    `
+                }
+            },
+            8: {
+                title: {
+                    bn: "কে রক্ত দিতে পারে?",
+                    en: "Who Can Donate Blood?"
+                },
+                category: {
+                    bn: "শিক্ষামূলক",
+                    en: "Educational"
+                },
+                content: {
+                    bn: `
+                        <p>রক্তদান একটি উদার কাজ, কিন্তু সবাই দাতা হতে পারে না। রক্তদান নিশ্চিত করার জন্য নির্দিষ্ট যোগ্যতার মানদণ্ড রয়েছে যা দাতা এবং প্রাপক উভয়ের সুরক্ষা নিশ্চিত করে। আসুন জেনে নেওয়া যাক কে রক্ত দিতে পারে এবং কারা পারে না।</p>
+                        
+                        <h3>সাধারণ যোগ্যতার মানদণ্ড</h3>
+                        
+                        <p><strong>বয়স:</strong> বেশিরভাগ দেশে, রক্তদাতাদের অবশ্যই ১৭ বছর বা তার বেশি বয়সী হতে হবে। কিছু দেশে ১৬ বছর বয়সীদের পিতামাতার সম্মতি সাপেক্ষে দান করার অনুমতি দেওয়া হয়। উচ্চ বয়সসীমা সাধারণত নেই, যতক্ষণ দাতা সুস্থ থাকে।</p>
+                        
+                        <p><strong>ওজন:</strong> দাতাদের ন্যূনতম ওজন প্রয়োজন হতে পারে, সাধারণত ৫০ কেজি (১১০ পাউন্ড)। এটি নিশ্চিত করে যে দাতার শরীরে দান করা রক্তের আয়তন নিরাপদে পরিচালনা করতে পারে।</p>
+                        
+                        <p><strong>স্বাস্থ্য অবস্থা:</strong> দাতাদের ভাল স্বাস্থ্যের অবস্থায় থাকতে হবে। তাদের কোনো সংক্রামক রোগ, ক্রনিক অসুস্থতা বা অন্যান্য স্বাস্থ্য সমস্যা থাকতে পারে না যা রক্ত বা প্রাপকের জন্য ঝুঁকি তৈরি করতে পারে।</p>
+                        
+                        <h3>অস্থায়ী অযোগ্যতা</h3>
+                        
+                        <p>কিছু অবস্থা অস্থায়ীভাবে আপনাকে রক্ত দান থেকে বিরত রাখতে পারে:</p>
+                        
+                        <p><strong>অসুস্থতা:</strong> জ্বর, ঠান্ডা, ফ্লু, বা অন্যান্য সংক্রমণ থাকলে আপনি সাময়িকভাবে অযোগ্য হতে পারেন। সাধারণত, আপনাকে সম্পূর্ণরূপে সুস্থ হওয়ার পরে দান করতে হবে।</p>
+                        
+                        <p><strong>গর্ভাবস্থা:</strong> গর্ভবতী মহিলারা রক্ত দিতে পারেন না। সন্তান প্রসবের পরে, তাদের সাধারণত ৬ মাস থেকে এক বছর পর্যন্ত বিলম্বিত করা হয়।</p>
+                        
+                        <p><strong>সাম্প্রতিক অস্ত্রোপচার:</strong> সাম্প্রতিক অস্ত্রোপচার বা ট্যাটু করার পরে, আপনাকে সাধারণত ৪-১২ মাসের জন্য বিলম্বিত করা হতে পারে।</p>
+                        
+                        <p><strong>ভ্রমণ:</strong> কিছু দেশে ভ্রমণ সাময়িক অযোগ্যতার কারণ হতে পারে, বিশেষ করে যেখানে ম্যালেরিয়া, জিকা ভাইরাস, বা অন্যান্য সংক্রামক রোগের ঝুঁকি রয়েছে।</p>
+                        
+                        <p><strong>ওষুধ:</strong> কিছু ওষুধ, যেমন অ্যান্টিবায়োটিক, ব্যথানাশক, বা রক্ত পাতলা করার ওষুধ, সাময়িক অযোগ্যতার কারণ হতে পারে।</p>
+                        
+                        <h3>স্থায়ী অযোগ্যতা</h3>
+                        
+                        <p>কিছু অবস্থা স্থায়ীভাবে আপনাকে রক্ত দান থেকে বিরত রাখতে পারে:</p>
+                        
+                        <p><strong>এইচআইভি/এইডস:</strong> এইচআইভি বা এইডসে আক্রান্ত ব্যক্তিরা রক্ত দিতে পারেন না।</p>
+                        
+                        <p><strong>হেপাটাইটিস বি বা সি:</strong> এই ভাইরাল সংক্রমণে আক্রান্ত ব্যক্তিরা রক্ত দিতে পারেন না।</p>
+                        
+                        <p><strong>কিছু ক্যান্সার:</strong> কিছু ধরনের ক্যান্সার বা ক্যান্সার চিকিৎসা স্থায়ী অযোগ্যতার কারণ হতে পারে।</p>
+                        
+                        <p><strong>হৃদয়ের অবস্থা:</strong> গুরুতর হৃদরোগ, হৃদয়ের অক্সিজেন ঘাটতি, বা সাম্প্রতিক হার্ট অ্যাটাক স্থায়ী অযোগ্যতার কারণ হতে পারে।</p>
+                        
+                        <p><strong>কিছু স্বতঃঅনাক্রম্য রোগ:</strong> লুপাস, আর্থ্রাইটিস, বা মাল্টিপল স্ক্লেরোসিসের মতো স্বতঃঅনাক্রম্য রোগে আক্রান্ত ব্যক্তিরা রক্ত দিতে পারেন না।</p>
+                        
+                        <h3>দানের আগে প্রস্তুতি</h3>
+                        
+                        <p>রক্তদানের জন্য প্রস্তুত হওয়ার জন্য কিছু টিপস:</p>
+                        
+                        <ul>
+                            <li>দানের আগে ভালভাবে হাইড্রেটেড থাকুন।</li>
+                            <li>দানের আগে আয়রন-সমৃদ্ধ খাবার খান।</li>
+                            <li>দানের আগে ক্যাফেইন এড়িয়ে চলুন।</li>
+                            <li>দানের আগে পর্যাপ্ত বিশ্রাম নিন।</li>
+                            <li>আপনার ওষুধ এবং স্বাস্থ্য ইতিহাস সম্পর্কে সঠিক তথ্য প্রদান করুন।</li>
+                        </ul>
+                        
+                        <p>মনে রাখবেন, রক্তদান কেন্দ্রের কর্মীরা আপনার যোগ্যতা নির্ধারণ করবেন। সর্বদা তাদের সাথে আপনার স্বাস্থ্য ইতিহাস এবং কোনো উদ্বেগ নিয়ে আলোচনা করুন।</p>
+                    `,
+                    en: `
+                        <p>Blood donation is a generous act, but not everyone can be a donor. There are specific eligibility criteria for blood donation to ensure the safety of both donors and recipients. Let's find out who can donate blood and who cannot.</p>
+                        
+                        <h3>General Eligibility Criteria</h3>
+                        
+                        <p><strong>Age:</strong> In most countries, blood donors must be at least 17 years old. Some countries allow 16-year-olds to donate with parental consent. There is usually no upper age limit, as long as the donor is in good health.</p>
+                        
+                        <p><strong>Weight:</strong> Donors may need to meet a minimum weight requirement, typically 50 kg (110 pounds). This ensures that the donor's body can safely handle the volume of blood donated.</p>
+                        
+                        <p><strong>Health Status:</strong> Donors must be in good health. They should not have any infectious diseases, chronic illnesses, or other health conditions that could pose a risk to the blood or the recipient.</p>
+                        
+                        <h3>Temporary Deferrals</h3>
+                        
+                        <p>Some conditions may temporarily disqualify you from donating blood:</p>
+                        
+                        <p><strong>Illness:</strong> If you have a fever, cold, flu, or other infection, you may be temporarily deferred. Generally, you must be fully recovered before donating.</p>
+                        
+                        <p><strong>Pregnancy:</strong> Pregnant women cannot donate blood. After giving birth, they are typically deferred for 6 months to a year.</p>
+                        
+                        <p><strong>Recent Surgery:</strong> After recent surgery or tattooing, you may be deferred for 4-12 months.</p>
+                        
+                        <p><strong>Travel:</strong> Travel to certain countries may be a temporary deferral, especially where there is a risk of malaria, Zika virus, or other infectious diseases.</p>
+                        
+                        <p><strong>Medications:</strong> Some medications, such as antibiotics, painkillers, or blood thinners, may cause temporary deferral.</p>
+                        
+                        <h3>Permanent Deferrals</h3>
+                        
+                        <p>Some conditions may permanently disqualify you from donating blood:</p>
+                        
+                        <p><strong>HIV/AIDS:</strong> Individuals with HIV or AIDS cannot donate blood.</p>
+                        
+                        <p><strong>Hepatitis B or C:</strong> People with these viral infections cannot donate blood.</p>
+                        
+                        <p><strong>Some Cancers:</strong> Certain types of cancer or cancer treatments may be permanent deferrals.</p>
+                        
+                        <p><strong>Heart Conditions:</strong> Serious heart disease, heart oxygen deficiency, or recent heart attack may be permanent deferrals.</p>
+                        
+                        <p><strong>Some Autoimmune Diseases:</strong> People with autoimmune diseases like lupus, arthritis, or multiple sclerosis cannot donate blood.</p>
+                        
+                        <h3>Preparation Before Donation</h3>
+                        
+                        <p>Some tips to prepare for blood donation:</p>
+                        
+                        <ul>
+                            <li>Stay well-hydrated before donation.</li>
+                            <li>Eat iron-rich foods before donation.</li>
+                            <li>Avoid caffeine before donation.</li>
+                            <li>Get adequate rest before donation.</li>
+                            <li>Provide accurate information about your medications and health history.</li>
+                        </ul>
+                        
+                        <p>Remember, blood donation center staff will determine your eligibility. Always discuss your health history and any concerns with them.</p>
+                    `
+                }
+            },
+            9: {
+                title: {
+                    bn: "রক্ত দেওয়ার পরে কী হয়?",
+                    en: "What Happens After You Donate Blood?"
+                },
+                category: {
+                    bn: "শিক্ষামূলক",
+                    en: "Educational"
+                },
+                content: {
+                    bn: `
+                        <p>রক্তদান প্রক্রিয়া শেষ হওয়ার পরে, আপনার দান করা রক্তের একটি যাত্রা শুরু হয় যা অনেক ধাপ অতিক্রম করে এবং শেষ পর্যন্ত একজন প্রাপকের কাছে পৌঁছায়। একই সময়ে, আপনার শরীর দান করা রক্ত পুনরুদ্ধার করতে শুরু করে। আসুন জেনে নেওয়া যাক রক্ত দেওয়ার পরে কী হয়।</p>
+                        
+                        <h3>দানের পরে তাত্ক্ষণিক প্রক্রিয়া</h3>
+                        
+                        <p>রক্তদানের পরে, আপনি সাধারণত 10-15 মিনিটের জন্য বিশ্রাম নেবেন। আপনাকে রিফ্রেশমেন্ট এবং স্ন্যাকস দেওয়া হবে যাতে আপনি জল এবং পুষ্টি পুনরায় পূরণ করতে পারেন। দাতা কেন্দ্রের কর্মীরা আপনার স্বাস্থ্য পর্যবেক্ষণ করবেন এবং নিশ্চিত করবেন যে আপনি ভাল অনুভব করছেন।</p>
+                        
+                        <p>দানের স্থান ত্যাগ করার আগে, আপনি কিছু নির্দেশিকা পাবেন:</p>
+                        
+                        <ul>
+                            <li>পরবর্তী ৪-৫ ঘন্টার জন্য ব্যান্ডেজটি রাখুন</li>
+                            <li>পরবর্তী ২৪ ঘন্টার জন্য ভারী উত্তোলন এড়িয়ে চলুন</li>
+                            <li>পর্যাপ্ত তরল পান করুন</li>
+                            <li>যদি কোনো অস্বস্তি বা মাথা ঘোরা অনুভব করেন তাহলে বিশ্রাম নিন</li>
+                        </ul>
+                        
+                        <h3>আপনার শরীরে পুনরুদ্ধার প্রক্রিয়া</h3>
+                        
+                        <p>রক্তদানের পরে, আপনার শরীর দ্রুত কাজ শুরু করে হারিয়ে যাওয়া রক্ত পুনরুদ্ধার করতে:</p>
+                        
+                        <p><strong>প্লাজমা:</strong> আপনার শরীর ২৪ ঘন্টার মধ্যে হারিয়ে যাওয়া প্লাজমা (রক্তের তরল অংশ) প্রতিস্থাপন করে।</p>
+                        
+                        <p><strong>প্লেটলেট:</strong> প্লেটলেট (রক্ত জমাট বাঁধতে সাহায্য করে) সাধারণত ৪৮ ঘন্টার মধ্যে পুনরুদ্ধার হয়।</p>
+                        
+                        <p><strong>লোহিত রক্তকণিকা:</strong> লোহিত রক্তকণিকা (অক্সিজেন বহন করে) পুনরুদ্ধার করতে বেশি সময় লাগে, সাধারণত ৪-৬ সপ্তাহ। এর কারণ হল অস্থিমজ্জায় নতুন লোহিত রক্তকণিকা তৈরি করতে সময় লাগে।</p>
+                        
+                        <p>এই পুনরুদ্ধার প্রক্রিয়াকে সমর্থন করার জন্য, আপনার শরীরের প্রয়োজন:</p>
+                        
+                        <ul>
+                            <li>পর্যাপ্ত তরল পান করা</li>
+                            <li>আয়রন-সমৃদ্ধ খাবার খাওয়া</li>
+                            <li>পর্যাপ্ত বিশ্রাম নেওয়া</li>
+                            <li>কয়েক দিনের জন্য কঠোর ব্যায়াম এড়িয়ে চলা</li>
+                        </ul>
+                        
+                        <h3>আপনার দান করা রক্তের যাত্রা</h3>
+                        
+                        <p>আপনার দান করা রক্ত রক্তব্যাঙ্কে পৌঁছানোর পরে, এটি বেশ কয়েকটি প্রক্রিয়ার মধ্য দিয়ে যায়:</p>
+                        
+                        <p><strong>পরীক্ষা এবং প্রক্রিয়াকরণ:</strong> রক্তের নমুনা পরীক্ষা করা হয় রক্তের গ্রুপ, আরএইচ ফ্যাক্টর, এবং সংক্রামক রোগ যেমন এইচআইভি, হেপাটাইটিস বি এবং সি, এবং সিফিলিসের জন্য। রক্তকে তার উপাদানগুলিতে (লোহিত রক্তকণিকা, প্লেটলেট, প্লাজমা) আলাদা করা হয়।</p>
+                        
+                        <p><strong>সংরক্ষণ:</strong> প্রক্রিয়াজাত রক্ত নির্দিষ্ট তাপমাত্রায় সংরক্ষণ করা হয়:</p>
+                        
+                        <ul>
+                            <li>লোহিত রক্তকণিকা: ৪°C তাপমাত্রায় ৪২ দিনের জন্য সংরক্ষণ করা যেতে পারে</li>
+                            <li>প্লেটলেট: কক্ষ তাপমাত্রায় ক্রমাগত আন্দোলনের সাথে ৫ দিনের জন্য সংরক্ষণ করা যেতে পারে</li>
+                            <li>প্লাজমা: হিমায়িত অবস্থায় এক বছর পর্যন্ত সংরক্ষণ করা যেতে পারে</li>
+                        </ul>
+                        
+                        <p><strong>বিতরণ:</strong> হাসপাতাল এবং চিকিৎসা কেন্দ্রগুলি রক্তের প্রয়োজনীয়তার উপর ভিত্তি করে রক্ত ব্যাঙ্ক থেকে রক্ত এবং রক্ত উপাদান অনুরোধ করে। রক্তব্যাঙ্ক রোগীদের চাহিদা পূরণের জন্য রক্ত সরবরাহ করে।</p>
+                        
+                        <h3>আপনার দানের প্রভাব</h3>
+                        
+                        <p>আপনার একক রক্তদান একাধিক জীবন বাঁচাতে পারে। রক্ত এবং এর উপাদানগুলি বিভিন্ন চিকিৎসা পরিস্থিতিতে ব্যবহার করা যেতে পারে:</p>
+                        
+                        <ul>
+                            <li>সম্পূর্ণ রক্ত: অস্ত্রোপচার, আঘাত, এবং জরুরি অবস্থার জন্য</li>
+                            <li>লোহিত রক্তকণিকা: রক্তশূন্যতা, অস্ত্রোপচার, এবং ক্যান্সার চিকিৎসার জন্য</li>
+                            <li>প্লেটলেট: ক্যান্সার রোগী এবং রক্ত জমাট বাঁধার ব্যাধির জন্য</li>
+                            <li>প্লাজমা: বার্ন ভিকটিম, শক রোগী, এবং হিমোফিলিয়ার জন্য</li>
+                        </ul>
+                        
+                        <p>মনে রাখবেন, আপনার দান একটি মূল্যবান সম্পদ যা জীবন বাঁচাতে পারে। প্রতিটি দানের সাথে, আপনি আপনার সম্প্রদায়ের জন্য একটি পার্থক্য তৈরি করছেন।</p>
+                    `,
+                    en: `
+                        <p>After the blood donation process is complete, your donated blood begins a journey that goes through several steps before eventually reaching a recipient. At the same time, your body starts to recover the donated blood. Let's find out what happens after you donate blood.</p>
+                        
+                        <h3>Immediate Post-Donation Process</h3>
+                        
+                        <p>After blood donation, you'll typically rest for 10-15 minutes. You'll be given refreshments and snacks to help you replenish fluids and nutrients. Donation center staff will monitor your health and ensure you're feeling well.</p>
+                        
+                        <p>Before leaving the donation site, you'll receive some instructions:</p>
+                        
+                        <ul>
+                            <li>Keep the bandage on for 4-5 hours</li>
+                            <li>Avoid heavy lifting for the next 24 hours</li>
+                            <li>Drink plenty of fluids</li>
+                            <li>Rest if you feel any discomfort or dizziness</li>
+                        </ul>
+                        
+                        <h3>Recovery Process in Your Body</h3>
+                        
+                        <p>After blood donation, your body quickly begins to work to recover the lost blood:</p>
+                        
+                        <p><strong>Plasma:</strong> Your body replaces the lost plasma (the liquid portion of blood) within 24 hours.</p>
+                        
+                        <p><strong>Platelets:</strong> Platelets (which help blood clot) are typically recovered within 48 hours.</p>
+                        
+                        <p><strong>Red Blood Cells:</strong> Red blood cells (which carry oxygen) take longer to recover, typically 4-6 weeks. This is because it takes time for the bone marrow to produce new red blood cells.</p>
+                        
+                        <p>To support this recovery process, your body needs:</p>
+                        
+                        <ul>
+                            <li>Plenty of fluids</li>
+                            <li>Iron-rich foods</li>
+                            <li>Adequate rest</li>
+                            <li>Avoiding strenuous exercise for a few days</li>
+                        </ul>
+                        
+                        <h3>The Journey of Your Donated Blood</h3>
+                        
+                        <p>After your donated blood reaches the blood bank, it goes through several processes:</p>
+                        
+                        <p><strong>Testing and Processing:</strong> Blood samples are tested for blood type, Rh factor, and infectious diseases such as HIV, hepatitis B and C, and syphilis. The blood is separated into its components (red blood cells, platelets, plasma).</p>
+                        
+                        <p><strong>Storage:</strong> Processed blood is stored at specific temperatures:</p>
+                        
+                        <ul>
+                            <li>Red blood cells: Can be stored for up to 42 days at 4°C</li>
+                            <li>Platelets: Can be stored for up to 5 days at room temperature with constant agitation</li>
+                            <li>Plasma: Can be stored for up to a year when frozen</li>
+                        </ul>
+                        
+                        <p><strong>Distribution:</strong> Hospitals and medical centers request blood and blood components from the blood bank based on their needs. The blood bank supplies blood to meet patient needs.</p>
+                        
+                        <h3>Impact of Your Donation</h3>
+                        
+                        <p>Your single blood donation can save multiple lives. Blood and its components can be used in various medical situations:</p>
+                        
+                        <ul>
+                            <li>Whole blood: For surgeries, trauma, and emergencies</li>
+                            <li>Red blood cells: For anemia, surgery, and cancer treatments</li>
+                            <li>Platelets: For cancer patients and bleeding disorders</li>
+                            <li>Plasma: For burn victims, shock patients, and hemophilia</li>
+                        </ul>
+                        
+                        <p>Remember, your donation is a valuable gift that can save lives. With each donation, you're making a difference in your community.</p>
+                    `
+                }
+            }
+        };
+        
         // Filter functionality
         const filterBtns = document.querySelectorAll('.filter-btn');
+        const blogCards = document.querySelectorAll('.blog-card');
         
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -1521,7 +2407,6 @@
                 btn.classList.add('active');
                 
                 const filter = btn.getAttribute('data-filter');
-                const blogCards = document.querySelectorAll('.blog-card');
                 
                 blogCards.forEach(card => {
                     if (filter === 'all' || card.getAttribute('data-category') === filter) {
@@ -1546,7 +2431,6 @@
         
         const searchFunction = debounce(() => {
             const searchTerm = searchBar.value.toLowerCase();
-            const blogCards = document.querySelectorAll('.blog-card');
             
             blogCards.forEach(card => {
                 const title = card.querySelector('.blog-title').textContent.toLowerCase();
@@ -1570,19 +2454,17 @@
         const closeModal = document.querySelector('.close-modal');
         
         // Event delegation for read more buttons
-        document.addEventListener('click', (e) => {
+        document.getElementById('blogGrid').addEventListener('click', (e) => {
             if (e.target.classList.contains('read-more-btn')) {
                 const articleId = e.target.getAttribute('data-id');
-                const article = window.blogArticles[articleId];
+                const article = blogArticles[articleId];
                 
-                if (article) {
-                    modalTitle.textContent = article.title[currentLang];
-                    modalCategory.textContent = article.category[currentLang];
-                    modalBody.innerHTML = article.content[currentLang];
-                    
-                    modal.style.display = 'block';
-                    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
-                }
+                modalTitle.textContent = article.title[currentLang];
+                modalCategory.textContent = article.category[currentLang];
+                modalBody.innerHTML = article.content[currentLang];
+                
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
             }
         });
         
@@ -1596,71 +2478,6 @@
                 modal.style.display = 'none';
                 document.body.style.overflow = 'auto';
             }
-        });
-        
-        // Image Carousel functionality
-        const slides = document.querySelectorAll('.carousel-slide');
-        const prevBtn = document.querySelector('.carousel-prev');
-        const nextBtn = document.querySelector('.carousel-next');
-        const indicators = document.querySelectorAll('.carousel-indicator');
-        
-        let currentSlide = 0;
-        let slideInterval;
-        
-        function showSlide(index) {
-            slides.forEach(slide => slide.classList.remove('active'));
-            indicators.forEach(indicator => indicator.classList.remove('active'));
-            
-            slides[index].classList.add('active');
-            indicators[index].classList.add('active');
-            
-            currentSlide = index;
-        }
-        
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % slides.length;
-            showSlide(currentSlide);
-        }
-        
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-            showSlide(currentSlide);
-        }
-        
-        function startSlideShow() {
-            slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
-        }
-        
-        function stopSlideShow() {
-            clearInterval(slideInterval);
-        }
-        
-        nextBtn.addEventListener('click', () => {
-            stopSlideShow();
-            nextSlide();
-            startSlideShow();
-        });
-        
-        prevBtn.addEventListener('click', () => {
-            stopSlideShow();
-            prevSlide();
-            startSlideShow();
-        });
-        
-        indicators.forEach((indicator, index) => {
-            indicator.addEventListener('click', () => {
-                stopSlideShow();
-                showSlide(index);
-                startSlideShow();
-            });
-        });
-        
-        // Start the slideshow
-        startSlideShow();
-        
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchArticles();
         });
     </script>
 </body>
