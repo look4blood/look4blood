@@ -728,6 +728,18 @@
             100% { transform: rotate(360deg); }
         }
         
+        /* Error Message */
+        .error-message {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+        }
+        
         /* Footer */
         .footer {
             background-color: #2d3436;
@@ -1005,6 +1017,11 @@
     <section class="blog-section" id="blog-section">
         <h2 class="section-title" data-bn="সর্বশেষ নিবন্ধ" data-en="Latest Articles">সর্বশেষ নিবন্ধ</h2>
         
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage">
+            <p data-bn="ডাটাবেস থেকে আর্টিকেল লোড করতে সমস্যা হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।" data-en="Failed to load articles from the database. Please try again later.">ডাটাবেস থেকে আর্টিকেল লোড করতে সমস্যা হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।</p>
+        </div>
+        
         <!-- Search Bar -->
         <div class="search-container">
             <input type="text" class="search-bar" data-bn-placeholder="নিবন্ধ অনুসন্ধান করুন..." data-en-placeholder="Search articles..." placeholder="নিবন্ধ অনুসন্ধান করুন..." id="searchBar">
@@ -1184,10 +1201,28 @@
     </footer>
     
     <script>
-        // Initialize Supabase
-        const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        // Initialize Supabase only when the script is loaded
+        let supabase;
+        
+        // Function to initialize Supabase
+        function initializeSupabase() {
+            if (typeof supabaseJs !== 'undefined') {
+                // Use the global supabaseJs if available
+                supabase = supabaseJs.createClient(
+                    'YOUR_SUPABASE_URL',
+                    'YOUR_SUPABASE_KEY'
+                );
+                return true;
+            } else if (window.supabase) {
+                // Use the window.supabase if available
+                supabase = window.supabase.createClient(
+                    'https://bbvyjeljeyofswuijlyg.supabase.co',
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I'
+                );
+                return true;
+            }
+            return false;
+        }
         
         // Language toggle functionality
         const enBtn = document.getElementById('enBtn');
@@ -1256,24 +1291,41 @@
         
         // Fetch articles from Supabase
         async function fetchArticles() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const blogGrid = document.getElementById('blogGrid');
+            const errorMessage = document.getElementById('errorMessage');
+            
             try {
-                const { data, error } = await supabase
-                    .from('articles')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+                // Try to initialize Supabase
+                const supabaseInitialized = initializeSupabase();
                 
-                if (error) {
-                    console.error('Error fetching articles:', error);
-                    // Fallback to local data if Supabase fails
+                if (supabaseInitialized) {
+                    const { data, error } = await supabase
+                        .from('articles')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) {
+                        console.error('Error fetching articles:', error);
+                        throw error;
+                    }
+                    
+                    displayArticles(data);
+                } else {
+                    // If Supabase is not available, use local data
+                    console.warn('Supabase not available, using local data');
                     loadLocalArticles();
-                    return;
                 }
-                
-                displayArticles(data);
             } catch (err) {
                 console.error('Error:', err);
-                // Fallback to local data if Supabase fails
-                loadLocalArticles();
+                // Show error message
+                loadingSpinner.style.display = 'none';
+                errorMessage.style.display = 'block';
+                
+                // Try to load local data as fallback
+                setTimeout(() => {
+                    loadLocalArticles();
+                }, 3000);
             }
         }
         
@@ -1406,9 +1458,11 @@
         function displayArticles(articles) {
             const blogGrid = document.getElementById('blogGrid');
             const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorMessage = document.getElementById('errorMessage');
             
-            // Clear loading spinner and show blog grid
+            // Clear loading spinner and error message, show blog grid
             loadingSpinner.style.display = 'none';
+            errorMessage.style.display = 'none';
             blogGrid.style.display = 'grid';
             blogGrid.innerHTML = '';
             
