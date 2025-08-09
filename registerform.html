@@ -18,13 +18,11 @@
       --border-radius: 8px;
       --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #ffebee, #ffcdd2);
@@ -35,13 +33,11 @@
       padding: 20px;
       color: var(--text-color);
     }
-
     .container {
       width: 100%;
       max-width: 600px;
       position: relative;
     }
-
     .form-header {
       background: var(--primary-color);
       color: white;
@@ -50,18 +46,15 @@
       text-align: center;
       position: relative;
     }
-
     .form-header h2 {
       font-weight: 600;
       font-size: 24px;
       margin-bottom: 5px;
     }
-
     .form-header p {
       font-size: 14px;
       opacity: 0.9;
     }
-
     form {
       background: white;
       padding: 30px;
@@ -69,11 +62,9 @@
       width: 100%;
       box-shadow: var(--box-shadow);
     }
-
     .form-group {
       margin-bottom: 20px;
     }
-
     label {
       display: block;
       margin-bottom: 8px;
@@ -81,7 +72,6 @@
       font-size: 14px;
       color: var(--text-color);
     }
-
     input, select {
       width: 100%;
       padding: 12px 15px;
@@ -91,25 +81,21 @@
       font-size: 14px;
       transition: all 0.3s ease;
     }
-
     input:focus, select:focus {
       border-color: var(--primary-color);
       outline: none;
       box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
     }
-
     .location-group {
       display: grid;
       grid-template-columns: 1fr;
       gap: 15px;
     }
-
     @media (min-width: 768px) {
       .location-group {
         grid-template-columns: 1fr 1fr 1fr;
       }
     }
-
     button[type="submit"] {
       background: var(--primary-color);
       color: white;
@@ -123,68 +109,57 @@
       transition: all 0.3s ease;
       margin-top: 10px;
     }
-
     button[type="submit"]:hover {
       background: var(--primary-dark);
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-
     button[type="submit"]:disabled {
       background: #cccccc;
       cursor: not-allowed;
       transform: none;
     }
-
     .checkbox-group {
       margin-top: 20px;
       display: flex;
       align-items: flex-start;
       gap: 10px;
     }
-
     .checkbox-group input[type="checkbox"] {
       width: auto;
       margin-top: 3px;
     }
-
     .checkbox-group label {
       display: inline;
       font-weight: normal;
       font-size: 13px;
       line-height: 1.4;
     }
-
     .login-link {
       text-align: center;
       margin-top: 20px;
       font-size: 14px;
     }
-
     .login-link a {
       color: var(--primary-color);
       text-decoration: none;
       font-weight: 500;
     }
-
     .login-link a:hover {
       text-decoration: underline;
     }
-
     .success {
       text-align: center;
       margin-top: 15px;
       color: var(--success-color);
       font-weight: 500;
     }
-
     .error {
       text-align: center;
       margin-top: 15px;
       color: var(--error-color);
       font-weight: 500;
     }
-
     #loading-overlay {
       display: none;
       position: fixed;
@@ -200,12 +175,10 @@
       flex-direction: column;
       font-family: 'Poppins', sans-serif;
     }
-
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-
     .blood-drop {
       position: absolute;
       top: -15px;
@@ -220,7 +193,6 @@
       justify-content: center;
       align-items: center;
     }
-
     .blood-drop::before {
       content: '';
       position: absolute;
@@ -232,7 +204,6 @@
       left: 10px;
       transform: rotate(-45deg);
     }
-
     .blood-drop::after {
       content: '';
       position: absolute;
@@ -244,7 +215,6 @@
       left: 15px;
       transform: rotate(-45deg);
     }
-
     .form-footer {
       text-align: center;
       margin-top: 20px;
@@ -254,19 +224,16 @@
       color: #666;
       font-size: 13px;
     }
-
     .required::after {
       content: " *";
       color: var(--error-color);
     }
-
     .lang-toggle {
       margin-top: 25px;
       text-align: center;
       padding-top: 15px;
       border-top: 1px solid #eee;
     }
-
     .lang-toggle button {
       background: #e0e0e0;
       color: #333;
@@ -278,11 +245,9 @@
       font-size: 14px;
       transition: all 0.3s ease;
     }
-
     .lang-toggle button:hover {
       background: #d0d0d0;
     }
-
     .lang-toggle button.active {
       background: var(--primary-color);
       color: white;
@@ -409,6 +374,61 @@
   const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
   const SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+  
+  // Function to send welcome SMS using BulkSMSBD API
+  async function sendWelcomeSMS(phoneNumber) {
+    // API configuration - replace with your actual API key and sender ID
+    const apiKey = "tnKcakTI7mBbSJQoob0T"; // Replace with your actual API key
+    const senderId = "8809617623984"; // Replace with your actual sender ID
+    const message = "Welcome to Look4Blood! ❤️ Thank you for registering as a life-saving blood donor.";
+    
+    // Format phone number to ensure it has the country code (assuming Bangladesh)
+    let formattedPhone = phoneNumber.trim();
+    if (!formattedPhone.startsWith('880')) {
+      if (formattedPhone.startsWith('01')) {
+        formattedPhone = '88' + formattedPhone;
+      } else if (formattedPhone.startsWith('+88')) {
+        formattedPhone = formattedPhone.substring(1);
+      }
+    }
+    
+    // Prepare the request data
+    const smsData = {
+      api_key: apiKey,
+      senderid: senderId,
+      messages: [
+        {
+          to: formattedPhone,
+          message: message
+        }
+      ]
+    };
+    
+    try {
+      console.log('Sending SMS to:', formattedPhone);
+      const response = await fetch('http://bulksmsbd.net/api/smsapimany', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(smsData)
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok && result.response_code === 202) {
+        console.log('SMS sent successfully:', result);
+        return { success: true, message: 'SMS sent successfully' };
+      } else {
+        console.error('SMS sending failed:', result);
+        return { success: false, message: result.error_message || 'Failed to send SMS' };
+      }
+    } catch (error) {
+      console.error('Error sending SMS:', error);
+      return { success: false, message: 'Error sending SMS: ' + error.message };
+    }
+  }
+  
   function setLang(lang) {
     document.querySelectorAll('[data-en]').forEach(el => {
       el.textContent = el.getAttribute(`data-${lang}`);
@@ -491,6 +511,14 @@ try {
       if (!googleResponse.ok) {
         throw new Error('Google Sheets submission failed');
       }
+      
+      // Step 5: Send welcome SMS
+      const smsResult = await sendWelcomeSMS(body.phone);
+      if (!smsResult.success) {
+        console.warn('SMS sending failed, but registration was successful:', smsResult.message);
+        // We don't throw an error here since the main registration was successful
+      }
+      
       successMsg.textContent = "✅ Registration successful!";
       form.reset();
       setLang('en');
