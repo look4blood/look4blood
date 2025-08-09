@@ -252,6 +252,15 @@
       background: var(--primary-color);
       color: white;
     }
+    .debug-info {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      font-size: 12px;
+      color: #666;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -362,6 +371,7 @@
     
     <div class="success" id="success-msg"></div>
     <div class="error" id="error-msg"></div>
+    <div class="debug-info" id="debug-info"></div>
   </form>
 </div>
 <div id="loading-overlay">
@@ -378,7 +388,7 @@
   // Function to send welcome SMS using BulkSMSBD API
   async function sendWelcomeSMS(phoneNumber) {
     // API configuration - replace with your actual API key and sender ID
-    const apiKey = "http://bulksmsbd.net/api/smsapi?api_key=tnKcakTI7mBbSJQoob0T&type=text&number=Receiver&senderid=8809617623984&message=TestSMS"; // Replace with your actual API key
+    const apiKey = "tnKcakTI7mBbSJQoob0T"; // Replace with your actual API key
     const senderId = "8809617623984"; // Replace with your actual sender ID
     const message = "Welcome to Look4Blood! ❤️ Thank you for registering as a life-saving blood donor.";
     
@@ -404,27 +414,83 @@
       ]
     };
     
+    // Show debug info
+    const debugInfo = document.getElementById('debug-info');
+    debugInfo.style.display = 'block';
+    debugInfo.innerHTML = `
+      <strong>SMS Debug Information:</strong><br>
+      Phone: ${formattedPhone}<br>
+      Message: ${message}<br>
+      API Endpoint: http://bulksmsbd.net/api/smsapimany<br>
+      Request Data: ${JSON.stringify(smsData, null, 2)}
+    `;
+    
     try {
       console.log('Sending SMS to:', formattedPhone);
-      const response = await fetch('http://bulksmsbd.net/api/smsapimany', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(smsData)
-      });
+      console.log('Request data:', JSON.stringify(smsData));
       
-      const result = await response.json();
+      // Try different request formats
+      let response;
       
-      if (response.ok && result.response_code === 202) {
-        console.log('SMS sent successfully:', result);
+      // First attempt: JSON format
+      try {
+        response = await fetch('http://bulksmsbd.net/api/smsapimany', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(smsData)
+        });
+      } catch (jsonError) {
+        console.warn('JSON request failed, trying form data:', jsonError);
+        
+        // Second attempt: Form data format
+        const formData = new FormData();
+        formData.append('api_key', apiKey);
+        formData.append('senderid', senderId);
+        formData.append('messages', JSON.stringify(smsData.messages));
+        
+        response = await fetch('http://bulksmsbd.net/api/smsapimany', {
+          method: 'POST',
+          body: formData
+        });
+      }
+      
+      const result = await response.text();
+      console.log('SMS API Response:', result);
+      
+      // Try to parse as JSON, if fails use text
+      let resultObj;
+      try {
+        resultObj = JSON.parse(result);
+      } catch (e) {
+        resultObj = { response_text: result };
+      }
+      
+      // Update debug info with response
+      debugInfo.innerHTML += `<br><br><strong>Response:</strong><br>${result}`;
+      
+      // Check if response is successful
+      if (response.ok && 
+          (resultObj.response_code === 202 || 
+           resultObj.response_code === 200 || 
+           resultObj.success === true ||
+           resultObj.response_text?.toLowerCase().includes('success'))) {
+        console.log('SMS sent successfully:', resultObj);
         return { success: true, message: 'SMS sent successfully' };
       } else {
-        console.error('SMS sending failed:', result);
-        return { success: false, message: result.error_message || 'Failed to send SMS' };
+        console.error('SMS sending failed:', resultObj);
+        return { 
+          success: false, 
+          message: resultObj.error_message || resultObj.response_text || 'Failed to send SMS' 
+        };
       }
     } catch (error) {
       console.error('Error sending SMS:', error);
+      
+      // Update debug info with error
+      debugInfo.innerHTML += `<br><br><strong>Error:</strong><br>${error.message}`;
+      
       return { success: false, message: 'Error sending SMS: ' + error.message };
     }
   }
@@ -447,6 +513,7 @@
     
     successMsg.textContent = '';
     errorMsg.textContent = '';
+    document.getElementById('debug-info').style.display = 'none';
     
     if (!form.terms.checked) {
       errorMsg.textContent = "You must agree to the terms.";
