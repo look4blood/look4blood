@@ -14,9 +14,8 @@
     // Initialize Supabase client
     const SUPABASE_URL = "https://bbvyjeljeyofswuijlyg.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I";
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Main App
     class UserRoleManager {
       constructor() {
         this.currentUser = null;
@@ -30,7 +29,7 @@
       }
 
       async checkAuth() {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) {
           this.currentUser = null;
           return;
@@ -38,7 +37,7 @@
         this.currentUser = session.user;
 
         // Fetch current user roles
-        const { data: roles, error } = await supabase
+        const { data: roles, error } = await supabaseClient
           .from('user_roles')
           .select('role')
           .eq('user_id', this.currentUser.id);
@@ -53,7 +52,7 @@
           return;
         }
 
-        const { data: profiles, error: profilesError } = await supabase
+        const { data: profiles, error: profilesError } = await supabaseClient
           .from('profiles')
           .select('id, full_name, email, created_at')
           .order('created_at', { ascending: false });
@@ -63,7 +62,7 @@
           return;
         }
 
-        const { data: roles, error: rolesError } = await supabase
+        const { data: roles, error: rolesError } = await supabaseClient
           .from('user_roles')
           .select('user_id, role');
 
@@ -72,7 +71,6 @@
           return;
         }
 
-        // Map roles to users
         this.users = profiles.map(profile => {
           const userRole = roles.find(r => r.user_id === profile.id);
           return {
@@ -83,7 +81,7 @@
       }
 
       async updateRole(userId, newRole) {
-        const { error } = await supabase.rpc('assign_user_role', {
+        const { error } = await supabaseClient.rpc('assign_user_role', {
           _user_id: userId,
           _role: newRole
         });
@@ -97,12 +95,12 @@
       }
 
       async signIn() {
-        const { error } = await supabase.auth.signInWithOAuth({ provider: 'github' });
+        const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'github' });
         if (error) alert('Login failed: ' + error.message);
       }
 
       async signOut() {
-        await supabase.auth.signOut();
+        await supabaseClient.auth.signOut();
         this.currentUser = null;
         this.currentRoles = [];
         this.users = [];
