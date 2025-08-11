@@ -59,6 +59,16 @@
         this.roles = [];
         this.isLoading = false;
         this.currentPage = 'dashboard'; // Can be 'dashboard', 'users', 'donors', etc.
+        
+        // Define default roles with their properties
+        this.defaultRoles = [
+          { name: 'user', description: 'Regular user with basic access', color: 'green' },
+          { name: 'moderator', description: 'Content moderator with limited admin privileges', color: 'yellow' },
+          { name: 'admin', description: 'System administrator with full access', color: 'red' }
+        ];
+        
+        // Load custom roles from localStorage
+        this.loadCustomRoles();
       }
       
       async init() {
@@ -66,6 +76,27 @@
         await this.loadRoles();
         this.render();
         this.setupModalEventListeners();
+      }
+      
+      loadCustomRoles() {
+        const savedRoles = localStorage.getItem('customRoles');
+        if (savedRoles) {
+          try {
+            this.customRoles = JSON.parse(savedRoles);
+          } catch (e) {
+            this.customRoles = [];
+          }
+        } else {
+          this.customRoles = [];
+        }
+      }
+      
+      saveCustomRoles() {
+        localStorage.setItem('customRoles', JSON.stringify(this.customRoles));
+      }
+      
+      getAllRoles() {
+        return [...this.defaultRoles, ...this.customRoles];
       }
       
       async checkAuth() {
@@ -85,17 +116,28 @@
         if (!this.currentUser) return;
         
         try {
+          // Get roles from user_roles table
           const { data, error } = await supabaseClient
             .from('user_roles')
-            .select(`
-              role_id,
-              roles(name, description, color)
-            `)
+            .select('role')
             .eq('user_id', this.currentUser.id);
             
           if (error) throw error;
           
-          this.currentRoles = data.map(item => item.roles.name);
+          this.currentRoles = data.map(item => item.role);
+          
+          // Also get role from profiles table as a fallback
+          if (this.currentRoles.length === 0) {
+            const { data: profileData, error: profileError } = await supabaseClient
+              .from('profiles')
+              .select('role')
+              .eq('id', this.currentUser.id)
+              .single();
+              
+            if (!profileError && profileData && profileData.role) {
+              this.currentRoles = [profileData.role];
+            }
+          }
         } catch (error) {
           console.error('Error fetching user roles:', error);
           this.currentRoles = [];
@@ -104,17 +146,28 @@
       
       async loadRoles() {
         try {
+          // Get available roles from the enum type
           const { data, error } = await supabaseClient
-            .from('roles')
-            .select('*')
-            .order('name');
+            .rpc('get_enum_values', { enum_name: 'app_role' });
             
-          if (error) throw error;
-          
-          this.roles = data;
+          if (error) {
+            console.error('Error loading roles from enum:', error);
+            // Fallback to default roles
+            this.roles = this.defaultRoles;
+          } else {
+            // Map enum values to role objects
+            this.roles = data.map(roleName => {
+              const defaultRole = this.defaultRoles.find(r => r.name === roleName);
+              return defaultRole || { 
+                name: roleName, 
+                description: 'Custom role', 
+                color: 'blue' 
+              };
+            });
+          }
         } catch (error) {
           console.error('Error loading roles:', error);
-          this.roles = [];
+          this.roles = this.defaultRoles;
         }
       }
       
@@ -127,28 +180,41 @@
         this.render();
         
         try {
-          // Get all users from auth
-          const { data: { users }, error: usersError } = await supabaseClient.auth.admin.listUsers();
-          
-          if (usersError) throw usersError;
+          // Get all profiles
+          const { data: profiles, error: profilesError } = await supabaseClient
+            .from('profiles')
+            .select('*')
+            .order('created_at', { ascending: false });
+            
+          if (profilesError) throw profilesError;
           
           // Get all user roles
           const { data: userRoles, error: rolesError } = await supabaseClient
             .from('user_roles')
-            .select('user_id, roles(name, color)');
+            .select('*');
             
           if (rolesError) throw rolesError;
           
           // Transform the data to match our expected format
-          this.users = users.map(user => {
-            const userRole = userRoles.find(ur => ur.user_id === user.id);
+          this.users = profiles.map(profile => {
+            const userRoleEntries = userRoles.filter(ur => ur.user_id === profile.id);
+            const userRolesList = userRoleEntries.map(ur => ur.role);
+            
+            // Get the primary role (first one or the one from profiles)
+            const primaryRole = profile.role || (userRolesList.length > 0 ? userRolesList[0] : 'user');
+            
+            // Get role properties
+            const roleInfo = this.getAllRoles().find(r => r.name === primaryRole) || 
+                           { name: primaryRole, description: 'Custom role', color: 'blue' };
+            
             return {
-              id: user.id,
-              full_name: user.user_metadata?.full_name || '',
-              email: user.email,
-              created_at: user.created_at,
-              role: userRole ? userRole.roles.name : 'user',
-              roleColor: userRole ? userRole.roles.color : 'green'
+              id: profile.id,
+              full_name: profile.full_name || '',
+              email: profile.email || '',
+              created_at: profile.created_at,
+              role: primaryRole,
+              roleColor: roleInfo.color,
+              allRoles: userRolesList
             };
           });
           
@@ -163,45 +229,44 @@
       
       async updateRole(userId, newRole) {
         try {
-          // Get the role ID for the new role
-          const { data: roleData, error: roleError } = await supabaseClient
-            .from('roles')
-            .select('id')
-            .eq('name', newRole)
-            .single();
-            
-          if (roleError) throw roleError;
-          
-          // Check if user already has this role
-          const { data: existingRole, error: checkError } = await supabaseClient
+          // Get the current user's roles
+          const { data: currentRoles, error: fetchError } = await supabaseClient
             .from('user_roles')
             .select('*')
-            .eq('user_id', userId)
-            .eq('role_id', roleData.id);
-            
-          if (checkError) throw checkError;
-          
-          if (existingRole.length > 0) {
-            // User already has this role, nothing to do
-            alert('User already has this role');
-            return;
-          }
-          
-          // Remove existing roles for this user
-          await supabaseClient
-            .from('user_roles')
-            .delete()
             .eq('user_id', userId);
             
-          // Assign new role
-          const { error } = await supabaseClient
+          if (fetchError) throw fetchError;
+          
+          // Remove all existing roles for this user
+          if (currentRoles.length > 0) {
+            const { error: deleteError } = await supabaseClient
+              .from('user_roles')
+              .delete()
+              .eq('user_id', userId);
+              
+            if (deleteError) throw deleteError;
+          }
+          
+          // Add the new role
+          const { error: insertError } = await supabaseClient
             .from('user_roles')
             .insert({
               user_id: userId,
-              role_id: roleData.id
+              role: newRole
             });
             
-          if (error) throw error;
+          if (insertError) throw insertError;
+          
+          // Also update the profile table for compatibility
+          const { error: profileError } = await supabaseClient
+            .from('profiles')
+            .update({ role: newRole })
+            .eq('id', userId);
+            
+          if (profileError) {
+            console.error('Error updating profile role:', profileError);
+            // Don't fail if profile update fails
+          }
           
           alert('Role updated successfully');
           
@@ -219,34 +284,24 @@
       
       async createNewRole(roleName, roleDescription, roleColor) {
         try {
-          // Check if role already exists
-          const { data: existingRole, error: checkError } = await supabaseClient
-            .from('roles')
-            .select('name')
-            .eq('name', roleName);
-            
-          if (checkError) throw checkError;
-          
-          if (existingRole.length > 0) {
+          // Check if role already exists in our custom roles
+          if (this.customRoles.some(role => role.name.toLowerCase() === roleName.toLowerCase())) {
             alert('Role with this name already exists');
             return false;
           }
           
-          // Create new role
-          const { error } = await supabaseClient
-            .from('roles')
-            .insert({
-              name: roleName,
-              description: roleDescription,
-              color: roleColor,
-              is_system_role: false
-            });
-            
-          if (error) throw error;
+          // Add new role to custom roles
+          this.customRoles.push({
+            name: roleName,
+            description: roleDescription,
+            color: roleColor
+          });
           
-          // Close modal and refresh roles
+          // Save to localStorage
+          this.saveCustomRoles();
+          
+          // Close modal and refresh
           this.closeRoleModal();
-          await this.loadRoles();
           this.render();
           
           return true;
@@ -257,61 +312,33 @@
         }
       }
       
-      async deleteRole(roleId, roleName) {
-        try {
-          // Don't allow deleting system roles
-          const { data: roleData, error: roleError } = await supabaseClient
-            .from('roles')
-            .select('is_system_role')
-            .eq('id', roleId)
-            .single();
-            
-          if (roleError) throw roleError;
-          
-          if (roleData.is_system_role) {
-            alert('Cannot delete system roles');
-            return false;
-          }
-          
-          // Confirm deletion
-          if (!confirm(`Are you sure you want to delete the "${roleName}" role?`)) {
-            return false;
-          }
-          
-          // Get the default user role ID
-          const { data: userRole, error: userRoleError } = await supabaseClient
-            .from('roles')
-            .select('id')
-            .eq('name', 'user')
-            .single();
-            
-          if (userRoleError) throw userRoleError;
-          
-          // Update all users with this role to the default user role
-          await supabaseClient
-            .from('user_roles')
-            .update({ role_id: userRole.id })
-            .eq('role_id', roleId);
-            
-          // Delete the role
-          const { error } = await supabaseClient
-            .from('roles')
-            .delete()
-            .eq('id', roleId);
-            
-          if (error) throw error;
-          
-          // Refresh roles and users
-          await this.loadRoles();
-          await this.fetchUsers();
-          this.render();
-          
-          return true;
-        } catch (error) {
-          console.error('Error deleting role:', error);
-          alert('Failed to delete role: ' + error.message);
+      deleteRole(roleName) {
+        // Don't allow deleting default roles
+        if (this.defaultRoles.some(role => role.name === roleName)) {
+          alert('Cannot delete default roles');
           return false;
         }
+        
+        // Confirm deletion
+        if (!confirm(`Are you sure you want to delete the "${roleName}" role?`)) {
+          return false;
+        }
+        
+        // Remove role from custom roles
+        this.customRoles = this.customRoles.filter(role => role.name !== roleName);
+        
+        // Save to localStorage
+        this.saveCustomRoles();
+        
+        // Update any users with this role to default 'user' role
+        this.users.forEach(async user => {
+          if (user.role === roleName) {
+            await this.updateRole(user.id, 'user');
+          }
+        });
+        
+        this.render();
+        return true;
       }
       
       openRoleModal() {
@@ -480,12 +507,12 @@
             <div class="mb-6">
               <h2 class="text-lg font-semibold mb-2">Available Roles</h2>
               <div class="flex flex-wrap gap-2">
-                ${this.roles.map(role => `
+                ${this.getAllRoles().map(role => `
                   <div class="relative group">
                     <span class="px-3 py-1 text-xs rounded-full ${this.getRoleBadgeClass(role.color)} flex items-center">
                       ${role.name}
-                      ${!role.is_system_role ? `
-                        <button class="ml-2 text-red-500 hover:text-red-700" onclick="app.deleteRole(${role.id}, '${role.name}')">
+                      ${!this.defaultRoles.some(dr => dr.name === role.name) ? `
+                        <button class="ml-2 text-red-500 hover:text-red-700" onclick="app.deleteRole('${role.name}')">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                           </svg>
@@ -512,6 +539,7 @@
                       <th class="border border-gray-300 px-3 py-2 text-left">Name</th>
                       <th class="border border-gray-300 px-3 py-2 text-left">Email</th>
                       <th class="border border-gray-300 px-3 py-2 text-left">Role</th>
+                      <th class="border border-gray-300 px-3 py-2 text-left">All Roles</th>
                       <th class="border border-gray-300 px-3 py-2 text-left">Joined</th>
                       <th class="border border-gray-300 px-3 py-2 text-left">Change Role</th>
                     </tr>
@@ -526,6 +554,13 @@
                             ${user.role}
                           </span>
                         </td>
+                        <td class="px-3 py-2">
+                          ${user.allRoles.map(role => {
+                            const roleInfo = this.getAllRoles().find(r => r.name === role) || 
+                                           { name: role, description: 'Custom role', color: 'blue' };
+                            return `<span class="px-2 py-1 text-xs rounded-full ${this.getRoleBadgeClass(roleInfo.color)}">${role}</span>`;
+                          }).join(' ')}
+                        </td>
                         <td class="px-3 py-2">${new Date(user.created_at).toLocaleDateString()}</td>
                         <td class="px-3 py-2">
                           <select data-user-id="${user.id}" class="role-select border rounded px-2 py-1 text-sm">
@@ -537,7 +572,7 @@
                       </tr>
                     `).join('') : `
                       <tr>
-                        <td colspan="5" class="px-3 py-4 text-center text-gray-500">No users found</td>
+                        <td colspan="6" class="px-3 py-4 text-center text-gray-500">No users found</td>
                       </tr>
                     `}
                   </tbody>
