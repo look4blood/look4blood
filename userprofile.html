@@ -195,6 +195,15 @@
             transform: translateY(-2px);
             box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.4);
         }
+        .btn-admin {
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.4);
+        }
         /* Input Styles */
         .form-input {
             width: 100%;
@@ -721,6 +730,9 @@
             <button id="shareBtn" class="btn btn-secondary">
                 <i class="fas fa-share-alt"></i> Share Profile
             </button>
+            <button id="adminPanelBtn" class="btn btn-admin hidden">
+                <i class="fas fa-cogs"></i> Admin Panel
+            </button>
         </div>
     </div>
     
@@ -865,6 +877,7 @@ Track your donation history, eligibility countdown, and feedback all in one plac
         let isEditMode = false;
         let cropper = null;
         let locations = [];
+        let userRoles = [];
         
         // Show success toast
         function showSuccessToast(message) {
@@ -1203,73 +1216,73 @@ Track your donation history, eligibility countdown, and feedback all in one plac
         });
         
         // Load locations from database
-async function loadLocations() {
-    try {
-        const { data, error } = await supabase
-            .from('locations')
-            .select('*')
-            .order('division', { ascending: true })
-            .order('district', { ascending: true })
-            .order('city', { ascending: true });
-        
-        if (error) throw error;
-        
-        locations = data;
-        
-        // Populate division dropdown
-        const divisions = [...new Set(data.map(loc => loc.division))];
-        const divisionSelect = document.getElementById('divisionInput');
-        
-        divisionSelect.innerHTML = '<option value="">Select Division</option>';
-        divisions.forEach(division => {
-            const option = document.createElement('option');
-            option.value = division;
-            option.textContent = division;
-            divisionSelect.appendChild(option);
-        });
-        
-        // Set current values if available
-        if (donorData.division) {
-            divisionSelect.value = donorData.division;
-            // Use donorData.state for district (since that's how it's stored in the database)
-            updateDistrictDropdown(donorData.division, donorData.state || donorData.district);
+        async function loadLocations() {
+            try {
+                const { data, error } = await supabase
+                    .from('locations')
+                    .select('*')
+                    .order('division', { ascending: true })
+                    .order('district', { ascending: true })
+                    .order('city', { ascending: true });
+                
+                if (error) throw error;
+                
+                locations = data;
+                
+                // Populate division dropdown
+                const divisions = [...new Set(data.map(loc => loc.division))];
+                const divisionSelect = document.getElementById('divisionInput');
+                
+                divisionSelect.innerHTML = '<option value="">Select Division</option>';
+                divisions.forEach(division => {
+                    const option = document.createElement('option');
+                    option.value = division;
+                    option.textContent = division;
+                    divisionSelect.appendChild(option);
+                });
+                
+                // Set current values if available
+                if (donorData.division) {
+                    divisionSelect.value = donorData.division;
+                    // Use donorData.state for district (since that's how it's stored in the database)
+                    updateDistrictDropdown(donorData.division, donorData.state || donorData.district);
+                }
+            } catch (error) {
+                console.error('Error loading locations:', error);
+            }
         }
-    } catch (error) {
-        console.error('Error loading locations:', error);
-    }
-}
         
         // Update district dropdown based on selected division
-function updateDistrictDropdown(division, selectedDistrict = '') {
-    const districtSelect = document.getElementById('districtInput');
-    
-    // Filter districts by selected division
-    const districts = [...new Set(
-        locations
-            .filter(loc => loc.division === division)
-            .map(loc => loc.district)
-    )];
-    
-    districtSelect.innerHTML = '<option value="">Select District</option>';
-    districts.forEach(district => {
-        const option = document.createElement('option');
-        option.value = district;
-        option.textContent = district;
-        if (district === selectedDistrict) {
-            option.selected = true;
+        function updateDistrictDropdown(division, selectedDistrict = '') {
+            const districtSelect = document.getElementById('districtInput');
+            
+            // Filter districts by selected division
+            const districts = [...new Set(
+                locations
+                    .filter(loc => loc.division === division)
+                    .map(loc => loc.district)
+            )];
+            
+            districtSelect.innerHTML = '<option value="">Select District</option>';
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                if (district === selectedDistrict) {
+                    option.selected = true;
+                }
+                districtSelect.appendChild(option);
+            });
+            
+            // Trigger change event to update city dropdown
+            if (selectedDistrict) {
+                updateCityDropdown(division, selectedDistrict, donorData.city);
+            } else {
+                // Clear city dropdown
+                const citySelect = document.getElementById('cityInput');
+                citySelect.innerHTML = '<option value="">Select City</option>';
+            }
         }
-        districtSelect.appendChild(option);
-    });
-    
-    // Trigger change event to update city dropdown
-    if (selectedDistrict) {
-        updateCityDropdown(division, selectedDistrict, donorData.city);
-    } else {
-        // Clear city dropdown
-        const citySelect = document.getElementById('cityInput');
-        citySelect.innerHTML = '<option value="">Select City</option>';
-    }
-}
         
         // Update city dropdown based on selected division and district
         function updateCityDropdown(division, district, selectedCity = '') {
@@ -1309,6 +1322,30 @@ function updateDistrictDropdown(division, selectedDistrict = '') {
             });
         }
         
+        // Load user roles
+        async function loadUserRoles() {
+            if (!currentUser) return;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('user_roles')
+                    .select('role')
+                    .eq('user_id', currentUser.id);
+                
+                if (error) throw error;
+                
+                userRoles = data.map(item => item.role);
+                console.log("User roles:", userRoles);
+                
+                // Check if user has admin or moderator role
+                if (userRoles.includes('admin') || userRoles.includes('moderator')) {
+                    document.getElementById('adminPanelBtn').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error loading user roles:', error);
+            }
+        }
+        
         // Check authentication on page load
         document.addEventListener('DOMContentLoaded', async function() {
             // Check authentication using getSession instead of getUser
@@ -1326,6 +1363,9 @@ function updateDistrictDropdown(division, selectedDistrict = '') {
                 
                 // Load the donor profile
                 await loadDonorProfile();
+                
+                // Load user roles
+                await loadUserRoles();
                 
                 // Load locations for dropdowns
                 await loadLocations();
@@ -1350,6 +1390,9 @@ function updateDistrictDropdown(division, selectedDistrict = '') {
                 
                 // Setup photo upload
                 setupPhotoUpload();
+                
+                // Setup admin panel button
+                setupAdminPanelButton();
             } else {
                 // Show authentication modal
                 showAuthModal();
@@ -1410,65 +1453,65 @@ function updateDistrictDropdown(division, selectedDistrict = '') {
         }
         
         // Update UI with donor data
-function updateUI() {
-    // Profile info
-    document.getElementById('userName').textContent = donorData.name;
-    document.getElementById('bloodGroup').innerHTML = '<i class="fas fa-tint mr-1"></i> ' + donorData.blood_group;
-    document.getElementById('userAge').innerHTML = '<i class="fas fa-user mr-1"></i> ' + donorData.age + ' years';
-    
-    if (donorData.avatar_url) {
-        document.getElementById('profilePhoto').src = donorData.avatar_url;
-    } else {
-        // Use a default avatar with donor's initials
-        const initials = donorData.name.split(' ').map(n => n[0]).join('').toUpperCase();
-        document.getElementById('profilePhoto').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=c62828&color=fff&size=200`;
-    }
-    
-    // Update donation badge
-    updateDonationBadge(donorData.times_donated || 0);
-    
-    // Donation stats
-    document.getElementById('totalDonations').textContent = donorData.times_donated || 0;
-    
-    if (donorData.last_donation) {
-        const lastDonationDate = new Date(donorData.last_donation);
-        const daysSinceLastDonation = Math.floor((new Date() - lastDonationDate) / (1000 * 60 * 60 * 24));
-        document.getElementById('lastDonation').textContent = daysSinceLastDonation + ' days ago';
-        
-        // Calculate progress
-        const daysRemaining = Math.max(0, 90 - daysSinceLastDonation);
-        const progressPercent = Math.min(100, Math.floor((daysSinceLastDonation / 90) * 100));
-        
-        updateProgressCircle(progressPercent);
-        
-        if (daysRemaining > 0) {
-            document.getElementById('nextDonationText').innerHTML = 
-                'You will be eligible to donate in <span class="font-bold text-red-500">' + daysRemaining + ' days</span>';
-        } else {
-            document.getElementById('nextDonationText').textContent = 'You are eligible to donate now!';
+        function updateUI() {
+            // Profile info
+            document.getElementById('userName').textContent = donorData.name;
+            document.getElementById('bloodGroup').innerHTML = '<i class="fas fa-tint mr-1"></i> ' + donorData.blood_group;
+            document.getElementById('userAge').innerHTML = '<i class="fas fa-user mr-1"></i> ' + donorData.age + ' years';
+            
+            if (donorData.avatar_url) {
+                document.getElementById('profilePhoto').src = donorData.avatar_url;
+            } else {
+                // Use a default avatar with donor's initials
+                const initials = donorData.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                document.getElementById('profilePhoto').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=c62828&color=fff&size=200`;
+            }
+            
+            // Update donation badge
+            updateDonationBadge(donorData.times_donated || 0);
+            
+            // Donation stats
+            document.getElementById('totalDonations').textContent = donorData.times_donated || 0;
+            
+            if (donorData.last_donation) {
+                const lastDonationDate = new Date(donorData.last_donation);
+                const daysSinceLastDonation = Math.floor((new Date() - lastDonationDate) / (1000 * 60 * 60 * 24));
+                document.getElementById('lastDonation').textContent = daysSinceLastDonation + ' days ago';
+                
+                // Calculate progress
+                const daysRemaining = Math.max(0, 90 - daysSinceLastDonation);
+                const progressPercent = Math.min(100, Math.floor((daysSinceLastDonation / 90) * 100));
+                
+                updateProgressCircle(progressPercent);
+                
+                if (daysRemaining > 0) {
+                    document.getElementById('nextDonationText').innerHTML = 
+                        'You will be eligible to donate in <span class="font-bold text-red-500">' + daysRemaining + ' days</span>';
+                } else {
+                    document.getElementById('nextDonationText').textContent = 'You are eligible to donate now!';
+                }
+            } else {
+                document.getElementById('lastDonation').textContent = 'Never';
+                document.getElementById('nextDonationText').textContent = 'No donation history available';
+                updateProgressCircle(0);
+            }
+            
+            // User info - Check if elements exist before setting values
+            const phoneInput = document.getElementById('phoneInput');
+            if (phoneInput) phoneInput.value = donorData.phone || 'Not provided';
+            
+            // Location info - Set current values
+            const divisionInput = document.getElementById('divisionInput');
+            const districtInput = document.getElementById('districtInput');
+            const cityInput = document.getElementById('cityInput');
+            
+            if (divisionInput) divisionInput.value = donorData.division || 'Not provided';
+            if (districtInput) districtInput.value = donorData.state || donorData.district || 'Not provided'; // Using state field for district
+            if (cityInput) cityInput.value = donorData.city || 'Not provided';
+            
+            const customIdInput = document.getElementById('customIdInput');
+            if (customIdInput) customIdInput.value = donorData.custom_id || donorData.id.toString().substring(0, 8);
         }
-    } else {
-        document.getElementById('lastDonation').textContent = 'Never';
-        document.getElementById('nextDonationText').textContent = 'No donation history available';
-        updateProgressCircle(0);
-    }
-    
-    // User info - Check if elements exist before setting values
-    const phoneInput = document.getElementById('phoneInput');
-    if (phoneInput) phoneInput.value = donorData.phone || 'Not provided';
-    
-    // Location info - Set current values
-    const divisionInput = document.getElementById('divisionInput');
-    const districtInput = document.getElementById('districtInput');
-    const cityInput = document.getElementById('cityInput');
-    
-    if (divisionInput) divisionInput.value = donorData.division || 'Not provided';
-    if (districtInput) districtInput.value = donorData.state || donorData.district || 'Not provided'; // Using state field for district
-    if (cityInput) cityInput.value = donorData.city || 'Not provided';
-    
-    const customIdInput = document.getElementById('customIdInput');
-    if (customIdInput) customIdInput.value = donorData.custom_id || donorData.id.toString().substring(0, 8);
-}
         
         // Update progress circle
         function updateProgressCircle(percent) {
@@ -1767,6 +1810,15 @@ function updateUI() {
             });
         }
         
+        // Setup admin panel button
+        function setupAdminPanelButton() {
+            const adminPanelBtn = document.getElementById('adminPanelBtn');
+            
+            adminPanelBtn.addEventListener('click', function() {
+                window.location.href = 'admin.html';
+            });
+        }
+        
         // Comment functionality
         document.getElementById('commentBtn').addEventListener('click', function() {
             const section = document.getElementById('commentsSection');
@@ -1943,16 +1995,61 @@ function updateUI() {
             document.getElementById('districtInput').disabled = false;
             document.getElementById('cityInput').disabled = false;
             
+            // Make name and age editable
+            const userNameElement = document.getElementById('userName');
+            const userAgeElement = document.getElementById('userAge');
+            
+            // Convert name to input field
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.value = userNameElement.textContent;
+            nameInput.className = 'form-input text-3xl md:text-4xl font-bold text-gray-800 mb-3';
+            nameInput.id = 'nameInput';
+            userNameElement.parentNode.replaceChild(nameInput, userNameElement);
+            
+            // Convert age to input field
+            const ageInput = document.createElement('input');
+            ageInput.type = 'number';
+            ageInput.min = '18';
+            ageInput.max = '65';
+            ageInput.value = donorData.age;
+            ageInput.className = 'form-input';
+            ageInput.id = 'ageInput';
+            
+            // Replace the age badge with input
+            const ageBadge = document.getElementById('userAge');
+            const ageContainer = ageBadge.parentNode;
+            ageContainer.innerHTML = '';
+            ageContainer.appendChild(ageInput);
+            
             // Change background to indicate edit mode
             document.getElementById('phoneInput').classList.remove('bg-gray-100');
         });
         
         document.getElementById('saveBtn').addEventListener('click', async function() {
             try {
-                // Validate location fields
+                // Validate fields
+                const name = document.getElementById('nameInput').value.trim();
+                const age = parseInt(document.getElementById('ageInput').value);
+                const phone = document.getElementById('phoneInput').value.trim();
                 const division = document.getElementById('divisionInput').value;
                 const district = document.getElementById('districtInput').value;
                 const city = document.getElementById('cityInput').value;
+                
+                if (!name) {
+                    alert('Please enter your name');
+                    return;
+                }
+                
+                if (!age || age < 18 || age > 65) {
+                    alert('Please enter a valid age between 18 and 65');
+                    return;
+                }
+                
+                if (!phone) {
+                    alert('Please enter your phone number');
+                    return;
+                }
                 
                 if (!division || !district || !city) {
                     alert('Please select your division, district, and city');
@@ -1960,7 +2057,9 @@ function updateUI() {
                 }
                 
                 const updateData = {
-                    phone: document.getElementById('phoneInput').value,
+                    name: name,
+                    age: age,
+                    phone: phone,
                     division: division,
                     state: district,  // Using 'state' field for district
                     city: city
@@ -1989,6 +2088,9 @@ function updateUI() {
                 
                 // Restore background
                 document.getElementById('phoneInput').classList.add('bg-gray-100');
+                
+                // Update UI with new values
+                updateUI();
                 
                 showSuccessToast('Profile updated successfully');
             } catch (error) {
