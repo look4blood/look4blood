@@ -231,6 +231,9 @@
             color: #94a3b8;
             cursor: not-allowed;
         }
+        .form-input.error {
+            border-color: #ef4444;
+        }
         /* Modal Styles */
         .modal {
             position: fixed;
@@ -721,7 +724,7 @@
                             <i class="fas fa-phone text-blue-500 mr-1"></i> Phone Number
                         </label>
                         <input id="phoneInput" type="tel" readonly 
-                               class="form-input">
+                               class="form-input" maxlength="11">
                     </div>
                     
                     <div>
@@ -1549,9 +1552,14 @@ Track your donation history, eligibility countdown, and feedback all in one plac
         // Update UI with donor data
         function updateUI() {
             // Profile info
-            document.getElementById('userName').textContent = donorData.name;
-            document.getElementById('bloodGroup').innerHTML = '<i class="fas fa-tint mr-1"></i> ' + donorData.blood_group;
-            document.getElementById('userAge').innerHTML = '<i class="fas fa-user mr-1"></i> ' + donorData.age + ' years';
+            const userNameElement = document.getElementById('userName');
+            if (userNameElement) userNameElement.textContent = donorData.name;
+            
+            const bloodGroupElement = document.getElementById('bloodGroup');
+            if (bloodGroupElement) bloodGroupElement.innerHTML = '<i class="fas fa-tint mr-1"></i> ' + donorData.blood_group;
+            
+            const userAgeElement = document.getElementById('userAge');
+            if (userAgeElement) userAgeElement.innerHTML = '<i class="fas fa-user mr-1"></i> ' + donorData.age + ' years';
             
             if (donorData.avatar_url) {
                 document.getElementById('profilePhoto').src = donorData.avatar_url;
@@ -1952,6 +1960,12 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                         return;
                     }
                     
+                    // Validate phone number (11 digits)
+                    if (phone.length !== 11 || !/^\d+$/.test(phone)) {
+                        alert('Please enter a valid 11-digit phone number');
+                        return;
+                    }
+                    
                     if (!division || !district || !city) {
                         alert('Please select your division, district, and city');
                         return;
@@ -1993,10 +2007,11 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                     // Restore background
                     document.getElementById('phoneInput').classList.add('bg-gray-100');
                     
-                    // Update UI with new values
-                    updateUI();
+                    // Show success message
+                    showSuccessToast('Profile updated successfully!');
                     
-                    showSuccessToast('Profile updated successfully');
+                    // Reload all data automatically
+                    await loadDonorProfile();
                 } catch (error) {
                     console.error('Error updating profile:', error);
                     alert('Error updating profile: ' + error.message);
@@ -2029,6 +2044,26 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             
             // Restore background
             document.getElementById('phoneInput').classList.add('bg-gray-100');
+            
+            // Restore original values
+            if (originalProfileData.name) {
+                donorData.name = originalProfileData.name;
+            }
+            if (originalProfileData.age) {
+                donorData.age = originalProfileData.age;
+            }
+            if (originalProfileData.phone) {
+                donorData.phone = originalProfileData.phone;
+            }
+            if (originalProfileData.division) {
+                donorData.division = originalProfileData.division;
+            }
+            if (originalProfileData.state) {
+                donorData.state = originalProfileData.state;
+            }
+            if (originalProfileData.city) {
+                donorData.city = originalProfileData.city;
+            }
             
             // Update UI with original values
             updateUI();
