@@ -724,6 +724,14 @@
                                class="form-input">
                     </div>
                     
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">
+                            <i class="fas fa-envelope text-blue-500 mr-1"></i> Email
+                        </label>
+                        <input id="emailInput" type="email" readonly 
+                               class="form-input bg-gray-100">
+                    </div>
+                    
                     <!-- Location Dropdowns -->
                     <div class="location-group">
                         <label class="block text-sm font-medium text-gray-600 mb-2">
@@ -948,6 +956,7 @@ Track your donation history, eligibility countdown, and feedback all in one plac
         let cropper = null;
         let locations = [];
         let userRoles = [];
+        let originalProfileData = {}; // Store original data for cancel functionality
         
         // Show success toast
         function showSuccessToast(message) {
@@ -1585,6 +1594,12 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             const phoneInput = document.getElementById('phoneInput');
             if (phoneInput) phoneInput.value = donorData.phone || 'Not provided';
             
+            // Email field
+            const emailInput = document.getElementById('emailInput');
+            if (emailInput && currentUser && currentUser.email) {
+                emailInput.value = currentUser.email;
+            }
+            
             // Location info - Set current values
             const divisionInput = document.getElementById('divisionInput');
             const districtInput = document.getElementById('districtInput');
@@ -1993,7 +2008,30 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             confirmCancelBtn.addEventListener('click', function() {
                 // Hide confirmation modal
                 document.getElementById('confirmModal').classList.add('hidden');
+                
+                // Cancel all changes by restoring original data
+                restoreOriginalData();
             });
+        }
+        
+        // Function to restore original data when canceling changes
+        function restoreOriginalData() {
+            // Exit edit mode
+            isEditMode = false;
+            document.getElementById('editBtn').classList.remove('hidden');
+            document.getElementById('saveBtn').classList.add('hidden');
+            
+            // Disable fields
+            document.getElementById('phoneInput').disabled = true;
+            document.getElementById('divisionInput').disabled = true;
+            document.getElementById('districtInput').disabled = true;
+            document.getElementById('cityInput').disabled = true;
+            
+            // Restore background
+            document.getElementById('phoneInput').classList.add('bg-gray-100');
+            
+            // Update UI with original values
+            updateUI();
         }
         
         // Comment functionality
@@ -2163,6 +2201,17 @@ Track your donation history, eligibility countdown, and feedback all in one plac
         // Edit/Save functionality
         document.getElementById('editBtn').addEventListener('click', function() {
             isEditMode = true;
+            
+            // Store original data for potential cancel operation
+            originalProfileData = {
+                name: donorData.name,
+                age: donorData.age,
+                phone: donorData.phone,
+                division: donorData.division,
+                state: donorData.state || donorData.district,
+                city: donorData.city
+            };
+            
             document.getElementById('editBtn').classList.add('hidden');
             document.getElementById('saveBtn').classList.remove('hidden');
             
@@ -2182,7 +2231,9 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             nameInput.value = userNameElement.textContent;
             nameInput.className = 'form-input text-3xl md:text-4xl font-bold text-gray-800 mb-3';
             nameInput.id = 'nameInput';
-            userNameElement.parentNode.replaceChild(nameInput, userNameElement);
+            if (userNameElement.parentNode) {
+                userNameElement.parentNode.replaceChild(nameInput, userNameElement);
+            }
             
             // Convert age to input field
             const ageInput = document.createElement('input');
@@ -2195,9 +2246,11 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             
             // Replace the age badge with input
             const ageBadge = document.getElementById('userAge');
-            const ageContainer = ageBadge.parentNode;
-            ageContainer.innerHTML = '';
-            ageContainer.appendChild(ageInput);
+            if (ageBadge && ageBadge.parentNode) {
+                const ageContainer = ageBadge.parentNode;
+                ageContainer.innerHTML = '';
+                ageContainer.appendChild(ageInput);
+            }
             
             // Change background to indicate edit mode
             document.getElementById('phoneInput').classList.remove('bg-gray-100');
