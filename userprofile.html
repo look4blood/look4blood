@@ -271,6 +271,30 @@
             background: linear-gradient(135deg, #dbeafe, #bfdbfe);
             color: #1d4ed8;
         }
+        .badge-admin {
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            color: white;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+        }
+        .badge-moderator {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+        }
         /* Donation Badge Styles */
         .donation-badge {
             position: absolute;
@@ -495,6 +519,27 @@
             .location-dropdowns {
                 grid-template-columns: 1fr;
             }
+            
+            /* Responsive action buttons */
+            .action-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.75rem;
+            }
+            
+            .action-buttons .btn {
+                flex: 1 1 calc(50% - 0.75rem);
+                min-width: 140px;
+                justify-content: center;
+            }
+            
+            /* Adjust badge position for mobile */
+            .badge-admin, .badge-moderator {
+                top: 10px;
+                right: 10px;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
@@ -503,6 +548,9 @@
     <div id="loading" class="loading-overlay">
         <div class="spinner"></div>
     </div>
+    
+    <!-- Admin/Moderator Badge (will be shown conditionally) -->
+    <div id="roleBadge" class="hidden"></div>
     
     <!-- Main Container -->
     <div class="container mx-auto px-4 py-8 max-w-6xl">
@@ -717,7 +765,7 @@
         </div>
         
         <!-- Action Buttons -->
-        <div class="flex justify-center space-x-4 mb-8 fade-in" style="animation-delay: 0.4s;">
+        <div class="action-buttons flex justify-center space-x-4 mb-8 fade-in" style="animation-delay: 0.4s;">
             <button id="editBtn" class="btn btn-secondary">
                 <i class="fas fa-edit"></i> Edit Profile
             </button>
@@ -825,6 +873,28 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-content rounded-2xl p-6 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Confirm Changes</h3>
+                <p class="text-gray-600">Are you sure you want to save these changes to your profile?</p>
+            </div>
+            
+            <div class="flex flex-col space-y-4">
+                <button id="confirmSaveBtn" class="btn btn-primary w-full justify-center">
+                    <i class="fas fa-save mr-2"></i> Save Changes
+                </button>
+                <button id="confirmCancelBtn" class="btn btn-secondary w-full justify-center">
+                    <i class="fas fa-times mr-2"></i> Cancel
+                </button>
+            </div>
         </div>
     </div>
     
@@ -1340,6 +1410,18 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                 // Check if user has admin or moderator role
                 if (userRoles.includes('admin') || userRoles.includes('moderator')) {
                     document.getElementById('adminPanelBtn').classList.remove('hidden');
+                    
+                    // Show role badge
+                    const roleBadge = document.getElementById('roleBadge');
+                    roleBadge.classList.remove('hidden');
+                    
+                    if (userRoles.includes('admin')) {
+                        roleBadge.className = 'badge badge-admin';
+                        roleBadge.innerHTML = '<i class="fas fa-user-shield mr-2"></i> Admin';
+                    } else if (userRoles.includes('moderator')) {
+                        roleBadge.className = 'badge badge-moderator';
+                        roleBadge.innerHTML = '<i class="fas fa-user-check mr-2"></i> Moderator';
+                    }
                 }
             } catch (error) {
                 console.error('Error loading user roles:', error);
@@ -1393,6 +1475,9 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                 
                 // Setup admin panel button
                 setupAdminPanelButton();
+                
+                // Setup confirmation modal
+                setupConfirmationModal();
             } else {
                 // Show authentication modal
                 showAuthModal();
@@ -1819,6 +1904,98 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             });
         }
         
+        // Setup confirmation modal
+        function setupConfirmationModal() {
+            const confirmSaveBtn = document.getElementById('confirmSaveBtn');
+            const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+            
+            confirmSaveBtn.addEventListener('click', async function() {
+                // Hide confirmation modal
+                document.getElementById('confirmModal').classList.add('hidden');
+                
+                try {
+                    // Validate fields
+                    const name = document.getElementById('nameInput').value.trim();
+                    const age = parseInt(document.getElementById('ageInput').value);
+                    const phone = document.getElementById('phoneInput').value.trim();
+                    const division = document.getElementById('divisionInput').value;
+                    const district = document.getElementById('districtInput').value;
+                    const city = document.getElementById('cityInput').value;
+                    
+                    if (!name) {
+                        alert('Please enter your name');
+                        return;
+                    }
+                    
+                    if (!age || age < 18 || age > 65) {
+                        alert('Please enter a valid age between 18 and 65');
+                        return;
+                    }
+                    
+                    if (!phone) {
+                        alert('Please enter your phone number');
+                        return;
+                    }
+                    
+                    if (!division || !district || !city) {
+                        alert('Please select your division, district, and city');
+                        return;
+                    }
+                    
+                    const updateData = {
+                        name: name,
+                        age: age,
+                        phone: phone,
+                        division: division,
+                        state: district,  // Using 'state' field for district
+                        city: city
+                    };
+                    
+                    // Show loading
+                    document.getElementById('loading').style.display = 'flex';
+                    
+                    const { error } = await supabase
+                        .from('donors')
+                        .update(updateData)
+                        .eq('id', donorData.id);
+                    
+                    if (error) throw error;
+                    
+                    // Update local data
+                    donorData = { ...donorData, ...updateData };
+                    
+                    // Exit edit mode
+                    isEditMode = false;
+                    document.getElementById('editBtn').classList.remove('hidden');
+                    document.getElementById('saveBtn').classList.add('hidden');
+                    
+                    // Disable fields
+                    document.getElementById('phoneInput').disabled = true;
+                    document.getElementById('divisionInput').disabled = true;
+                    document.getElementById('districtInput').disabled = true;
+                    document.getElementById('cityInput').disabled = true;
+                    
+                    // Restore background
+                    document.getElementById('phoneInput').classList.add('bg-gray-100');
+                    
+                    // Update UI with new values
+                    updateUI();
+                    
+                    showSuccessToast('Profile updated successfully');
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                    alert('Error updating profile: ' + error.message);
+                } finally {
+                    document.getElementById('loading').style.display = 'none';
+                }
+            });
+            
+            confirmCancelBtn.addEventListener('click', function() {
+                // Hide confirmation modal
+                document.getElementById('confirmModal').classList.add('hidden');
+            });
+        }
+        
         // Comment functionality
         document.getElementById('commentBtn').addEventListener('click', function() {
             const section = document.getElementById('commentsSection');
@@ -2026,77 +2203,9 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             document.getElementById('phoneInput').classList.remove('bg-gray-100');
         });
         
-        document.getElementById('saveBtn').addEventListener('click', async function() {
-            try {
-                // Validate fields
-                const name = document.getElementById('nameInput').value.trim();
-                const age = parseInt(document.getElementById('ageInput').value);
-                const phone = document.getElementById('phoneInput').value.trim();
-                const division = document.getElementById('divisionInput').value;
-                const district = document.getElementById('districtInput').value;
-                const city = document.getElementById('cityInput').value;
-                
-                if (!name) {
-                    alert('Please enter your name');
-                    return;
-                }
-                
-                if (!age || age < 18 || age > 65) {
-                    alert('Please enter a valid age between 18 and 65');
-                    return;
-                }
-                
-                if (!phone) {
-                    alert('Please enter your phone number');
-                    return;
-                }
-                
-                if (!division || !district || !city) {
-                    alert('Please select your division, district, and city');
-                    return;
-                }
-                
-                const updateData = {
-                    name: name,
-                    age: age,
-                    phone: phone,
-                    division: division,
-                    state: district,  // Using 'state' field for district
-                    city: city
-                };
-                
-                const { error } = await supabase
-                    .from('donors')
-                    .update(updateData)
-                    .eq('id', donorData.id);
-                
-                if (error) throw error;
-                
-                // Update local data
-                donorData = { ...donorData, ...updateData };
-                
-                // Exit edit mode
-                isEditMode = false;
-                document.getElementById('editBtn').classList.remove('hidden');
-                document.getElementById('saveBtn').classList.add('hidden');
-                
-                // Disable fields
-                document.getElementById('phoneInput').disabled = true;
-                document.getElementById('divisionInput').disabled = true;
-                document.getElementById('districtInput').disabled = true;
-                document.getElementById('cityInput').disabled = true;
-                
-                // Restore background
-                document.getElementById('phoneInput').classList.add('bg-gray-100');
-                
-                // Update UI with new values
-                updateUI();
-                
-                showSuccessToast('Profile updated successfully');
-            } catch (error) {
-                console.error('Error updating profile:', error);
-                alert('Error updating profile');
-            }
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            // Show confirmation modal
+            document.getElementById('confirmModal').classList.remove('hidden');
         });
         
         // Logout functionality
