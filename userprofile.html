@@ -230,6 +230,7 @@
             background-color: #f8fafc;
             color: #94a3b8;
             cursor: not-allowed;
+            pointer-events: none;
         }
         .form-input.error {
             border-color: #ef4444;
@@ -2251,7 +2252,10 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             document.getElementById('saveBtn').classList.remove('hidden');
             
             // Enable editable fields
-            document.getElementById('phoneInput').disabled = false;
+            const phoneInput = document.getElementById('phoneInput');
+            phoneInput.disabled = false;
+            phoneInput.classList.remove('bg-gray-100');
+            
             document.getElementById('divisionInput').disabled = false;
             document.getElementById('districtInput').disabled = false;
             document.getElementById('cityInput').disabled = false;
@@ -2286,9 +2290,6 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                 ageContainer.innerHTML = '';
                 ageContainer.appendChild(ageInput);
             }
-            
-            // Change background to indicate edit mode
-            document.getElementById('phoneInput').classList.remove('bg-gray-100');
         });
         
         document.getElementById('saveBtn').addEventListener('click', function() {
