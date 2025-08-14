@@ -1,407 +1,1451 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Look4Blood Admin Panel</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Orbitron', sans-serif;
-    }
-    body {
-      background-color: #0f0f0f;
-      color: #fff;
-      overflow-x: hidden;
-    }
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: 250px;
-      background: linear-gradient(135deg, #1b1b1b, #2e0f15);
-      padding-top: 60px;
-      transition: 0.3s;
-      z-index: 100;
-    }
-    .sidebar h2 {
-      text-align: center;
-      color: #e11d48;
-      font-size: 22px;
-      margin-bottom: 20px;
-    }
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-    }
-    .sidebar ul li {
-      padding: 15px 20px;
-      cursor: pointer;
-      color: white;
-      transition: background 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .sidebar ul li:hover, .sidebar ul li.active {
-      background: #e11d48;
-      border-left: 5px solid #fff;
-    }
-    .content {
-      margin-left: 250px;
-      padding: 30px;
-    }
-    .section {
-      display: none;
-      animation: fadeSlideIn 0.5s ease forwards;
-    }
-    .section.active {
-      display: block;
-    }
-    @keyframes fadeSlideIn {
-      0% {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    button {
-      background: #e11d48;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #fff;
-      color: #e11d48;
-    }
-    .field-group {
-      margin-bottom: 20px;
-    }
-    .field-group label {
-      display: block;
-      margin-bottom: 5px;
-      color: #aaa;
-    }
-    .field-group input, .field-group select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #333;
-      background: #1a1a1a;
-      color: #fff;
-    }
-    .action-buttons {
-      display: flex;
-      gap: 15px;
-      margin-top: 10px;
-    }
-    .confirm-box {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #1b1b1b;
-      padding: 30px;
-      border-radius: 12px;
-      border: 2px solid #e11d48;
-      z-index: 1000;
-      display: none;
-      text-align: center;
-    }
-    .confirm-box.active {
-      display: block;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloodHero - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        :root {
+            --primary: #e53935;
+            --primary-dark: #c62828;
+            --secondary: #f5f5f5;
+            --light: #ffffff;
+            --dark: #333333;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --gray: #9e9e9e;
+            --light-gray: #e0e0e0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--light);
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .logo i {
+            font-size: 28px;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.9;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .main-content {
+            padding: 30px 0;
+            min-height: 80vh;
+        }
+        
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .page-title i {
+            font-size: 32px;
+            color: var(--primary);
+        }
+        
+        .page-title h2 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .admin-panel {
+            background: var(--light);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .admin-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--light);
+            border-radius: 8px;
+            padding: 0 15px;
+            box-shadow: var(--shadow);
+            width: 300px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 0;
+            border: none;
+            background: transparent;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--light-gray);
+            overflow-x: auto;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .requests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .request-card {
+            background: var(--light);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .request-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .request-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .request-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .request-info {
+            flex: 1;
+        }
+        
+        .request-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .request-blood {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .request-body {
+            padding: 20px;
+        }
+        
+        .request-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .request-detail:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .request-label {
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .request-value {
+            font-weight: 500;
+            text-align: right;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            border-top: 1px solid var(--light-gray);
+            background-color: #fafafa;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--light);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: var(--light);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: var(--light);
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: var(--light);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .document-item {
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .document-header {
+            padding: 12px 15px;
+            background-color: #f5f5f5;
+            font-weight: 500;
+        }
+        
+        .document-preview {
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: #fafafa;
+        }
+        
+        .document-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+            grid-column: 1 / -1;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--light-gray);
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-indicator::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-pending::before {
+            background-color: #ff8f00;
+        }
+        
+        .status-approved::before {
+            background-color: var(--success);
+        }
+        
+        .status-rejected::before {
+            background-color: var(--danger);
+        }
+        
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #e3f2fd;
+            color: #1976d2;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .verified-badge i {
+            color: #1976d2;
+        }
+        
+        .review-info {
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        .rejection-reason {
+            background-color: #ffebee;
+            color: var(--danger);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .rejection-reason-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid var(--light-gray);
+            background: var(--light);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .pagination button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination-info {
+            margin: 0 15px;
+            color: var(--gray);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.2);
+        }
+        
+        .form-control[disabled] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: row;
+                gap: 15px;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: var(--primary-dark);
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+                transform: translateY(-150%);
+                transition: transform 0.3s ease-in-out;
+                z-index: 99;
+                box-shadow: var(--shadow);
+            }
+            
+            .nav-links.active {
+                transform: translateY(0);
+            }
+            
+            .requests-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .page-title h2 {
+                font-size: 22px;
+            }
+            
+            .page-title i {
+                font-size: 24px;
+            }
+            
+            .request-header {
+                padding: 15px;
+            }
+            
+            .request-body {
+                padding: 15px;
+            }
+            
+            .request-actions {
+                padding: 12px 15px;
+                flex-wrap: wrap;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+            
+            .modal-header, .modal-body, .modal-footer {
+                padding: 15px;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2><i class="fas fa-shield-alt"></i> Admin Panel</h2>
-    <ul>
-      <li class="active" onclick="showSection('donorMgmt')"><i class="fas fa-users"></i> Donor Management</li>
-      <li onclick="showSection('cityMgmt')"><i class="fas fa-map-marker-alt"></i> District & City Management</li>
-      <li onclick="showSection('donationTrack')"><i class="fas fa-hand-holding-heart"></i> Donation Tracking</li>
-      <li onclick="showSection('statsReports')"><i class="fas fa-chart-pie"></i> Statistics & Reports</li>
-      <li onclick="showSection('settings')"><i class="fas fa-cogs"></i> System Settings</li>
-      <li onclick="showSection('announcements')"><i class="fas fa-bullhorn"></i> Announcements</li>
-    </ul>
-  </div>
-
-  <div class="content">
-    <div id="donorMgmt" class="section active">
-      <h2>Donor Management</h2>
-      <div class="field-group">
-        <label>Search Donor by Number</label>
-        <input type="text" id="donorSearchNumber" placeholder="Enter mobile number">
-      </div>
-      <div class="action-buttons">
-        <button onclick="searchDonor()">Search</button>
-      </div>
-      <div id="donorInfo"></div>
-    </div>
-
-    <div id="cityMgmt" class="section">
-      <h2>District & City Management</h2>
-      <button onclick="addCityDistrict()">Add New District/City</button>
-      <button onclick="editCityDistrict()">Edit Existing</button>
-    </div>
-
-    <div id="donationTrack" class="section">
-      <h2>Donation Tracking</h2>
-      <div id="donationList"></div>
-    </div>
-
-    <div id="statsReports" class="section">
-      <h2>Statistics & Reports</h2>
-      <div id="statsOutput"></div>
-    </div>
-
-    <div id="settings" class="section">
-      <h2>System Settings</h2>
-      <label>Set Donation Eligibility (Days)</label>
-      <input type="number" id="eligibilityDays" value="90">
-      <button onclick="updateSettings()">Update</button>
-    </div>
-
-    <div id="announcements" class="section">
-      <h2>Announcements</h2>
-      <div class="field-group">
-        <label>Target Page</label>
-        <select id="targetPage">
-          <option value="index.html">index.html</option>
-          <option value="registerform.html">registerform.html</option>
-        </select>
-      </div>
-      <div class="field-group">
-        <label>Announcement Text</label>
-        <input type="text" id="announcementText">
-      </div>
-      <button onclick="postAnnouncement()">Post Announcement</button>
-      <div id="announcementList"></div>
-    </div>
-  </div>
-
-  <div id="confirmBox" class="confirm-box">
-    <p>Are you sure you want to delete this donor?</p>
-    <div class="action-buttons">
-      <button onclick="confirmDelete(true)">Yes</button>
-      <button onclick="confirmDelete(false)">No</button>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // Existing code for sidebar navigation
-  const sections = document.querySelectorAll('.section');
-  const sidebarLinks = document.querySelectorAll('.sidebar ul li');
-
-  function showSection(id) {
-    sections.forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    sidebarLinks.forEach(link => link.classList.remove('active'));
-    event.target.classList.add('active');
-  }
-
-  // --- Supabase setup ---
-  <!-- Replace old script with this at the end of <body> -->
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-  const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  // Sidebar navigation logic
-  const sections = document.querySelectorAll('.section');
-  const sidebarLinks = document.querySelectorAll('.sidebar ul li');
-
-  window.showSection = function(id) {
-    sections.forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    sidebarLinks.forEach(link => link.classList.remove('active'));
-    event.target.classList.add('active');
-  };
-
-  let donorToDeleteId = null;
-
-  window.searchDonor = async function () {
-    const number = document.getElementById('donorSearchNumber').value.trim();
-    const donorInfoDiv = document.getElementById('donorInfo');
-    donorInfoDiv.innerHTML = 'Searching...';
-
-    if (!number) {
-      donorInfoDiv.innerHTML = '<p style="color:#e11d48;">Please enter a mobile number.</p>';
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('donors')
-        .select('*')
-        .eq('mobile_number', number)
-        .single();
-
-      if (error) {
-        donorInfoDiv.innerHTML = error.code === 'PGRST116'
-          ? '<p style="color:#e11d48;">No donor found with this number.</p>'
-          : `<p style="color:#e11d48;">Error: ${error.message}</p>`;
-        return;
-      }
-
-      donorInfoDiv.innerHTML = `
-        <div style="background:#1a1a1a; padding:15px; border-radius:8px; margin-top:15px;">
-          <p><strong>Name:</strong> ${data.name}</p>
-          <p><strong>Blood Group:</strong> ${data.blood_group}</p>
-          <p><strong>Mobile Number:</strong> ${data.mobile_number}</p>
-          <p><strong>Last Donation Date:</strong> ${data.last_donation_date || 'N/A'}</p>
-          <p><strong>Times Donated:</strong> ${data.times_donated || 0}</p>
-          <button onclick="promptDelete('${data.id}')">Delete Donor</button>
+    <div class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-tint"></i>
+                    <h1>Look4Blood</h1>
+                </a>
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                    <a href="#"><i class="fas fa-search"></i> Find Donors</a>
+                    <a href="#"><i class="fas fa-heart"></i> Donate</a>
+                    <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+                    <a href="#"><i class="fas fa-user"></i> Profile</a>
+                    <a href="#" class="active"><i class="fas fa-shield-alt"></i> Admin</a>
+                </div>
+                
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">AD</div>
+                    <span id="userName">Admin User</span>
+                </div>
+            </div>
         </div>
-      `;
-    } catch (err) {
-      donorInfoDiv.innerHTML = `<p style="color:#e11d48;">Unexpected error: ${err.message}</p>`;
-    }
-  };
-
-  window.promptDelete = function(id) {
-    donorToDeleteId = id;
-    document.getElementById('confirmBox').classList.add('active');
-  };
-
-  window.confirmDelete = async function(confirm) {
-    const confirmBox = document.getElementById('confirmBox');
-    if (!confirm) {
-      donorToDeleteId = null;
-      confirmBox.classList.remove('active');
-      return;
-    }
-
-    if (!donorToDeleteId) return;
-
-    try {
-      const { error } = await supabase
-        .from('donors')
-        .delete()
-        .eq('id', donorToDeleteId);
-
-      if (error) {
-        alert('Failed to delete donor: ' + error.message);
-      } else {
-        alert('Donor deleted successfully.');
-        document.getElementById('donorInfo').innerHTML = '';
-      }
-    } catch (err) {
-      alert('Unexpected error: ' + err.message);
-    }
-
-    donorToDeleteId = null;
-    confirmBox.classList.remove('active');
-  };
-
-  window.updateSettings = async function () {
-    const daysInput = document.getElementById('eligibilityDays');
-    const days = Number(daysInput.value);
-    if (isNaN(days) || days < 0) {
-      alert('Please enter a valid number of days.');
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('settings')
-        .upsert({ key: 'donation_eligibility_days', value: days.toString() }, { onConflict: 'key' });
-
-      if (error) {
-        alert('Failed to update settings: ' + error.message);
-        return;
-      }
-
-      alert('Donation eligibility updated successfully.');
-    } catch (err) {
-      alert('Unexpected error: ' + err.message);
-    }
-  };
-
-  window.postAnnouncement = async function () {
-    const targetPage = document.getElementById('targetPage').value;
-    const text = document.getElementById('announcementText').value.trim();
-
-    if (!text) {
-      alert('Please enter announcement text.');
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('announcements')
-        .insert([{ target_page: targetPage, text, created_at: new Date().toISOString() }]);
-
-      if (error) {
-        alert('Failed to post announcement: ' + error.message);
-        return;
-      }
-
-      alert('Announcement posted successfully.');
-      document.getElementById('announcementText').value = '';
-      loadAnnouncements();
-    } catch (err) {
-      alert('Unexpected error: ' + err.message);
-    }
-  };
-
-  async function loadAnnouncements() {
-    const announcementList = document.getElementById('announcementList');
-    announcementList.innerHTML = 'Loading announcements...';
-
-    try {
-      const { data, error } = await supabase
-        .from('announcements')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        announcementList.innerHTML = 'Failed to load announcements.';
-        return;
-      }
-
-      if (!data.length) {
-        announcementList.innerHTML = '<p>No announcements posted yet.</p>';
-        return;
-      }
-
-      announcementList.innerHTML = data.map(a => `
-        <div style="background:#1a1a1a; margin-bottom:10px; padding:10px; border-radius:6px;">
-          <p><strong>Page:</strong> ${a.target_page}</p>
-          <p>${a.text}</p>
-          <small style="color:#777;">Posted on: ${new Date(a.created_at).toLocaleString()}</small>
+    </div>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="page-title">
+                <i class="fas fa-shield-alt"></i>
+                <h2>Admin Panel</h2>
+            </div>
+            
+            <div class="admin-panel">
+                <div class="admin-header">
+                    <div class="admin-title">Verification Requests</div>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by name or phone...">
+                    </div>
+                </div>
+                
+                <div class="tabs">
+                    <div class="tab active" data-status="pending">Pending</div>
+                    <div class="tab" data-status="approved">Approved</div>
+                    <div class="tab" data-status="rejected">Rejected</div>
+                </div>
+                
+                <div class="requests-grid" id="requestsGrid">
+                    <!-- Requests will be dynamically loaded here -->
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+                
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be dynamically loaded here -->
+                </div>
+            </div>
         </div>
-      `).join('');
-    } catch (err) {
-      announcementList.innerHTML = 'Unexpected error loading announcements.';
-    }
-  }
-
-  window.addCityDistrict = async function () {
-    alert('Add City/District functionality not yet implemented.');
-  };
-
-  window.editCityDistrict = async function () {
-    alert('Edit City/District functionality not yet implemented.');
-  };
-
-  window.addEventListener('DOMContentLoaded', loadAnnouncements);
-</script>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Verification Details</div>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="modalName" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="modalEmail" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="modalPhone" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Division</label>
+                        <input type="text" id="modalDivision" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Blood Group</label>
+                        <input type="text" id="modalBloodGroup" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>State</label>
+                        <input type="text" id="modalState" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" id="modalCity" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Organisation Name</label>
+                        <input type="text" id="modalOrganisation" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Last Donation Date</label>
+                        <input type="date" id="modalLastDonation" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Times Donated</label>
+                        <input type="number" id="modalTimesDonated" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Verification Status</label>
+                        <input type="text" id="modalStatus" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Reviewed By</label>
+                        <input type="text" id="modalReviewedBy" class="form-control" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Reviewed At</label>
+                        <input type="text" id="modalReviewedAt" class="form-control" disabled>
+                    </div>
+                </div>
+                
+                <div class="documents-grid">
+                    <div class="document-item">
+                        <div class="document-header">Profile Photo</div>
+                        <div class="document-preview">
+                            <img id="modalProfilePhoto" src="" alt="Profile">
+                        </div>
+                    </div>
+                    
+                    <div class="document-item">
+                        <div class="document-header">NID Front Side</div>
+                        <div class="document-preview">
+                            <img id="modalNidFront" src="" alt="NID Front">
+                        </div>
+                    </div>
+                    
+                    <div class="document-item">
+                        <div class="document-header">NID Back Side</div>
+                        <div class="document-preview">
+                            <img id="modalNidBack" src="" alt="NID Back">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="modalRejectionReason" class="rejection-reason" style="display: none;">
+                    <div class="rejection-reason-title">Reason for rejection:</div>
+                    <div id="modalRejectionText"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modalCloseBtn">Close</button>
+                <button class="btn btn-success" id="modalApproveBtn">Approve</button>
+                <button class="btn btn-danger" id="modalRejectBtn">Reject</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // DOM Elements
+        const requestsGrid = document.getElementById('requestsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const tabs = document.querySelectorAll('.tab');
+        const detailsModal = document.getElementById('detailsModal');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const modalApproveBtn = document.getElementById('modalApproveBtn');
+        const modalRejectBtn = document.getElementById('modalRejectBtn');
+        const pagination = document.getElementById('pagination');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        const modalRejectionReason = document.getElementById('modalRejectionReason');
+        const modalRejectionText = document.getElementById('modalRejectionText');
+        
+        // State
+        let currentStatus = 'pending';
+        let currentUser = null;
+        let verificationRequests = [];
+        let filteredRequests = [];
+        let currentRequestId = null;
+        let isAdmin = false;
+        let isModerator = false;
+        let currentPage = 1;
+        const itemsPerPage = 6;
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check authentication
+            await checkAuth();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Load verification requests if admin
+            if (isAdmin || isModerator) {
+                await loadVerificationRequests();
+            } else {
+                // Redirect to home if not admin
+                window.location.href = 'index.html';
+            }
+        });
+        
+        // Check authentication and user role
+        async function checkAuth() {
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                
+                if (error) {
+                    console.error('Error getting user:', error);
+                    return;
+                }
+                
+                if (user) {
+                    currentUser = user;
+                    
+                    // Check if user is admin or moderator
+                    const { data: roles, error: rolesError } = await supabase
+                        .from('user_roles')
+                        .select('role')
+                        .eq('user_id', user.id);
+                    
+                    if (rolesError) {
+                        console.error('Error fetching user roles:', rolesError);
+                        return;
+                    }
+                    
+                    if (roles) {
+                        roles.forEach(role => {
+                            if (role.role === 'admin') {
+                                isAdmin = true;
+                            } else if (role.role === 'moderator') {
+                                isModerator = true;
+                            }
+                        });
+                    }
+                    
+                    // Update user info in header
+                    document.getElementById('userName').textContent = user.email;
+                    document.getElementById('userAvatar').textContent = user.email.charAt(0).toUpperCase();
+                } else {
+                    // Redirect to login if not authenticated
+                    console.log('User not authenticated');
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Error checking authentication:', error);
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // Load verification requests
+        async function loadVerificationRequests() {
+            if (!isAdmin && !isModerator) return;
+            
+            try {
+                const { data: requests, error } = await supabase
+                    .from('verification_requests')
+                    .select(`
+                        *,
+                        donors (
+                            id,
+                            name,
+                            email,
+                            phone,
+                            blood_group,
+                            division,
+                            state,
+                            city,
+                            last_donation,
+                            times_donated
+                        )
+                    `)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                verificationRequests = requests || [];
+                filterRequests();
+            } catch (error) {
+                console.error('Error loading verification requests:', error);
+                requestsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading verification requests</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Filter requests based on status and search
+        function filterRequests() {
+            filteredRequests = verificationRequests.filter(request => {
+                // Filter by status
+                if (request.status !== currentStatus) {
+                    return false;
+                }
+                
+                // Filter by search term
+                const searchTerm = searchInput.value.toLowerCase();
+                if (searchTerm) {
+                    const donorName = request.donors?.name?.toLowerCase() || '';
+                    const donorPhone = request.donors?.phone?.toLowerCase() || '';
+                    
+                    if (!donorName.includes(searchTerm) && !donorPhone.includes(searchTerm)) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            // Reset to first page when filtering
+            currentPage = 1;
+            
+            renderRequests();
+            renderPagination();
+        }
+        
+        // Render verification requests
+        function renderRequests() {
+            // Calculate pagination
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedRequests = filteredRequests.slice(startIndex, endIndex);
+            
+            if (paginatedRequests.length === 0) {
+                requestsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No ${currentStatus} verification requests found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            requestsGrid.innerHTML = '';
+            
+            paginatedRequests.forEach(request => {
+                const card = document.createElement('div');
+                card.className = 'request-card';
+                
+                // Get reviewer info
+                let reviewerInfo = '';
+                if (request.reviewed_by && (request.status === 'approved' || request.status === 'rejected')) {
+                    reviewerInfo = `
+                        <div class="review-info">
+                            ${request.status === 'approved' ? 'Approved' : 'Rejected'} by ${request.reviewed_by} on ${formatDate(request.reviewed_at)}
+                        </div>
+                    `;
+                }
+                
+                // Add rejection reason if available
+                let rejectionReasonHtml = '';
+                if (request.status === 'rejected' && request.rejection_reason) {
+                    rejectionReasonHtml = `
+                        <div class="rejection-reason">
+                            <div class="rejection-reason-title">Reason:</div>
+                            <div>${request.rejection_reason}</div>
+                        </div>
+                    `;
+                }
+                
+                card.innerHTML = `
+                    <div class="request-header">
+                        <div class="request-avatar">${request.donors?.name?.charAt(0).toUpperCase() || 'U'}</div>
+                        <div class="request-info">
+                            <div class="request-name">
+                                ${request.donors?.name || 'Unknown'}
+                                ${request.status === 'approved' ? '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>' : ''}
+                            </div>
+                            <div class="request-blood">Blood Group: ${request.donors?.blood_group || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="request-body">
+                        <div class="request-detail">
+                            <span class="request-label">Location:</span>
+                            <span class="request-value">${request.donors?.city || 'N/A'}, ${request.donors?.state || 'N/A'}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Division:</span>
+                            <span class="request-value">${request.donors?.division || 'N/A'}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Phone:</span>
+                            <span class="request-value">${request.donors?.phone || 'N/A'}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Organisation:</span>
+                            <span class="request-value">${request.organisation_name || 'N/A'}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Last Donation:</span>
+                            <span class="request-value">${formatDate(request.donors?.last_donation)}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Times Donated:</span>
+                            <span class="request-value">${request.donors?.times_donated || 0}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Status:</span>
+                            <span class="request-value status-indicator status-${request.status}">${request.status.charAt(0).toUpperCase() + request.status.slice(1)}</span>
+                        </div>
+                        ${reviewerInfo}
+                        ${rejectionReasonHtml}
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-sm btn-secondary view-details" data-id="${request.id}">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        ${request.status === 'pending' ? `
+                            <button class="btn btn-sm btn-success approve-btn" data-id="${request.id}">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="btn btn-sm btn-danger reject-btn" data-id="${request.id}">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                
+                requestsGrid.appendChild(card);
+            });
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', () => {
+                    const requestId = button.getAttribute('data-id');
+                    showRequestDetails(requestId);
+                });
+            });
+            
+            document.querySelectorAll('.approve-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const requestId = button.getAttribute('data-id');
+                    currentRequestId = requestId;
+                    showRequestDetails(requestId);
+                });
+            });
+            
+            document.querySelectorAll('.reject-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const requestId = button.getAttribute('data-id');
+                    currentRequestId = requestId;
+                    showRequestDetails(requestId);
+                });
+            });
+        }
+        
+        // Render pagination
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `
+                <button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `;
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    paginationHTML += `
+                        <button class="${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    paginationHTML += `<span>...</span>`;
+                }
+            }
+            
+            // Next button
+            paginationHTML += `
+                <button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            
+            // Page info
+            const startItem = (currentPage - 1) * itemsPerPage + 1;
+            const endItem = Math.min(currentPage * itemsPerPage, filteredRequests.length);
+            paginationHTML += `
+                <div class="pagination-info">
+                    Showing ${startItem}-${endItem} of ${filteredRequests.length} requests
+                </div>
+            `;
+            
+            pagination.innerHTML = paginationHTML;
+        }
+        
+        // Change page
+        function changePage(page) {
+            currentPage = page;
+            renderRequests();
+            renderPagination();
+            
+            // Scroll to top of requests grid
+            requestsGrid.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Mobile menu toggle
+            mobileMenuBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+            
+            // Close mobile menu when clicking on a link
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                });
+            });
+            
+            // Search functionality
+            searchInput.addEventListener('input', handleSearch);
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentStatus = tab.getAttribute('data-status');
+                    filterRequests();
+                });
+            });
+            
+            // Modal controls
+            document.querySelector('.modal-close').addEventListener('click', () => {
+                detailsModal.classList.remove('active');
+            });
+            
+            modalCloseBtn.addEventListener('click', () => {
+                detailsModal.classList.remove('active');
+            });
+            
+            modalApproveBtn.addEventListener('click', approveRequest);
+            modalRejectBtn.addEventListener('click', () => {
+                const reason = prompt('Please provide a reason for rejection:');
+                if (reason) {
+                    rejectRequest(reason);
+                }
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === detailsModal) {
+                    detailsModal.classList.remove('active');
+                }
+            });
+        }
+        
+        // Handle search input
+        function handleSearch() {
+            filterRequests();
+        }
+        
+        // Show request details in modal
+        function showRequestDetails(requestId) {
+            const request = verificationRequests.find(r => r.id === requestId);
+            
+            if (!request) {
+                alert('Request not found');
+                return;
+            }
+            
+            currentRequestId = requestId;
+            
+            // Populate modal with request details
+            document.getElementById('modalName').value = request.donors?.name || 'N/A';
+            document.getElementById('modalEmail').value = request.donors?.email || 'N/A';
+            document.getElementById('modalPhone').value = request.donors?.phone || 'N/A';
+            document.getElementById('modalDivision').value = request.donors?.division || 'N/A';
+            document.getElementById('modalBloodGroup').value = request.donors?.blood_group || 'N/A';
+            document.getElementById('modalState').value = request.donors?.state || 'N/A';
+            document.getElementById('modalCity').value = request.donors?.city || 'N/A';
+            document.getElementById('modalOrganisation').value = request.organisation_name || 'N/A';
+            document.getElementById('modalLastDonation').value = request.donors?.last_donation || 'N/A';
+            document.getElementById('modalTimesDonated').value = request.donors?.times_donated || 0;
+            document.getElementById('modalStatus').value = request.status.charAt(0).toUpperCase() + request.status.slice(1);
+            document.getElementById('modalReviewedBy').value = request.reviewed_by || 'N/A';
+            document.getElementById('modalReviewedAt').value = formatDate(request.reviewed_at);
+            
+            // Set document images
+            document.getElementById('modalProfilePhoto').src = request.profile_photo_url || '';
+            document.getElementById('modalNidFront').src = request.nid_front_url || '';
+            document.getElementById('modalNidBack').src = request.nid_back_url || '';
+            
+            // Show/hide rejection reason
+            if (request.status === 'rejected' && request.rejection_reason) {
+                modalRejectionReason.style.display = 'block';
+                modalRejectionText.textContent = request.rejection_reason;
+            } else {
+                modalRejectionReason.style.display = 'none';
+            }
+            
+            // Show/hide action buttons based on status
+            if (request.status === 'pending') {
+                modalApproveBtn.style.display = 'inline-flex';
+                modalRejectBtn.style.display = 'inline-flex';
+            } else {
+                modalApproveBtn.style.display = 'none';
+                modalRejectBtn.style.display = 'none';
+            }
+            
+            // Show modal
+            detailsModal.classList.add('active');
+        }
+        
+        // Approve request
+        async function approveRequest() {
+            if (!currentRequestId) return;
+            
+            try {
+                if (!currentUser) {
+                    throw new Error('User not authenticated');
+                }
+                
+                // Update verification request
+                const { error } = await supabase
+                    .from('verification_requests')
+                    .update({
+                        status: 'approved',
+                        is_verified: true,
+                        reviewed_by: currentUser.email,
+                        reviewed_at: new Date().toISOString()
+                    })
+                    .eq('id', currentRequestId);
+                
+                if (error) throw error;
+                
+                // Get donor ID
+                const request = verificationRequests.find(r => r.id === currentRequestId);
+                if (request) {
+                    // Update donor verification status
+                    await supabase
+                        .from('donors')
+                        .update({ verification_status: 'approved', is_verified: true })
+                        .eq('id', request.donor_id);
+                }
+                
+                alert('Verification request approved successfully!');
+                detailsModal.classList.remove('active');
+                
+                // Reload requests
+                await loadVerificationRequests();
+                
+            } catch (error) {
+                console.error('Error approving request:', error);
+                alert('Error approving request: ' + error.message);
+            }
+        }
+        
+        // Reject request
+        async function rejectRequest(reason) {
+            if (!currentRequestId) return;
+            
+            try {
+                if (!currentUser) {
+                    throw new Error('User not authenticated');
+                }
+                
+                // Update verification request
+                const { error } = await supabase
+                    .from('verification_requests')
+                    .update({
+                        status: 'rejected',
+                        is_verified: false,
+                        reviewed_by: currentUser.email,
+                        reviewed_at: new Date().toISOString(),
+                        rejection_reason: reason
+                    })
+                    .eq('id', currentRequestId);
+                
+                if (error) throw error;
+                
+                // Get donor ID
+                const request = verificationRequests.find(r => r.id === currentRequestId);
+                if (request) {
+                    // Update donor verification status
+                    await supabase
+                        .from('donors')
+                        .update({ verification_status: 'rejected', is_verified: false })
+                        .eq('id', request.donor_id);
+                }
+                
+                alert('Verification request rejected successfully!');
+                detailsModal.classList.remove('active');
+                
+                // Reload requests
+                await loadVerificationRequests();
+                
+            } catch (error) {
+                console.error('Error rejecting request:', error);
+                alert('Error rejecting request: ' + error.message);
+            }
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+    </script>
 </body>
 </html>
