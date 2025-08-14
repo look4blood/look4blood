@@ -1075,57 +1075,7 @@
                 </div>
             </div>
             
-            <!-- Supabase Installation Instructions -->
-            <div class="supabase-install">
-                <h3><i class="fas fa-database"></i> Supabase Installation</h3>
-                <p>Here's the SQL to set up the required tables:</p>
-                
-                <pre id="sqlCode">
--- Create donors table
-CREATE TABLE public.donors (
-  custom_id text not null,
-  name text not null,
-  age integer null,
-  gender text null,
-  blood_group text null,
-  phone text null,
-  email text null,
-  state text null,
-  city text null,
-  zip text null,
-  last_donation date null,
-  times_donated integer null default 0,
-  available boolean null,
-  terms boolean null default true,
-  created_at timestamp with time zone null default CURRENT_TIMESTAMP,
-  user_id uuid null,
-  id uuid not null default gen_random_uuid (),
-  avatar_url text null,
-  division text null,
-  thumbs_up integer null default 0,
-  thumbs_down integer null default 0,
-  constraint donors_pkey primary key (id),
-  constraint donors_user_id_fkey foreign KEY (user_id) references auth.users (id)
-) TABLESPACE pg_default;
-
--- Add verification columns to donors table
-ALTER TABLE public.donors
-ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT false,
-ADD COLUMN IF NOT EXISTS verification_status TEXT DEFAULT 'pending',
-ADD COLUMN IF NOT EXISTS date_of_birth DATE;
-
--- Create verification_requests table
-CREATE TABLE public.verification_requests (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  donor_id UUID REFERENCES public.donors(id) ON DELETE CASCADE,
-  profile_photo_url TEXT,
-  nid_front_url TEXT,
-  nid_back_url TEXT,
-  submitted_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
-  reviewed_by UUID REFERENCES auth.users(id),
-  reviewed_at TIMESTAMP WITH TIME ZONE
-);</pre>
+           
                 
                 <button class="btn-copy" onclick="copySQL()">
                     <i class="fas fa-copy"></i> Copy SQL to Clipboard
@@ -1222,8 +1172,8 @@ CREATE TABLE public.verification_requests (
     
     <script>
         // Supabase initialization
-        const supabaseUrl = 'https://your-project.supabase.co';
-        const supabaseKey = 'your-supabase-key';
+        const supabaseUrl = 'https://bbvyjeljeyofswuijlyg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJidnlqZWxqZXlvZnN3dWlqbHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTY2MzEsImV4cCI6MjA2NzM3MjYzMX0.m3YNxZK-W8thAsuo8FAda49Bz5zbQHDaTfi-6yY136I';
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
         
         // DOM Elements
