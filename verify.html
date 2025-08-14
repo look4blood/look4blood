@@ -190,6 +190,11 @@
             color: #1976d2;
         }
         
+        .badge-initial {
+            background-color: #f3e5f5;
+            color: #9c27b0;
+        }
+        
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -674,39 +679,8 @@
             background-color: var(--danger);
         }
         
-        .supabase-install {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 25px;
-            margin: 30px 0;
-            border-left: 4px solid #3ecf8e;
-        }
-        
-        .supabase-install h3 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-        
-        .supabase-install pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-            font-size: 14px;
-        }
-        
-        .supabase-install .btn-copy {
-            background: #3ecf8e;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
+        .status-initial::before {
+            background-color: #9c27b0;
         }
         
         .role-switcher {
@@ -730,6 +704,29 @@
         .role-btn.active {
             background: var(--primary);
             color: white;
+        }
+        
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #e3f2fd;
+            color: #1976d2;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .verified-badge i {
+            color: #1976d2;
+        }
+        
+        .review-info {
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 5px;
         }
         
         @media (max-width: 768px) {
@@ -802,7 +799,7 @@
             </div>
             
             <!-- Role Switcher for Demo -->
-            <div class="role-switcher">
+            <div class="role-switcher" id="roleSwitcher">
                 <span>View as:</span>
                 <button class="role-btn active" id="donorBtn">Donor</button>
                 <button class="role-btn" id="adminBtn">Admin</button>
@@ -814,12 +811,12 @@
                     <div class="card-header">
                         <div class="card-title">
                             <span>Your Information</span>
-                            <span class="badge badge-verified">
-                                <i class="fas fa-check-circle"></i> Verified
+                            <span id="verificationStatusBadge" class="badge badge-initial">
+                                <i class="fas fa-clock"></i> Initial
                             </span>
                         </div>
-                        <div class="status-indicator status-approved">
-                            Approved on 15 Aug 2023
+                        <div id="statusIndicator" class="status-indicator status-initial">
+                            Verification not submitted yet
                         </div>
                     </div>
                     
@@ -845,8 +842,8 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="dob">Date of Birth</label>
-                            <input type="date" id="dob" class="form-control" value="1990-05-15" disabled>
+                            <label for="division">Division</label>
+                            <input type="text" id="division" class="form-control" value="California" disabled>
                         </div>
                         
                         <div class="form-group">
@@ -914,11 +911,16 @@
                             </div>
                             <div class="preview-container" id="nidBackPreview"></div>
                         </div>
+                        
+                        <div class="form-group">
+                            <label for="organisationName">Organisation Name (Optional)</label>
+                            <input type="text" id="organisationName" class="form-control" placeholder="Please enter the organisation name">
+                        </div>
                     </div>
                     
                     <div class="form-group">
                         <label>
-                            <input type="checkbox" id="termsCheckbox" checked> 
+                            <input type="checkbox" id="termsCheckbox"> 
                             I confirm that all information provided is accurate and I agree to the terms of service.
                         </label>
                     </div>
@@ -941,135 +943,21 @@
                         <div class="admin-title">Verification Requests</div>
                         <div class="search-box">
                             <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search requests...">
+                            <input type="text" id="searchInput" placeholder="Search by name or phone...">
                         </div>
                     </div>
                     
                     <div class="tabs">
-                        <div class="tab active">Pending (3)</div>
-                        <div class="tab">Approved (24)</div>
-                        <div class="tab">Rejected (5)</div>
+                        <div class="tab active" data-status="pending">Pending</div>
+                        <div class="tab" data-status="approved">Approved</div>
+                        <div class="tab" data-status="rejected">Rejected</div>
                     </div>
                     
-                    <div class="requests-grid">
-                        <!-- Request 1 -->
-                        <div class="request-card">
-                            <div class="request-header">
-                                <div class="request-avatar">SA</div>
-                                <div class="request-info">
-                                    <div class="request-name">Sarah Anderson</div>
-                                    <div class="request-blood">Blood Group: A+</div>
-                                </div>
-                            </div>
-                            <div class="request-body">
-                                <div class="request-detail">
-                                    <span class="request-label">Location:</span>
-                                    <span class="request-value">New York, NY</span>
-                                </div>
-                                <div class="request-detail">
-                                    <span class="request-label">Last Donation:</span>
-                                    <span class="request-value">2023-06-15</span>
-                                </div>
-                                <div class="request-detail">
-                                    <span class="request-label">Times Donated:</span>
-                                    <span class="request-value">8</span>
-                                </div>
-                                <div class="request-detail">
-                                    <span class="request-label">Status:</span>
-                                    <span class="request-value status-indicator status-pending">Pending</span>
-                                </div>
-                            </div>
-                            <div class="request-actions">
-                                <button class="btn btn-sm btn-secondary view-details">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <button class="btn btn-sm btn-success">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                                <button class="btn btn-sm btn-danger">
-                                    <i class="fas fa-times"></i> Reject
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Request 2 -->
-                        <div class="request-card">
-                            <div class="request-header">
-                                <div class="request-avatar">MJ</div>
-                                <div class="request-info">
-                                    <div class="request-name">Michael Johnson</div>
-                                    <div class="request-blood">Blood Group: O-</div>
-                                </div>
-                            </div>
-                            <div class="request-body">
-                                <div class="request-detail">
-                                    <span class="request-label">Location:</span>
-                                    <span class="request-value">Chicago, IL</span>
-                                </div>
-                                <div class="request-detail">
-                                    <span class="request-label">Last Donation:</span>
-                                    <span class="request-value">2023-07-10</span>
-                                </div>
-                                <div class="request-detail">
-                                    <span class="request-label">Times Donated:</span>
-                                    <span class="request-value">5</span>
-                                </div>
-                                <div class="request-detail">
-                                    <span class="request-label">Status:</span>
-                                    <span class="request-value status-indicator status-pending">Pending</span>
-                                </div>
-                            </div>
-                            <div class="request-actions">
-                                <button class="btn btn-sm btn-secondary view-details">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <button class="btn btn-sm btn-success">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                                <button class="btn btn-sm btn-danger">
-                                    <i class="fas fa-times"></i> Reject
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Request 3 -->
-                        <div class="request-card">
-                            <div class="request-header">
-                                <div class="request-avatar">ER</div>
-                                <div class="request-info">
-                                    <div class="request-name">Emma Roberts</div>
-                                    <div class="request-blood">Blood Group: B+</div>
-                                </div>
-                            </div>
-                            <div class="request-body">
-                                <div class="request-detail">
-                                    <span class="request-label">Location:</span>
-                                    <span class="request-value">Miami, FL</span>
-                                </div>
-                                <div class="request-detail">
-                                    <span class="request-label">Last Donation:</span>
-                                    <span class="request-value">2023-05-22</span>
-                                </div>
-                                <div class="request-detail">
-                                    <span class="request-label">Times Donated:</span>
-                                    <span class="request-value">11</span>
-                                </div>
-                                <div class="request-detail">
-                                    <span class="request-label">Status:</span>
-                                    <span class="request-value status-indicator status-pending">Pending</span>
-                                </div>
-                            </div>
-                            <div class="request-actions">
-                                <button class="btn btn-sm btn-secondary view-details">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <button class="btn btn-sm btn-success">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                                <button class="btn btn-sm btn-danger">
-                                    <i class="fas fa-times"></i> Reject
-                                </button>
-                            </div>
+                    <div class="requests-grid" id="requestsGrid">
+                        <!-- Requests will be dynamically loaded here -->
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No verification requests found</p>
                         </div>
                     </div>
                 </div>
@@ -1086,47 +974,67 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Full Name</label>
-                                <input type="text" class="form-control" value="Sarah Anderson" disabled>
+                                <input type="text" id="modalName" class="form-control" disabled>
                             </div>
                             
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="email" class="form-control" value="sarah@example.com" disabled>
+                                <input type="email" id="modalEmail" class="form-control" disabled>
                             </div>
                             
                             <div class="form-group">
                                 <label>Phone Number</label>
-                                <input type="tel" class="form-control" value="+1 (555) 987-6543" disabled>
+                                <input type="tel" id="modalPhone" class="form-control" disabled>
                             </div>
                             
                             <div class="form-group">
-                                <label>Date of Birth</label>
-                                <input type="date" class="form-control" value="1988-11-03" disabled>
+                                <label>Division</label>
+                                <input type="text" id="modalDivision" class="form-control" disabled>
                             </div>
                             
                             <div class="form-group">
                                 <label>Blood Group</label>
-                                <input type="text" class="form-control" value="A+" disabled>
+                                <input type="text" id="modalBloodGroup" class="form-control" disabled>
                             </div>
                             
                             <div class="form-group">
                                 <label>State</label>
-                                <input type="text" class="form-control" value="New York" disabled>
+                                <input type="text" id="modalState" class="form-control" disabled>
                             </div>
                             
                             <div class="form-group">
                                 <label>City</label>
-                                <input type="text" class="form-control" value="New York" disabled>
+                                <input type="text" id="modalCity" class="form-control" disabled>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Organisation Name</label>
+                                <input type="text" id="modalOrganisation" class="form-control" disabled>
                             </div>
                             
                             <div class="form-group">
                                 <label>Last Donation Date</label>
-                                <input type="date" class="form-control" value="2023-06-15" disabled>
+                                <input type="date" id="modalLastDonation" class="form-control" disabled>
                             </div>
                             
                             <div class="form-group">
                                 <label>Times Donated</label>
-                                <input type="number" class="form-control" value="8" disabled>
+                                <input type="number" id="modalTimesDonated" class="form-control" disabled>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Verification Status</label>
+                                <input type="text" id="modalStatus" class="form-control" disabled>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Reviewed By</label>
+                                <input type="text" id="modalReviewedBy" class="form-control" disabled>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Reviewed At</label>
+                                <input type="text" id="modalReviewedAt" class="form-control" disabled>
                             </div>
                         </div>
                         
@@ -1134,29 +1042,29 @@
                             <div class="document-item">
                                 <div class="document-header">Profile Photo</div>
                                 <div class="document-preview">
-                                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Profile">
+                                    <img id="modalProfilePhoto" src="" alt="Profile">
                                 </div>
                             </div>
                             
                             <div class="document-item">
                                 <div class="document-header">NID Front Side</div>
                                 <div class="document-preview">
-                                    <img src="https://images.unsplash.com/photo-1586769852836-bc069f19e1b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="NID Front">
+                                    <img id="modalNidFront" src="" alt="NID Front">
                                 </div>
                             </div>
                             
                             <div class="document-item">
                                 <div class="document-header">NID Back Side</div>
                                 <div class="document-preview">
-                                    <img src="https://images.unsplash.com/photo-1586769852836-bc069f19e1b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="NID Back">
+                                    <img id="modalNidBack" src="" alt="NID Back">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary">Close</button>
-                        <button class="btn btn-success">Approve</button>
-                        <button class="btn btn-danger">Reject</button>
+                        <button class="btn btn-secondary" id="modalCloseBtn">Close</button>
+                        <button class="btn btn-success" id="modalApproveBtn">Approve</button>
+                        <button class="btn btn-danger" id="modalRejectBtn">Reject</button>
                     </div>
                 </div>
             </div>
@@ -1174,24 +1082,301 @@
         const adminView = document.getElementById('adminView');
         const donorBtn = document.getElementById('donorBtn');
         const adminBtn = document.getElementById('adminBtn');
+        const roleSwitcher = document.getElementById('roleSwitcher');
         const submitBtn = document.getElementById('submitVerification');
+        const requestsGrid = document.getElementById('requestsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const tabs = document.querySelectorAll('.tab');
+        const detailsModal = document.getElementById('detailsModal');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const modalApproveBtn = document.getElementById('modalApproveBtn');
+        const modalRejectBtn = document.getElementById('modalRejectBtn');
         
-        // Role switching
-        donorBtn.addEventListener('click', () => {
-            donorView.style.display = 'block';
-            adminView.style.display = 'none';
-            donorBtn.classList.add('active');
-            adminBtn.classList.remove('active');
+        // State
+        let currentStatus = 'pending';
+        let currentUser = null;
+        let currentDonor = null;
+        let verificationRequests = [];
+        let filteredRequests = [];
+        let currentRequestId = null;
+        let isAdmin = false;
+        let isModerator = false;
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check authentication
+            await checkAuth();
+            
+            // Set up file previews
+            setupFilePreview('profilePhoto', 'profilePreview');
+            setupFilePreview('nidFront', 'nidFrontPreview');
+            setupFilePreview('nidBack', 'nidBackPreview');
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Load donor data
+            await loadDonorData();
+            
+            // Load verification requests if admin
+            if (isAdmin || isModerator) {
+                await loadVerificationRequests();
+            }
         });
         
-        adminBtn.addEventListener('click', () => {
-            donorView.style.display = 'none';
-            adminView.style.display = 'block';
-            adminBtn.classList.add('active');
-            donorBtn.classList.remove('active');
-        });
+        // Check authentication and user role
+        async function checkAuth() {
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                
+                if (error) {
+                    console.error('Error getting user:', error);
+                    return;
+                }
+                
+                if (user) {
+                    currentUser = user;
+                    
+                    // Check if user is admin or moderator
+                    const { data: roles, error: rolesError } = await supabase
+                        .from('user_roles')
+                        .select('role')
+                        .eq('user_id', user.id);
+                    
+                    if (rolesError) {
+                        console.error('Error fetching user roles:', rolesError);
+                        return;
+                    }
+                    
+                    if (roles) {
+                        roles.forEach(role => {
+                            if (role.role === 'admin') {
+                                isAdmin = true;
+                            } else if (role.role === 'moderator') {
+                                isModerator = true;
+                            }
+                        });
+                    }
+                    
+                    // Show admin button only for admin and moderator
+                    if (isAdmin || isModerator) {
+                        adminBtn.style.display = 'block';
+                    } else {
+                        adminBtn.style.display = 'none';
+                    }
+                    
+                    // Update user info in header
+                    document.getElementById('userName').textContent = user.email;
+                    document.getElementById('userAvatar').textContent = user.email.charAt(0).toUpperCase();
+                } else {
+                    // Redirect to login if not authenticated
+                    console.log('User not authenticated');
+                    // In a real app, you would redirect to login page
+                    // window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Error checking authentication:', error);
+            }
+        }
         
-        // File upload previews
+        // Load donor data
+        async function loadDonorData() {
+            if (!currentUser) return;
+            
+            try {
+                const { data: donor, error } = await supabase
+                    .from('donors')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+                
+                if (error) {
+                    console.error('Error fetching donor data:', error);
+                    return;
+                }
+                
+                if (donor) {
+                    currentDonor = donor;
+                    
+                    // Update form fields
+                    document.getElementById('name').value = donor.name || '';
+                    document.getElementById('email').value = donor.email || currentUser.email || '';
+                    document.getElementById('phone').value = donor.phone || '';
+                    document.getElementById('bloodGroup').value = donor.blood_group || '';
+                    document.getElementById('division').value = donor.division || '';
+                    document.getElementById('gender').value = donor.gender || '';
+                    document.getElementById('state').value = donor.state || '';
+                    document.getElementById('city').value = donor.city || '';
+                    document.getElementById('lastDonation').value = donor.last_donation || '';
+                    document.getElementById('timesDonated').value = donor.times_donated || 0;
+                    
+                    // Get verification status
+                    const { data: verification, error: verificationError } = await supabase
+                        .from('verification_requests')
+                        .select('*')
+                        .eq('donor_id', donor.id)
+                        .order('created_at', { ascending: false })
+                        .limit(1)
+                        .single();
+                    
+                    if (verificationError && verificationError.code !== 'PGRST116') {
+                        console.error('Error fetching verification data:', verificationError);
+                        return;
+                    }
+                    
+                    // Update verification status UI
+                    updateVerificationStatus(verification);
+                }
+            } catch (error) {
+                console.error('Error loading donor data:', error);
+            }
+        }
+        
+        // Update verification status UI
+        function updateVerificationStatus(verification) {
+            const badge = document.getElementById('verificationStatusBadge');
+            const indicator = document.getElementById('statusIndicator');
+            
+            if (!verification) {
+                badge.className = 'badge badge-initial';
+                badge.innerHTML = '<i class="fas fa-clock"></i> Initial';
+                indicator.className = 'status-indicator status-initial';
+                indicator.textContent = 'Verification not submitted yet';
+                return;
+            }
+            
+            switch (verification.status) {
+                case 'pending':
+                    badge.className = 'badge badge-pending';
+                    badge.innerHTML = '<i class="fas fa-clock"></i> Pending';
+                    indicator.className = 'status-indicator status-pending';
+                    indicator.textContent = 'Verification under review';
+                    break;
+                case 'approved':
+                    badge.className = 'badge badge-verified';
+                    badge.innerHTML = '<i class="fas fa-check-circle"></i> Verified';
+                    indicator.className = 'status-indicator status-approved';
+                    
+                    // Get reviewer name
+                    if (verification.reviewed_by) {
+                        getReviewerName(verification.reviewed_by).then(name => {
+                            indicator.innerHTML = `Approved by ${name} on ${formatDate(verification.reviewed_at)}`;
+                        });
+                    } else {
+                        indicator.textContent = `Approved on ${formatDate(verification.reviewed_at)}`;
+                    }
+                    break;
+                case 'rejected':
+                    badge.className = 'badge badge-rejected';
+                    badge.innerHTML = '<i class="fas fa-times-circle"></i> Rejected';
+                    indicator.className = 'status-indicator status-rejected';
+                    
+                    // Get reviewer name
+                    if (verification.reviewed_by) {
+                        getReviewerName(verification.reviewed_by).then(name => {
+                            indicator.innerHTML = `Rejected by ${name} on ${formatDate(verification.reviewed_at)}`;
+                        });
+                    } else {
+                        indicator.textContent = `Rejected on ${formatDate(verification.reviewed_at)}`;
+                    }
+                    break;
+                default:
+                    badge.className = 'badge badge-initial';
+                    badge.innerHTML = '<i class="fas fa-clock"></i> Initial';
+                    indicator.className = 'status-indicator status-initial';
+                    indicator.textContent = 'Verification not submitted yet';
+            }
+        }
+        
+        // Get reviewer name
+        async function getReviewerName(userId) {
+            try {
+                const { data: user, error } = await supabase.auth.admin.getUserById(userId);
+                
+                if (error) {
+                    console.error('Error fetching reviewer:', error);
+                    return 'Unknown';
+                }
+                
+                return user.user.email || 'Unknown';
+            } catch (error) {
+                console.error('Error getting reviewer name:', error);
+                return 'Unknown';
+            }
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Role switching
+            donorBtn.addEventListener('click', () => {
+                donorView.style.display = 'block';
+                adminView.style.display = 'none';
+                donorBtn.classList.add('active');
+                adminBtn.classList.remove('active');
+            });
+            
+            adminBtn.addEventListener('click', () => {
+                donorView.style.display = 'none';
+                adminView.style.display = 'block';
+                adminBtn.classList.add('active');
+                donorBtn.classList.remove('active');
+                
+                // Load verification requests if not already loaded
+                if (verificationRequests.length === 0) {
+                    loadVerificationRequests();
+                }
+            });
+            
+            // Form submission
+            submitBtn.addEventListener('click', submitVerification);
+            
+            // Search functionality
+            searchInput.addEventListener('input', handleSearch);
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentStatus = tab.getAttribute('data-status');
+                    filterRequests();
+                });
+            });
+            
+            // Modal controls
+            document.querySelector('.modal-close').addEventListener('click', () => {
+                detailsModal.classList.remove('active');
+            });
+            
+            modalCloseBtn.addEventListener('click', () => {
+                detailsModal.classList.remove('active');
+            });
+            
+            modalApproveBtn.addEventListener('click', approveRequest);
+            modalRejectBtn.addEventListener('click', () => {
+                const reason = prompt('Please provide a reason for rejection:');
+                if (reason) {
+                    rejectRequest(reason);
+                }
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === detailsModal) {
+                    detailsModal.classList.remove('active');
+                }
+            });
+        }
+        
+        // Set up file preview
         function setupFilePreview(inputId, previewContainerId) {
             const input = document.getElementById(inputId);
             const previewContainer = document.getElementById(previewContainerId);
@@ -1223,13 +1408,8 @@
             });
         }
         
-        // Set up file previews
-        setupFilePreview('profilePhoto', 'profilePreview');
-        setupFilePreview('nidFront', 'nidFrontPreview');
-        setupFilePreview('nidBack', 'nidBackPreview');
-        
-        // Form submission
-        submitBtn.addEventListener('click', async function() {
+        // Submit verification
+        async function submitVerification() {
             // Validate form
             const termsChecked = document.getElementById('termsCheckbox').checked;
             if (!termsChecked) {
@@ -1240,33 +1420,17 @@
             // Show loading spinner
             const spinner = document.createElement('div');
             spinner.className = 'spinner';
-            this.innerHTML = '';
-            this.appendChild(spinner);
-            this.disabled = true;
-            
-            // Get current user
-            const { data: { user }, error: userError } = await supabase.auth.getUser();
-            
-            if (userError || !user) {
-                alert('User not authenticated. Please login first.');
-                this.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Verification';
-                this.disabled = false;
-                return;
-            }
+            submitBtn.innerHTML = '';
+            submitBtn.appendChild(spinner);
+            submitBtn.disabled = true;
             
             try {
-                // Get donor data
-                const { data: donor, error: donorError } = await supabase
-                    .from('donors')
-                    .select('id')
-                    .eq('user_id', user.id)
-                    .single();
+                if (!currentUser) {
+                    throw new Error('User not authenticated');
+                }
                 
-                if (donorError || !donor) {
-                    alert('Donor profile not found.');
-                    this.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Verification';
-                    this.disabled = false;
-                    return;
+                if (!currentDonor) {
+                    throw new Error('Donor profile not found');
                 }
                 
                 // Get files
@@ -1275,16 +1439,13 @@
                 const nidBackFile = document.getElementById('nidBack').files[0];
                 
                 if (!profilePhotoFile || !nidFrontFile || !nidBackFile) {
-                    alert('Please upload all required documents.');
-                    this.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Verification';
-                    this.disabled = false;
-                    return;
+                    throw new Error('Please upload all required documents');
                 }
                 
                 // Upload files to Supabase Storage
-                const profilePhotoPath = `verification/${user.id}/profile_${Date.now()}`;
-                const nidFrontPath = `verification/${user.id}/nid_front_${Date.now()}`;
-                const nidBackPath = `verification/${user.id}/nid_back_${Date.now()}`;
+                const profilePhotoPath = `verification/${currentUser.id}/profile_${Date.now()}`;
+                const nidFrontPath = `verification/${currentUser.id}/nid_front_${Date.now()}`;
+                const nidBackPath = `verification/${currentUser.id}/nid_back_${Date.now()}`;
                 
                 const { data: profilePhotoData, error: profilePhotoError } = await supabase.storage
                     .from('documents')
@@ -1317,16 +1478,20 @@
                     .from('documents')
                     .getPublicUrl(nidBackPath);
                 
+                // Get organisation name
+                const organisationName = document.getElementById('organisationName').value;
+                
                 // Create verification request
                 const { data: verificationData, error: verificationError } = await supabase
                     .from('verification_requests')
                     .insert({
-                        donor_id: donor.id,
+                        donor_id: currentDonor.id,
                         profile_photo_url: profilePhotoUrl.publicUrl,
                         nid_front_url: nidFrontUrl.publicUrl,
                         nid_back_url: nidBackUrl.publicUrl,
-                        date_of_birth: document.getElementById('dob').value,
-                        status: 'pending'
+                        organisation_name: organisationName,
+                        status: 'pending',
+                        is_verified: false
                     });
                 
                 if (verificationError) throw verificationError;
@@ -1335,208 +1500,341 @@
                 const { error: updateError } = await supabase
                     .from('donors')
                     .update({ verification_status: 'pending' })
-                    .eq('id', donor.id);
+                    .eq('id', currentDonor.id);
                 
                 if (updateError) throw updateError;
                 
                 alert('Verification request submitted successfully!');
-                this.innerHTML = '<i class="fas fa-check"></i> Submitted';
-                this.style.backgroundColor = '#4caf50';
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Submitted';
+                submitBtn.style.backgroundColor = '#4caf50';
+                
+                // Update verification status UI
+                updateVerificationStatus({
+                    status: 'pending'
+                });
                 
             } catch (error) {
                 console.error('Error submitting verification request:', error);
                 alert('Error submitting request: ' + error.message);
-                this.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Verification';
-                this.disabled = false;
-            }
-        });
-        
-        // Admin actions
-        document.querySelectorAll('.view-details').forEach(button => {
-            button.addEventListener('click', () => {
-                document.getElementById('detailsModal').classList.add('active');
-            });
-        });
-        
-        document.querySelector('.modal-close').addEventListener('click', () => {
-            document.getElementById('detailsModal').classList.remove('active');
-        });
-        
-        document.querySelector('.modal-footer .btn-secondary').addEventListener('click', () => {
-            document.getElementById('detailsModal').classList.remove('active');
-        });
-        
-        // Approve/Reject actions
-        document.querySelectorAll('.btn-success').forEach(button => {
-            if(!button.classList.contains('view-details')) {
-                button.addEventListener('click', async function() {
-                    if(confirm('Are you sure you want to approve this verification request?')) {
-                        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving';
-                        this.disabled = true;
-                        
-                        try {
-                            // Get current user
-                            const { data: { user }, error: userError } = await supabase.auth.getUser();
-                            
-                            if (userError || !user) {
-                                alert('User not authenticated. Please login first.');
-                                this.innerHTML = '<i class="fas fa-check"></i> Approve';
-                                this.disabled = false;
-                                return;
-                            }
-                            
-                            // In a real app, you would get the request ID from the data attribute
-                            // For demo purposes, we'll simulate approval
-                            
-                            // Simulate API delay
-                            await new Promise(resolve => setTimeout(resolve, 1000));
-                            
-                            this.closest('.request-card').remove();
-                            alert('User verification approved successfully!');
-                        } catch (error) {
-                            console.error('Error approving verification request:', error);
-                            alert('Error approving request: ' + error.message);
-                            this.innerHTML = '<i class="fas fa-check"></i> Approve';
-                            this.disabled = false;
-                        }
-                    }
-                });
-            }
-        });
-        
-        document.querySelectorAll('.btn-danger').forEach(button => {
-            if(!button.classList.contains('view-details')) {
-                button.addEventListener('click', async function() {
-                    if(confirm('Are you sure you want to reject this verification request?')) {
-                        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting';
-                        this.disabled = true;
-                        
-                        try {
-                            // Get current user
-                            const { data: { user }, error: userError } = await supabase.auth.getUser();
-                            
-                            if (userError || !user) {
-                                alert('User not authenticated. Please login first.');
-                                this.innerHTML = '<i class="fas fa-times"></i> Reject';
-                                this.disabled = false;
-                                return;
-                            }
-                            
-                            // In a real app, you would get the request ID from the data attribute
-                            // For demo purposes, we'll simulate rejection
-                            
-                            // Simulate API delay
-                            await new Promise(resolve => setTimeout(resolve, 1000));
-                            
-                            this.closest('.request-card').remove();
-                            alert('User verification rejected!');
-                        } catch (error) {
-                            console.error('Error rejecting verification request:', error);
-                            alert('Error rejecting request: ' + error.message);
-                            this.innerHTML = '<i class="fas fa-times"></i> Reject';
-                            this.disabled = false;
-                        }
-                    }
-                });
-            }
-        });
-        
-        // Initialize Supabase authentication
-        async function initAuth() {
-            try {
-                const { data: { user }, error } = await supabase.auth.getUser();
-                
-                if (error) {
-                    console.error('Error getting user:', error);
-                    return;
-                }
-                
-                if (user) {
-                    // Fetch donor data
-                    const { data: donor, error: donorError } = await supabase
-                        .from('donors')
-                        .select('*')
-                        .eq('user_id', user.id)
-                        .single();
-                    
-                    if (donorError) {
-                        console.error('Error fetching donor data:', donorError);
-                        return;
-                    }
-                    
-                    if (donor) {
-                        document.getElementById('userName').textContent = donor.name || user.email;
-                        document.getElementById('userAvatar').textContent = (donor.name || user.email).charAt(0).toUpperCase();
-                        
-                        // Update form fields
-                        document.getElementById('name').value = donor.name || '';
-                        document.getElementById('email').value = donor.email || user.email || '';
-                        document.getElementById('phone').value = donor.phone || '';
-                        document.getElementById('bloodGroup').value = donor.blood_group || '';
-                        document.getElementById('dob').value = donor.date_of_birth || '';
-                        document.getElementById('gender').value = donor.gender || '';
-                        document.getElementById('state').value = donor.state || '';
-                        document.getElementById('city').value = donor.city || '';
-                        document.getElementById('lastDonation').value = donor.last_donation || '';
-                        document.getElementById('timesDonated').value = donor.times_donated || 0;
-                        
-                        // Update verification status
-                        const cardTitle = document.querySelector('.card-title');
-                        const statusIndicator = document.querySelector('.status-indicator');
-                        
-                        if (donor.verification_status === 'approved') {
-                            cardTitle.innerHTML = `
-                                <span>Your Information</span>
-                                <span class="badge badge-verified">
-                                    <i class="fas fa-check-circle"></i> Verified
-                                </span>
-                            `;
-                            statusIndicator.className = 'status-indicator status-approved';
-                            statusIndicator.textContent = 'Approved on ' + new Date().toLocaleDateString();
-                        } else if (donor.verification_status === 'rejected') {
-                            cardTitle.innerHTML = `
-                                <span>Your Information</span>
-                                <span class="badge badge-rejected">
-                                    <i class="fas fa-times-circle"></i> Rejected
-                                </span>
-                            `;
-                            statusIndicator.className = 'status-indicator status-rejected';
-                            statusIndicator.textContent = 'Rejected on ' + new Date().toLocaleDateString();
-                        } else {
-                            cardTitle.innerHTML = `
-                                <span>Your Information</span>
-                                <span class="badge badge-pending">
-                                    <i class="fas fa-clock"></i> Pending
-                                </span>
-                            `;
-                            statusIndicator.className = 'status-indicator status-pending';
-                            statusIndicator.textContent = 'Pending verification';
-                        }
-                    }
-                } else {
-                    // Redirect to login if not authenticated
-                    console.log('User not authenticated');
-                    // In a real app, you would redirect to login page
-                    // window.location.href = '/login';
-                }
-            } catch (error) {
-                console.error('Error initializing authentication:', error);
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Verification';
+                submitBtn.disabled = false;
             }
         }
         
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize authentication
-            initAuth();
+        // Load verification requests
+        async function loadVerificationRequests() {
+            if (!isAdmin && !isModerator) return;
             
-            // Tab switching
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
+            try {
+                const { data: requests, error } = await supabase
+                    .from('verification_requests')
+                    .select(`
+                        *,
+                        donors (
+                            id,
+                            name,
+                            email,
+                            phone,
+                            blood_group,
+                            division,
+                            state,
+                            city,
+                            last_donation,
+                            times_donated
+                        )
+                    `)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                verificationRequests = requests || [];
+                filterRequests();
+            } catch (error) {
+                console.error('Error loading verification requests:', error);
+                requestsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading verification requests</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Filter requests based on status and search
+        function filterRequests() {
+            filteredRequests = verificationRequests.filter(request => {
+                // Filter by status
+                if (request.status !== currentStatus) {
+                    return false;
+                }
+                
+                // Filter by search term
+                const searchTerm = searchInput.value.toLowerCase();
+                if (searchTerm) {
+                    const donorName = request.donors?.name?.toLowerCase() || '';
+                    const donorPhone = request.donors?.phone?.toLowerCase() || '';
+                    
+                    if (!donorName.includes(searchTerm) && !donorPhone.includes(searchTerm)) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            renderRequests();
+        }
+        
+        // Handle search input
+        function handleSearch() {
+            filterRequests();
+        }
+        
+        // Render verification requests
+        function renderRequests() {
+            if (filteredRequests.length === 0) {
+                requestsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No ${currentStatus} verification requests found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            requestsGrid.innerHTML = '';
+            
+            filteredRequests.forEach(request => {
+                const card = document.createElement('div');
+                card.className = 'request-card';
+                
+                // Get reviewer info
+                let reviewerInfo = '';
+                if (request.reviewed_by && (request.status === 'approved' || request.status === 'rejected')) {
+                    reviewerInfo = `
+                        <div class="review-info">
+                            ${request.status === 'approved' ? 'Approved' : 'Rejected'} by ${request.reviewed_by} on ${formatDate(request.reviewed_at)}
+                        </div>
+                    `;
+                }
+                
+                card.innerHTML = `
+                    <div class="request-header">
+                        <div class="request-avatar">${request.donors?.name?.charAt(0).toUpperCase() || 'U'}</div>
+                        <div class="request-info">
+                            <div class="request-name">
+                                ${request.donors?.name || 'Unknown'}
+                                ${request.status === 'approved' ? '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>' : ''}
+                            </div>
+                            <div class="request-blood">Blood Group: ${request.donors?.blood_group || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="request-body">
+                        <div class="request-detail">
+                            <span class="request-label">Location:</span>
+                            <span class="request-value">${request.donors?.city || 'N/A'}, ${request.donors?.state || 'N/A'}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Division:</span>
+                            <span class="request-value">${request.donors?.division || 'N/A'}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Phone:</span>
+                            <span class="request-value">${request.donors?.phone || 'N/A'}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Organisation:</span>
+                            <span class="request-value">${request.organisation_name || 'N/A'}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Last Donation:</span>
+                            <span class="request-value">${formatDate(request.donors?.last_donation)}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Times Donated:</span>
+                            <span class="request-value">${request.donors?.times_donated || 0}</span>
+                        </div>
+                        <div class="request-detail">
+                            <span class="request-label">Status:</span>
+                            <span class="request-value status-indicator status-${request.status}">${request.status.charAt(0).toUpperCase() + request.status.slice(1)}</span>
+                        </div>
+                        ${reviewerInfo}
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-sm btn-secondary view-details" data-id="${request.id}">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        ${request.status === 'pending' ? `
+                            <button class="btn btn-sm btn-success approve-btn" data-id="${request.id}">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="btn btn-sm btn-danger reject-btn" data-id="${request.id}">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                
+                requestsGrid.appendChild(card);
+            });
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', () => {
+                    const requestId = button.getAttribute('data-id');
+                    showRequestDetails(requestId);
                 });
             });
-        });
+            
+            document.querySelectorAll('.approve-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const requestId = button.getAttribute('data-id');
+                    currentRequestId = requestId;
+                    showRequestDetails(requestId);
+                });
+            });
+            
+            document.querySelectorAll('.reject-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const requestId = button.getAttribute('data-id');
+                    currentRequestId = requestId;
+                    showRequestDetails(requestId);
+                });
+            });
+        }
+        
+        // Show request details in modal
+        function showRequestDetails(requestId) {
+            const request = verificationRequests.find(r => r.id === requestId);
+            
+            if (!request) {
+                alert('Request not found');
+                return;
+            }
+            
+            currentRequestId = requestId;
+            
+            // Populate modal with request details
+            document.getElementById('modalName').value = request.donors?.name || 'N/A';
+            document.getElementById('modalEmail').value = request.donors?.email || 'N/A';
+            document.getElementById('modalPhone').value = request.donors?.phone || 'N/A';
+            document.getElementById('modalDivision').value = request.donors?.division || 'N/A';
+            document.getElementById('modalBloodGroup').value = request.donors?.blood_group || 'N/A';
+            document.getElementById('modalState').value = request.donors?.state || 'N/A';
+            document.getElementById('modalCity').value = request.donors?.city || 'N/A';
+            document.getElementById('modalOrganisation').value = request.organisation_name || 'N/A';
+            document.getElementById('modalLastDonation').value = request.donors?.last_donation || 'N/A';
+            document.getElementById('modalTimesDonated').value = request.donors?.times_donated || 0;
+            document.getElementById('modalStatus').value = request.status.charAt(0).toUpperCase() + request.status.slice(1);
+            document.getElementById('modalReviewedBy').value = request.reviewed_by || 'N/A';
+            document.getElementById('modalReviewedAt').value = formatDate(request.reviewed_at);
+            
+            // Set document images
+            document.getElementById('modalProfilePhoto').src = request.profile_photo_url || '';
+            document.getElementById('modalNidFront').src = request.nid_front_url || '';
+            document.getElementById('modalNidBack').src = request.nid_back_url || '';
+            
+            // Show/hide action buttons based on status
+            if (request.status === 'pending') {
+                modalApproveBtn.style.display = 'inline-flex';
+                modalRejectBtn.style.display = 'inline-flex';
+            } else {
+                modalApproveBtn.style.display = 'none';
+                modalRejectBtn.style.display = 'none';
+            }
+            
+            // Show modal
+            detailsModal.classList.add('active');
+        }
+        
+        // Approve request
+        async function approveRequest() {
+            if (!currentRequestId) return;
+            
+            try {
+                if (!currentUser) {
+                    throw new Error('User not authenticated');
+                }
+                
+                // Update verification request
+                const { error } = await supabase
+                    .from('verification_requests')
+                    .update({
+                        status: 'approved',
+                        is_verified: true,
+                        reviewed_by: currentUser.email,
+                        reviewed_at: new Date().toISOString()
+                    })
+                    .eq('id', currentRequestId);
+                
+                if (error) throw error;
+                
+                // Get donor ID
+                const request = verificationRequests.find(r => r.id === currentRequestId);
+                if (request) {
+                    // Update donor verification status
+                    await supabase
+                        .from('donors')
+                        .update({ verification_status: 'approved', is_verified: true })
+                        .eq('id', request.donor_id);
+                }
+                
+                alert('Verification request approved successfully!');
+                detailsModal.classList.remove('active');
+                
+                // Reload requests
+                await loadVerificationRequests();
+                
+            } catch (error) {
+                console.error('Error approving request:', error);
+                alert('Error approving request: ' + error.message);
+            }
+        }
+        
+        // Reject request
+        async function rejectRequest(reason) {
+            if (!currentRequestId) return;
+            
+            try {
+                if (!currentUser) {
+                    throw new Error('User not authenticated');
+                }
+                
+                // Update verification request
+                const { error } = await supabase
+                    .from('verification_requests')
+                    .update({
+                        status: 'rejected',
+                        is_verified: false,
+                        reviewed_by: currentUser.email,
+                        reviewed_at: new Date().toISOString(),
+                        rejection_reason: reason
+                    })
+                    .eq('id', currentRequestId);
+                
+                if (error) throw error;
+                
+                // Get donor ID
+                const request = verificationRequests.find(r => r.id === currentRequestId);
+                if (request) {
+                    // Update donor verification status
+                    await supabase
+                        .from('donors')
+                        .update({ verification_status: 'rejected', is_verified: false })
+                        .eq('id', request.donor_id);
+                }
+                
+                alert('Verification request rejected successfully!');
+                detailsModal.classList.remove('active');
+                
+                // Reload requests
+                await loadVerificationRequests();
+                
+            } catch (error) {
+                console.error('Error rejecting request:', error);
+                alert('Error rejecting request: ' + error.message);
+            }
+        }
     </script>
 </body>
 </html>
