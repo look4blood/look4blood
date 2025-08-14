@@ -1,3 +1,7 @@
+Gmail	Look 4 Blood <lookforblood@gmail.com>
+user prfl 6
+Look 4 Blood <lookforblood@gmail.com>	Thu, Aug 14, 2025 at 3:56 PM
+To: efor6600@gmail.com
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -784,6 +788,9 @@
             <button id="saveBtn" class="btn btn-primary hidden">
                 <i class="fas fa-save"></i> Save Changes
             </button>
+            <button id="cancelBtn" class="btn btn-secondary hidden">
+                <i class="fas fa-times"></i> Cancel
+            </button>
             <button id="logoutBtn" class="btn btn-danger">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </button>
@@ -793,6 +800,120 @@
             <button id="adminPanelBtn" class="btn btn-admin hidden">
                 <i class="fas fa-cogs"></i> Admin Panel
             </button>
+        </div>
+    </div>
+    
+    <!-- Edit Profile Modal -->
+    <div id="editModal" class="modal hidden">
+        <div class="modal-content rounded-2xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold flex items-center">
+                    <i class="fas fa-user-edit text-blue-500 mr-2"></i> Edit Profile
+                </h3>
+                <button id="closeEditModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="editProfileForm">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user text-blue-500 mr-1"></i> Full Name
+                        </label>
+                        <input id="editNameInput" type="text" class="form-input" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-calendar-alt text-blue-500 mr-1"></i> Age
+                        </label>
+                        <input id="editAgeInput" type="number" min="18" max="65" class="form-input" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-phone text-blue-500 mr-1"></i> Phone Number
+                        </label>
+                        <input id="editPhoneInput" type="tel" class="form-input" maxlength="11" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-tint text-blue-500 mr-1"></i> Blood Group
+                        </label>
+                        <select id="editBloodGroupInput" class="form-input" required>
+                            <option value="">Select Blood Group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Location Dropdowns -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-map-marker-alt text-red-500 mr-1"></i> Location
+                        </label>
+                        <div class="location-dropdowns">
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Division</label>
+                                <select id="editDivisionInput" class="form-input" required>
+                                    <option value="">Select Division</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">District</label>
+                                <select id="editDistrictInput" class="form-input" required>
+                                    <option value="">Select District</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">City</label>
+                                <select id="editCityInput" class="form-input" required>
+                                    <option value="">Select City</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3 mt-8">
+                    <button type="button" id="cancelEditBtn" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-content rounded-2xl p-6 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Confirm Changes</h3>
+                <p class="text-gray-600">Are you sure you want to save these changes to your profile?</p>
+            </div>
+            
+            <div class="flex flex-col space-y-4">
+                <button id="confirmSaveBtn" class="btn btn-primary w-full justify-center">
+                    <i class="fas fa-save mr-2"></i> Save Changes
+                </button>
+                <button id="confirmCancelBtn" class="btn btn-secondary w-full justify-center">
+                    <i class="fas fa-times mr-2"></i> Cancel
+                </button>
+            </div>
         </div>
     </div>
     
@@ -885,28 +1006,6 @@
                     </button>
                 </div>
             </form>
-        </div>
-    </div>
-    
-    <!-- Confirmation Modal -->
-    <div id="confirmModal" class="modal hidden">
-        <div class="modal-content rounded-2xl p-6 max-w-md w-full mx-4">
-            <div class="text-center mb-6">
-                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
-                    <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-gray-800 mb-2">Confirm Changes</h3>
-                <p class="text-gray-600">Are you sure you want to save these changes to your profile?</p>
-            </div>
-            
-            <div class="flex flex-col space-y-4">
-                <button id="confirmSaveBtn" class="btn btn-primary w-full justify-center">
-                    <i class="fas fa-save mr-2"></i> Save Changes
-                </button>
-                <button id="confirmCancelBtn" class="btn btn-secondary w-full justify-center">
-                    <i class="fas fa-times mr-2"></i> Cancel
-                </button>
-            </div>
         </div>
     </div>
     
@@ -1312,10 +1411,12 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                 
                 locations = data;
                 
-                // Populate division dropdown
+                // Populate division dropdowns for both main view and edit modal
                 const divisions = [...new Set(data.map(loc => loc.division))];
                 const divisionSelect = document.getElementById('divisionInput');
+                const editDivisionSelect = document.getElementById('editDivisionInput');
                 
+                // Main view dropdown
                 divisionSelect.innerHTML = '<option value="">Select Division</option>';
                 divisions.forEach(division => {
                     const option = document.createElement('option');
@@ -1324,18 +1425,29 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                     divisionSelect.appendChild(option);
                 });
                 
+                // Edit modal dropdown
+                editDivisionSelect.innerHTML = '<option value="">Select Division</option>';
+                divisions.forEach(division => {
+                    const option = document.createElement('option');
+                    option.value = division;
+                    option.textContent = division;
+                    editDivisionSelect.appendChild(option);
+                });
+                
                 // Set current values if available
                 if (donorData.division) {
                     divisionSelect.value = donorData.division;
+                    editDivisionSelect.value = donorData.division;
                     // Use donorData.state for district (since that's how it's stored in the database)
                     updateDistrictDropdown(donorData.division, donorData.state || donorData.district);
+                    updateEditDistrictDropdown(donorData.division, donorData.state || donorData.district);
                 }
             } catch (error) {
                 console.error('Error loading locations:', error);
             }
         }
         
-        // Update district dropdown based on selected division
+        // Update district dropdown based on selected division (main view)
         function updateDistrictDropdown(division, selectedDistrict = '') {
             const districtSelect = document.getElementById('districtInput');
             
@@ -1367,7 +1479,39 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             }
         }
         
-        // Update city dropdown based on selected division and district
+        // Update district dropdown based on selected division (edit modal)
+        function updateEditDistrictDropdown(division, selectedDistrict = '') {
+            const districtSelect = document.getElementById('editDistrictInput');
+            
+            // Filter districts by selected division
+            const districts = [...new Set(
+                locations
+                    .filter(loc => loc.division === division)
+                    .map(loc => loc.district)
+            )];
+            
+            districtSelect.innerHTML = '<option value="">Select District</option>';
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                if (district === selectedDistrict) {
+                    option.selected = true;
+                }
+                districtSelect.appendChild(option);
+            });
+            
+            // Trigger change event to update city dropdown
+            if (selectedDistrict) {
+                updateEditCityDropdown(division, selectedDistrict, donorData.city);
+            } else {
+                // Clear city dropdown
+                const citySelect = document.getElementById('editCityInput');
+                citySelect.innerHTML = '<option value="">Select City</option>';
+            }
+        }
+        
+        // Update city dropdown based on selected division and district (main view)
         function updateCityDropdown(division, district, selectedCity = '') {
             const citySelect = document.getElementById('cityInput');
             
@@ -1388,7 +1532,28 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             });
         }
         
-        // Setup location dropdown change events
+        // Update city dropdown based on selected division and district (edit modal)
+        function updateEditCityDropdown(division, district, selectedCity = '') {
+            const citySelect = document.getElementById('editCityInput');
+            
+            // Filter cities by selected division and district
+            const cities = locations
+                .filter(loc => loc.division === division && loc.district === district)
+                .map(loc => loc.city);
+            
+            citySelect.innerHTML = '<option value="">Select City</option>';
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                if (city === selectedCity) {
+                    option.selected = true;
+                }
+                citySelect.appendChild(option);
+            });
+        }
+        
+        // Setup location dropdown change events (main view)
         function setupLocationDropdowns() {
             const divisionSelect = document.getElementById('divisionInput');
             const districtSelect = document.getElementById('districtInput');
@@ -1402,6 +1567,23 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                 const selectedDivision = divisionSelect.value;
                 const selectedDistrict = this.value;
                 updateCityDropdown(selectedDivision, selectedDistrict);
+            });
+        }
+        
+        // Setup location dropdown change events (edit modal)
+        function setupEditLocationDropdowns() {
+            const divisionSelect = document.getElementById('editDivisionInput');
+            const districtSelect = document.getElementById('editDistrictInput');
+            
+            divisionSelect.addEventListener('change', function() {
+                const selectedDivision = this.value;
+                updateEditDistrictDropdown(selectedDivision);
+            });
+            
+            districtSelect.addEventListener('change', function() {
+                const selectedDivision = divisionSelect.value;
+                const selectedDistrict = this.value;
+                updateEditCityDropdown(selectedDivision, selectedDistrict);
             });
         }
         
@@ -1467,6 +1649,7 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                 
                 // Setup location dropdowns
                 setupLocationDropdowns();
+                setupEditLocationDropdowns();
                 
                 // Setup star rating
                 setupStarRating();
@@ -1491,6 +1674,9 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                 
                 // Setup confirmation modal
                 setupConfirmationModal();
+                
+                // Setup edit modal
+                setupEditModal();
             } else {
                 // Show authentication modal
                 showAuthModal();
@@ -1938,13 +2124,14 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                 document.getElementById('confirmModal').classList.add('hidden');
                 
                 try {
-                    // Validate fields
-                    const name = document.getElementById('nameInput').value.trim();
-                    const age = parseInt(document.getElementById('ageInput').value);
-                    const phone = document.getElementById('phoneInput').value.trim();
-                    const division = document.getElementById('divisionInput').value;
-                    const district = document.getElementById('districtInput').value;
-                    const city = document.getElementById('cityInput').value;
+                    // Get form data
+                    const name = document.getElementById('editNameInput').value.trim();
+                    const age = parseInt(document.getElementById('editAgeInput').value);
+                    const phone = document.getElementById('editPhoneInput').value.trim();
+                    const bloodGroup = document.getElementById('editBloodGroupInput').value;
+                    const division = document.getElementById('editDivisionInput').value;
+                    const district = document.getElementById('editDistrictInput').value;
+                    const city = document.getElementById('editCityInput').value;
                     
                     if (!name) {
                         alert('Please enter your name');
@@ -1967,6 +2154,11 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                         return;
                     }
                     
+                    if (!bloodGroup) {
+                        alert('Please select your blood group');
+                        return;
+                    }
+                    
                     if (!division || !district || !city) {
                         alert('Please select your division, district, and city');
                         return;
@@ -1976,6 +2168,7 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                         name: name,
                         age: age,
                         phone: phone,
+                        blood_group: bloodGroup,
                         division: division,
                         state: district,  // Using 'state' field for district
                         city: city
@@ -1994,19 +2187,13 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                     // Update local data
                     donorData = { ...donorData, ...updateData };
                     
-                    // Exit edit mode
-                    isEditMode = false;
+                    // Hide edit modal
+                    document.getElementById('editModal').classList.add('hidden');
+                    
+                    // Reset button visibility
                     document.getElementById('editBtn').classList.remove('hidden');
                     document.getElementById('saveBtn').classList.add('hidden');
-                    
-                    // Disable fields
-                    document.getElementById('phoneInput').disabled = true;
-                    document.getElementById('divisionInput').disabled = true;
-                    document.getElementById('districtInput').disabled = true;
-                    document.getElementById('cityInput').disabled = true;
-                    
-                    // Restore background
-                    document.getElementById('phoneInput').classList.add('bg-gray-100');
+                    document.getElementById('cancelBtn').classList.add('hidden');
                     
                     // Show success message
                     showSuccessToast('Profile updated successfully!');
@@ -2024,27 +2211,87 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             confirmCancelBtn.addEventListener('click', function() {
                 // Hide confirmation modal
                 document.getElementById('confirmModal').classList.add('hidden');
+            });
+        }
+        
+        // Setup edit modal
+        function setupEditModal() {
+            const editBtn = document.getElementById('editBtn');
+            const editModal = document.getElementById('editModal');
+            const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+            const editProfileForm = document.getElementById('editProfileForm');
+            
+            // Open edit modal
+            editBtn.addEventListener('click', function() {
+                // Store original data for potential cancel operation
+                originalProfileData = {
+                    name: donorData.name,
+                    age: donorData.age,
+                    phone: donorData.phone,
+                    blood_group: donorData.blood_group,
+                    division: donorData.division,
+                    state: donorData.state || donorData.district,
+                    city: donorData.city
+                };
                 
-                // Cancel all changes by restoring original data
+                // Populate form with current data
+                document.getElementById('editNameInput').value = donorData.name;
+                document.getElementById('editAgeInput').value = donorData.age;
+                document.getElementById('editPhoneInput').value = donorData.phone || '';
+                document.getElementById('editBloodGroupInput').value = donorData.blood_group;
+                
+                // Set location values
+                document.getElementById('editDivisionInput').value = donorData.division || '';
+                updateEditDistrictDropdown(donorData.division, donorData.state || donorData.district);
+                document.getElementById('editDistrictInput').value = donorData.state || donorData.district || '';
+                updateEditCityDropdown(donorData.division, donorData.state || donorData.district, donorData.city);
+                document.getElementById('editCityInput').value = donorData.city || '';
+                
+                // Show modal
+                editModal.classList.remove('hidden');
+                
+                // Update button visibility
+                document.getElementById('editBtn').classList.add('hidden');
+                document.getElementById('saveBtn').classList.remove('hidden');
+                document.getElementById('cancelBtn').classList.remove('hidden');
+            });
+            
+            // Close edit modal
+            closeEditModalBtn.addEventListener('click', function() {
+                editModal.classList.add('hidden');
                 restoreOriginalData();
+            });
+            
+            // Cancel edit
+            cancelEditBtn.addEventListener('click', function() {
+                editModal.classList.add('hidden');
+                restoreOriginalData();
+            });
+            
+            // Submit form
+            editProfileForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Hide edit modal and show confirmation modal
+                editModal.classList.add('hidden');
+                document.getElementById('confirmModal').classList.remove('hidden');
+            });
+            
+            // Close modal when clicking outside
+            editModal.addEventListener('click', function(e) {
+                if (e.target === editModal) {
+                    editModal.classList.add('hidden');
+                    restoreOriginalData();
+                }
             });
         }
         
         // Function to restore original data when canceling changes
         function restoreOriginalData() {
-            // Exit edit mode
-            isEditMode = false;
+            // Reset button visibility
             document.getElementById('editBtn').classList.remove('hidden');
             document.getElementById('saveBtn').classList.add('hidden');
-            
-            // Disable fields
-            document.getElementById('phoneInput').disabled = true;
-            document.getElementById('divisionInput').disabled = true;
-            document.getElementById('districtInput').disabled = true;
-            document.getElementById('cityInput').disabled = true;
-            
-            // Restore background
-            document.getElementById('phoneInput').classList.add('bg-gray-100');
+            document.getElementById('cancelBtn').classList.add('hidden');
             
             // Restore original values
             if (originalProfileData.name) {
@@ -2055,6 +2302,9 @@ Track your donation history, eligibility countdown, and feedback all in one plac
             }
             if (originalProfileData.phone) {
                 donorData.phone = originalProfileData.phone;
+            }
+            if (originalProfileData.blood_group) {
+                donorData.blood_group = originalProfileData.blood_group;
             }
             if (originalProfileData.division) {
                 donorData.division = originalProfileData.division;
@@ -2232,69 +2482,6 @@ Track your donation history, eligibility countdown, and feedback all in one plac
                 console.error('Error submitting report:', error);
                 alert('Error submitting report');
             }
-        });
-        
-        // Edit/Save functionality
-        document.getElementById('editBtn').addEventListener('click', function() {
-            isEditMode = true;
-            
-            // Store original data for potential cancel operation
-            originalProfileData = {
-                name: donorData.name,
-                age: donorData.age,
-                phone: donorData.phone,
-                division: donorData.division,
-                state: donorData.state || donorData.district,
-                city: donorData.city
-            };
-            
-            document.getElementById('editBtn').classList.add('hidden');
-            document.getElementById('saveBtn').classList.remove('hidden');
-            
-            // Enable editable fields
-            const phoneInput = document.getElementById('phoneInput');
-            phoneInput.disabled = false;
-            phoneInput.classList.remove('bg-gray-100');
-            
-            document.getElementById('divisionInput').disabled = false;
-            document.getElementById('districtInput').disabled = false;
-            document.getElementById('cityInput').disabled = false;
-            
-            // Make name and age editable
-            const userNameElement = document.getElementById('userName');
-            const userAgeElement = document.getElementById('userAge');
-            
-            // Convert name to input field
-            const nameInput = document.createElement('input');
-            nameInput.type = 'text';
-            nameInput.value = userNameElement.textContent;
-            nameInput.className = 'form-input text-3xl md:text-4xl font-bold text-gray-800 mb-3';
-            nameInput.id = 'nameInput';
-            if (userNameElement.parentNode) {
-                userNameElement.parentNode.replaceChild(nameInput, userNameElement);
-            }
-            
-            // Convert age to input field
-            const ageInput = document.createElement('input');
-            ageInput.type = 'number';
-            ageInput.min = '18';
-            ageInput.max = '65';
-            ageInput.value = donorData.age;
-            ageInput.className = 'form-input';
-            ageInput.id = 'ageInput';
-            
-            // Replace the age badge with input
-            const ageBadge = document.getElementById('userAge');
-            if (ageBadge && ageBadge.parentNode) {
-                const ageContainer = ageBadge.parentNode;
-                ageContainer.innerHTML = '';
-                ageContainer.appendChild(ageInput);
-            }
-        });
-        
-        document.getElementById('saveBtn').addEventListener('click', function() {
-            // Show confirmation modal
-            document.getElementById('confirmModal').classList.remove('hidden');
         });
         
         // Logout functionality
