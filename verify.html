@@ -20,6 +20,7 @@
             --gray: #9e9e9e;
             --light-gray: #e0e0e0;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -44,7 +45,7 @@
         .header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: var(--light);
-            padding: 20px 0;
+            padding: 15px 0;
             box-shadow: var(--shadow);
             position: sticky;
             top: 0;
@@ -84,6 +85,9 @@
             text-decoration: none;
             font-weight: 500;
             transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .nav-links a:hover {
@@ -108,8 +112,17 @@
             font-weight: bold;
         }
         
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
         .main-content {
-            padding: 40px 0;
+            padding: 30px 0;
             min-height: 80vh;
         }
         
@@ -117,7 +130,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .page-title i {
@@ -134,13 +147,14 @@
             background: var(--light);
             border-radius: 12px;
             box-shadow: var(--shadow);
-            padding: 30px;
-            margin-bottom: 30px;
-            transition: transform 0.3s;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
         
         .card:hover {
             transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
         }
         
         .card-header {
@@ -197,8 +211,8 @@
         
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
         }
         
         .form-group {
@@ -219,17 +233,19 @@
             border-radius: 8px;
             font-family: 'Poppins', sans-serif;
             font-size: 16px;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
         
         .form-control:focus {
             border-color: var(--primary);
             outline: none;
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.2);
         }
         
         .form-control[disabled] {
             background-color: #f5f5f5;
             cursor: not-allowed;
+            opacity: 0.7;
         }
         
         .upload-container {
@@ -247,6 +263,16 @@
         .upload-container:hover {
             border-color: var(--primary);
             background-color: #fff;
+        }
+        
+        .upload-container.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .upload-container.disabled:hover {
+            border-color: var(--light-gray);
+            background-color: #fafafa;
         }
         
         .upload-icon {
@@ -334,6 +360,7 @@
         
         .btn-primary:hover {
             background-color: var(--primary-dark);
+            transform: translateY(-2px);
         }
         
         .btn-secondary {
@@ -368,7 +395,7 @@
         }
         
         .admin-panel {
-            margin-top: 40px;
+            margin-top: 30px;
         }
         
         .admin-header {
@@ -418,11 +445,12 @@
             border-radius: 12px;
             box-shadow: var(--shadow);
             overflow: hidden;
-            transition: transform 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
         
         .request-card:hover {
             transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
         }
         
         .request-header {
@@ -569,7 +597,7 @@
         
         .documents-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
@@ -638,6 +666,7 @@
             gap: 10px;
             margin-bottom: 25px;
             border-bottom: 1px solid var(--light-gray);
+            overflow-x: auto;
         }
         
         .tab {
@@ -646,6 +675,7 @@
             font-weight: 500;
             border-bottom: 3px solid transparent;
             transition: all 0.3s;
+            white-space: nowrap;
         }
         
         .tab.active {
@@ -729,15 +759,113 @@
             margin-top: 5px;
         }
         
+        .rejection-reason {
+            background-color: #ffebee;
+            color: var(--danger);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .rejection-reason-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid var(--light-gray);
+            background: var(--light);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .pagination button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination-info {
+            margin: 0 15px;
+            color: var(--gray);
+        }
+        
+        .success-message {
+            background-color: #e8f5e9;
+            color: var(--success);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .disabled-form-overlay {
+            position: relative;
+        }
+        
+        .disabled-form-overlay::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7);
+            z-index: 10;
+            cursor: not-allowed;
+        }
+        
         @media (max-width: 768px) {
             .header-content {
-                flex-direction: column;
+                flex-direction: row;
                 gap: 15px;
             }
             
+            .mobile-menu-btn {
+                display: block;
+            }
+            
             .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: var(--primary-dark);
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+                transform: translateY(-150%);
+                transition: transform 0.3s ease-in-out;
+                z-index: 99;
+                box-shadow: var(--shadow);
+            }
+            
+            .nav-links.active {
+                transform: translateY(0);
             }
             
             .form-grid {
@@ -765,6 +893,39 @@
             .search-box {
                 width: 100%;
             }
+            
+            .page-title h2 {
+                font-size: 22px;
+            }
+            
+            .page-title i {
+                font-size: 24px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .request-header {
+                padding: 15px;
+            }
+            
+            .request-body {
+                padding: 15px;
+            }
+            
+            .request-actions {
+                padding: 12px 15px;
+                flex-wrap: wrap;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+            
+            .modal-header, .modal-body, .modal-footer {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -776,13 +937,20 @@
                     <i class="fas fa-tint"></i>
                     <h1>BloodHero</h1>
                 </a>
-                <div class="nav-links">
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="nav-links" id="navLinks">
                     <a href="#"><i class="fas fa-home"></i> Home</a>
                     <a href="#"><i class="fas fa-search"></i> Find Donors</a>
                     <a href="#"><i class="fas fa-heart"></i> Donate</a>
                     <a href="#"><i class="fas fa-bell"></i> Notifications</a>
                     <a href="#"><i class="fas fa-user"></i> Profile</a>
+                    <a href="admin.html" id="adminLink"><i class="fas fa-shield-alt"></i> Admin</a>
                 </div>
+                
                 <div class="user-info">
                     <div class="user-avatar" id="userAvatar">JD</div>
                     <span id="userName">John Doe</span>
@@ -798,11 +966,10 @@
                 <h2>Get Verified Badge</h2>
             </div>
             
-            <!-- Role Switcher for Demo -->
-            <div class="role-switcher" id="roleSwitcher">
-                <span>View as:</span>
-                <button class="role-btn active" id="donorBtn">Donor</button>
-                <button class="role-btn" id="adminBtn">Admin</button>
+            <!-- Success Message -->
+            <div id="successMessage" class="success-message" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <span>Your verification request has been submitted successfully!</span>
             </div>
             
             <!-- Donor View -->
@@ -820,7 +987,7 @@
                         </div>
                     </div>
                     
-                    <div class="form-grid">
+                    <div class="form-grid" id="userForm">
                         <div class="form-group">
                             <label for="name">Full Name</label>
                             <input type="text" id="name" class="form-control" value="John Doe" disabled>
@@ -873,7 +1040,7 @@
                     </div>
                 </div>
                 
-                <div class="card">
+                <div class="card" id="verificationCard">
                     <div class="card-header">
                         <div class="card-title">Verification Documents</div>
                     </div>
@@ -881,7 +1048,7 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Profile Photo</label>
-                            <div class="upload-container">
+                            <div class="upload-container" id="profilePhotoContainer">
                                 <i class="fas fa-cloud-upload-alt upload-icon"></i>
                                 <div class="upload-text">Upload your profile photo</div>
                                 <div class="upload-hint">JPG or PNG, max 2MB</div>
@@ -892,7 +1059,7 @@
                         
                         <div class="form-group">
                             <label>NID Front Side</label>
-                            <div class="upload-container">
+                            <div class="upload-container" id="nidFrontContainer">
                                 <i class="fas fa-cloud-upload-alt upload-icon"></i>
                                 <div class="upload-text">Upload NID front side</div>
                                 <div class="upload-hint">JPG or PNG, max 2MB</div>
@@ -903,7 +1070,7 @@
                         
                         <div class="form-group">
                             <label>NID Back Side</label>
-                            <div class="upload-container">
+                            <div class="upload-container" id="nidBackContainer">
                                 <i class="fas fa-cloud-upload-alt upload-icon"></i>
                                 <div class="upload-text">Upload NID back side</div>
                                 <div class="upload-hint">JPG or PNG, max 2MB</div>
@@ -935,139 +1102,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Admin View -->
-            <div id="adminView" style="display: none;">
-                <div class="admin-panel">
-                    <div class="admin-header">
-                        <div class="admin-title">Verification Requests</div>
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="Search by name or phone...">
-                        </div>
-                    </div>
-                    
-                    <div class="tabs">
-                        <div class="tab active" data-status="pending">Pending</div>
-                        <div class="tab" data-status="approved">Approved</div>
-                        <div class="tab" data-status="rejected">Rejected</div>
-                    </div>
-                    
-                    <div class="requests-grid" id="requestsGrid">
-                        <!-- Requests will be dynamically loaded here -->
-                        <div class="empty-state">
-                            <i class="fas fa-inbox"></i>
-                            <p>No verification requests found</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Modal -->
-            <div class="modal" id="detailsModal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div class="modal-title">Verification Details</div>
-                        <button class="modal-close">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Full Name</label>
-                                <input type="text" id="modalName" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" id="modalEmail" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Phone Number</label>
-                                <input type="tel" id="modalPhone" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Division</label>
-                                <input type="text" id="modalDivision" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Blood Group</label>
-                                <input type="text" id="modalBloodGroup" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>State</label>
-                                <input type="text" id="modalState" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>City</label>
-                                <input type="text" id="modalCity" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Organisation Name</label>
-                                <input type="text" id="modalOrganisation" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Last Donation Date</label>
-                                <input type="date" id="modalLastDonation" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Times Donated</label>
-                                <input type="number" id="modalTimesDonated" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Verification Status</label>
-                                <input type="text" id="modalStatus" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Reviewed By</label>
-                                <input type="text" id="modalReviewedBy" class="form-control" disabled>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Reviewed At</label>
-                                <input type="text" id="modalReviewedAt" class="form-control" disabled>
-                            </div>
-                        </div>
-                        
-                        <div class="documents-grid">
-                            <div class="document-item">
-                                <div class="document-header">Profile Photo</div>
-                                <div class="document-preview">
-                                    <img id="modalProfilePhoto" src="" alt="Profile">
-                                </div>
-                            </div>
-                            
-                            <div class="document-item">
-                                <div class="document-header">NID Front Side</div>
-                                <div class="document-preview">
-                                    <img id="modalNidFront" src="" alt="NID Front">
-                                </div>
-                            </div>
-                            
-                            <div class="document-item">
-                                <div class="document-header">NID Back Side</div>
-                                <div class="document-preview">
-                                    <img id="modalNidBack" src="" alt="NID Back">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" id="modalCloseBtn">Close</button>
-                        <button class="btn btn-success" id="modalApproveBtn">Approve</button>
-                        <button class="btn btn-danger" id="modalRejectBtn">Reject</button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     
@@ -1079,28 +1113,20 @@
         
         // DOM Elements
         const donorView = document.getElementById('donorView');
-        const adminView = document.getElementById('adminView');
-        const donorBtn = document.getElementById('donorBtn');
-        const adminBtn = document.getElementById('adminBtn');
-        const roleSwitcher = document.getElementById('roleSwitcher');
         const submitBtn = document.getElementById('submitVerification');
-        const requestsGrid = document.getElementById('requestsGrid');
-        const searchInput = document.getElementById('searchInput');
-        const tabs = document.querySelectorAll('.tab');
-        const detailsModal = document.getElementById('detailsModal');
-        const modalCloseBtn = document.getElementById('modalCloseBtn');
-        const modalApproveBtn = document.getElementById('modalApproveBtn');
-        const modalRejectBtn = document.getElementById('modalRejectBtn');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        const adminLink = document.getElementById('adminLink');
+        const userForm = document.getElementById('userForm');
+        const verificationCard = document.getElementById('verificationCard');
+        const successMessage = document.getElementById('successMessage');
         
         // State
-        let currentStatus = 'pending';
         let currentUser = null;
         let currentDonor = null;
-        let verificationRequests = [];
-        let filteredRequests = [];
-        let currentRequestId = null;
         let isAdmin = false;
         let isModerator = false;
+        let isVerified = false;
         
         // Initialize the application
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1108,20 +1134,15 @@
             await checkAuth();
             
             // Set up file previews
-            setupFilePreview('profilePhoto', 'profilePreview');
-            setupFilePreview('nidFront', 'nidFrontPreview');
-            setupFilePreview('nidBack', 'nidBackPreview');
+            setupFilePreview('profilePhoto', 'profilePreview', 'profilePhotoContainer');
+            setupFilePreview('nidFront', 'nidFrontPreview', 'nidFrontContainer');
+            setupFilePreview('nidBack', 'nidBackPreview', 'nidBackContainer');
             
             // Set up event listeners
             setupEventListeners();
             
             // Load donor data
             await loadDonorData();
-            
-            // Load verification requests if admin
-            if (isAdmin || isModerator) {
-                await loadVerificationRequests();
-            }
         });
         
         // Check authentication and user role
@@ -1158,11 +1179,11 @@
                         });
                     }
                     
-                    // Show admin button only for admin and moderator
+                    // Show admin link only for admin and moderator
                     if (isAdmin || isModerator) {
-                        adminBtn.style.display = 'block';
+                        adminLink.style.display = 'flex';
                     } else {
-                        adminBtn.style.display = 'none';
+                        adminLink.style.display = 'none';
                     }
                     
                     // Update user info in header
@@ -1242,6 +1263,7 @@
                 badge.innerHTML = '<i class="fas fa-clock"></i> Initial';
                 indicator.className = 'status-indicator status-initial';
                 indicator.textContent = 'Verification not submitted yet';
+                isVerified = false;
                 return;
             }
             
@@ -1251,11 +1273,13 @@
                     badge.innerHTML = '<i class="fas fa-clock"></i> Pending';
                     indicator.className = 'status-indicator status-pending';
                     indicator.textContent = 'Verification under review';
+                    isVerified = false;
                     break;
                 case 'approved':
                     badge.className = 'badge badge-verified';
                     badge.innerHTML = '<i class="fas fa-check-circle"></i> Verified';
                     indicator.className = 'status-indicator status-approved';
+                    isVerified = true;
                     
                     // Get reviewer name
                     if (verification.reviewed_by) {
@@ -1265,11 +1289,15 @@
                     } else {
                         indicator.textContent = `Approved on ${formatDate(verification.reviewed_at)}`;
                     }
+                    
+                    // Disable form if verified
+                    disableForm();
                     break;
                 case 'rejected':
                     badge.className = 'badge badge-rejected';
                     badge.innerHTML = '<i class="fas fa-times-circle"></i> Rejected';
                     indicator.className = 'status-indicator status-rejected';
+                    isVerified = false;
                     
                     // Get reviewer name
                     if (verification.reviewed_by) {
@@ -1279,13 +1307,52 @@
                     } else {
                         indicator.textContent = `Rejected on ${formatDate(verification.reviewed_at)}`;
                     }
+                    
+                    // Show rejection reason if available
+                    if (verification.rejection_reason) {
+                        const reasonDiv = document.createElement('div');
+                        reasonDiv.className = 'rejection-reason';
+                        reasonDiv.innerHTML = `
+                            <div class="rejection-reason-title">Reason for rejection:</div>
+                            <div>${verification.rejection_reason}</div>
+                        `;
+                        indicator.parentNode.appendChild(reasonDiv);
+                    }
                     break;
                 default:
                     badge.className = 'badge badge-initial';
                     badge.innerHTML = '<i class="fas fa-clock"></i> Initial';
                     indicator.className = 'status-indicator status-initial';
                     indicator.textContent = 'Verification not submitted yet';
+                    isVerified = false;
             }
+        }
+        
+        // Disable form when verified
+        function disableForm() {
+            // Add overlay to form
+            userForm.classList.add('disabled-form-overlay');
+            
+            // Disable all upload containers
+            document.getElementById('profilePhotoContainer').classList.add('disabled');
+            document.getElementById('nidFrontContainer').classList.add('disabled');
+            document.getElementById('nidBackContainer').classList.add('disabled');
+            
+            // Disable file inputs
+            document.getElementById('profilePhoto').disabled = true;
+            document.getElementById('nidFront').disabled = true;
+            document.getElementById('nidBack').disabled = true;
+            
+            // Disable organisation name input
+            document.getElementById('organisationName').disabled = true;
+            
+            // Disable checkbox
+            document.getElementById('termsCheckbox').disabled = true;
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-check"></i> Already Verified';
+            submitBtn.style.backgroundColor = '#4caf50';
         }
         
         // Get reviewer name
@@ -1298,10 +1365,10 @@
                     return 'Unknown';
                 }
                 
-                return 'Look4Blood Team';
+                return 'BloodHero Team';
             } catch (error) {
                 console.error('Error getting reviewer name:', error);
-                return 'Look4Blood Team';
+                return 'BloodHero Team';
             }
         }
         
@@ -1315,71 +1382,27 @@
         
         // Set up event listeners
         function setupEventListeners() {
-            // Role switching
-            donorBtn.addEventListener('click', () => {
-                donorView.style.display = 'block';
-                adminView.style.display = 'none';
-                donorBtn.classList.add('active');
-                adminBtn.classList.remove('active');
+            // Mobile menu toggle
+            mobileMenuBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
             });
             
-            adminBtn.addEventListener('click', () => {
-                donorView.style.display = 'none';
-                adminView.style.display = 'block';
-                adminBtn.classList.add('active');
-                donorBtn.classList.remove('active');
-                
-                // Load verification requests if not already loaded
-                if (verificationRequests.length === 0) {
-                    loadVerificationRequests();
-                }
+            // Close mobile menu when clicking on a link
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                });
             });
             
             // Form submission
             submitBtn.addEventListener('click', submitVerification);
-            
-            // Search functionality
-            searchInput.addEventListener('input', handleSearch);
-            
-            // Tab switching
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    currentStatus = tab.getAttribute('data-status');
-                    filterRequests();
-                });
-            });
-            
-            // Modal controls
-            document.querySelector('.modal-close').addEventListener('click', () => {
-                detailsModal.classList.remove('active');
-            });
-            
-            modalCloseBtn.addEventListener('click', () => {
-                detailsModal.classList.remove('active');
-            });
-            
-            modalApproveBtn.addEventListener('click', approveRequest);
-            modalRejectBtn.addEventListener('click', () => {
-                const reason = prompt('Please provide a reason for rejection:');
-                if (reason) {
-                    rejectRequest(reason);
-                }
-            });
-            
-            // Close modal when clicking outside
-            window.addEventListener('click', (e) => {
-                if (e.target === detailsModal) {
-                    detailsModal.classList.remove('active');
-                }
-            });
         }
         
         // Set up file preview
-        function setupFilePreview(inputId, previewContainerId) {
+        function setupFilePreview(inputId, previewContainerId, containerId) {
             const input = document.getElementById(inputId);
             const previewContainer = document.getElementById(previewContainerId);
+            const container = document.getElementById(containerId);
             
             input.addEventListener('change', function(e) {
                 if (this.files && this.files[0]) {
@@ -1504,7 +1527,10 @@
                 
                 if (updateError) throw updateError;
                 
-                alert('Verification request submitted successfully!');
+                // Show success message
+                successMessage.style.display = 'flex';
+                
+                // Update button state
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Submitted';
                 submitBtn.style.backgroundColor = '#4caf50';
                 
@@ -1513,326 +1539,14 @@
                     status: 'pending'
                 });
                 
+                // Scroll to top to show success message
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
             } catch (error) {
                 console.error('Error submitting verification request:', error);
                 alert('Error submitting request: ' + error.message);
                 submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Verification';
                 submitBtn.disabled = false;
-            }
-        }
-        
-        // Load verification requests
-        async function loadVerificationRequests() {
-            if (!isAdmin && !isModerator) return;
-            
-            try {
-                const { data: requests, error } = await supabase
-                    .from('verification_requests')
-                    .select(`
-                        *,
-                        donors (
-                            id,
-                            name,
-                            email,
-                            phone,
-                            blood_group,
-                            division,
-                            state,
-                            city,
-                            last_donation,
-                            times_donated
-                        )
-                    `)
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                verificationRequests = requests || [];
-                filterRequests();
-            } catch (error) {
-                console.error('Error loading verification requests:', error);
-                requestsGrid.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Error loading verification requests</p>
-                    </div>
-                `;
-            }
-        }
-        
-        // Filter requests based on status and search
-        function filterRequests() {
-            filteredRequests = verificationRequests.filter(request => {
-                // Filter by status
-                if (request.status !== currentStatus) {
-                    return false;
-                }
-                
-                // Filter by search term
-                const searchTerm = searchInput.value.toLowerCase();
-                if (searchTerm) {
-                    const donorName = request.donors?.name?.toLowerCase() || '';
-                    const donorPhone = request.donors?.phone?.toLowerCase() || '';
-                    
-                    if (!donorName.includes(searchTerm) && !donorPhone.includes(searchTerm)) {
-                        return false;
-                    }
-                }
-                
-                return true;
-            });
-            
-            renderRequests();
-        }
-        
-        // Handle search input
-        function handleSearch() {
-            filterRequests();
-        }
-        
-        // Render verification requests
-        function renderRequests() {
-            if (filteredRequests.length === 0) {
-                requestsGrid.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
-                        <p>No ${currentStatus} verification requests found</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            requestsGrid.innerHTML = '';
-            
-            filteredRequests.forEach(request => {
-                const card = document.createElement('div');
-                card.className = 'request-card';
-                
-                // Get reviewer info
-                let reviewerInfo = '';
-                if (request.reviewed_by && (request.status === 'approved' || request.status === 'rejected')) {
-                    reviewerInfo = `
-                        <div class="review-info">
-                            ${request.status === 'approved' ? 'Approved' : 'Rejected'} by ${request.reviewed_by} on ${formatDate(request.reviewed_at)}
-                        </div>
-                    `;
-                }
-                
-                card.innerHTML = `
-                    <div class="request-header">
-                        <div class="request-avatar">${request.donors?.name?.charAt(0).toUpperCase() || 'U'}</div>
-                        <div class="request-info">
-                            <div class="request-name">
-                                ${request.donors?.name || 'Unknown'}
-                                ${request.status === 'approved' ? '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>' : ''}
-                            </div>
-                            <div class="request-blood">Blood Group: ${request.donors?.blood_group || 'N/A'}</div>
-                        </div>
-                    </div>
-                    <div class="request-body">
-                        <div class="request-detail">
-                            <span class="request-label">Location:</span>
-                            <span class="request-value">${request.donors?.city || 'N/A'}, ${request.donors?.state || 'N/A'}</span>
-                        </div>
-                        <div class="request-detail">
-                            <span class="request-label">Division:</span>
-                            <span class="request-value">${request.donors?.division || 'N/A'}</span>
-                        </div>
-                        <div class="request-detail">
-                            <span class="request-label">Phone:</span>
-                            <span class="request-value">${request.donors?.phone || 'N/A'}</span>
-                        </div>
-                        <div class="request-detail">
-                            <span class="request-label">Organisation:</span>
-                            <span class="request-value">${request.organisation_name || 'N/A'}</span>
-                        </div>
-                        <div class="request-detail">
-                            <span class="request-label">Last Donation:</span>
-                            <span class="request-value">${formatDate(request.donors?.last_donation)}</span>
-                        </div>
-                        <div class="request-detail">
-                            <span class="request-label">Times Donated:</span>
-                            <span class="request-value">${request.donors?.times_donated || 0}</span>
-                        </div>
-                        <div class="request-detail">
-                            <span class="request-label">Status:</span>
-                            <span class="request-value status-indicator status-${request.status}">${request.status.charAt(0).toUpperCase() + request.status.slice(1)}</span>
-                        </div>
-                        ${reviewerInfo}
-                    </div>
-                    <div class="request-actions">
-                        <button class="btn btn-sm btn-secondary view-details" data-id="${request.id}">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                        ${request.status === 'pending' ? `
-                            <button class="btn btn-sm btn-success approve-btn" data-id="${request.id}">
-                                <i class="fas fa-check"></i> Approve
-                            </button>
-                            <button class="btn btn-sm btn-danger reject-btn" data-id="${request.id}">
-                                <i class="fas fa-times"></i> Reject
-                            </button>
-                        ` : ''}
-                    </div>
-                `;
-                
-                requestsGrid.appendChild(card);
-            });
-            
-            // Add event listeners to buttons
-            document.querySelectorAll('.view-details').forEach(button => {
-                button.addEventListener('click', () => {
-                    const requestId = button.getAttribute('data-id');
-                    showRequestDetails(requestId);
-                });
-            });
-            
-            document.querySelectorAll('.approve-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    const requestId = button.getAttribute('data-id');
-                    currentRequestId = requestId;
-                    showRequestDetails(requestId);
-                });
-            });
-            
-            document.querySelectorAll('.reject-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    const requestId = button.getAttribute('data-id');
-                    currentRequestId = requestId;
-                    showRequestDetails(requestId);
-                });
-            });
-        }
-        
-        // Show request details in modal
-        function showRequestDetails(requestId) {
-            const request = verificationRequests.find(r => r.id === requestId);
-            
-            if (!request) {
-                alert('Request not found');
-                return;
-            }
-            
-            currentRequestId = requestId;
-            
-            // Populate modal with request details
-            document.getElementById('modalName').value = request.donors?.name || 'N/A';
-            document.getElementById('modalEmail').value = request.donors?.email || 'N/A';
-            document.getElementById('modalPhone').value = request.donors?.phone || 'N/A';
-            document.getElementById('modalDivision').value = request.donors?.division || 'N/A';
-            document.getElementById('modalBloodGroup').value = request.donors?.blood_group || 'N/A';
-            document.getElementById('modalState').value = request.donors?.state || 'N/A';
-            document.getElementById('modalCity').value = request.donors?.city || 'N/A';
-            document.getElementById('modalOrganisation').value = request.organisation_name || 'N/A';
-            document.getElementById('modalLastDonation').value = request.donors?.last_donation || 'N/A';
-            document.getElementById('modalTimesDonated').value = request.donors?.times_donated || 0;
-            document.getElementById('modalStatus').value = request.status.charAt(0).toUpperCase() + request.status.slice(1);
-            document.getElementById('modalReviewedBy').value = request.reviewed_by || 'N/A';
-            document.getElementById('modalReviewedAt').value = formatDate(request.reviewed_at);
-            
-            // Set document images
-            document.getElementById('modalProfilePhoto').src = request.profile_photo_url || '';
-            document.getElementById('modalNidFront').src = request.nid_front_url || '';
-            document.getElementById('modalNidBack').src = request.nid_back_url || '';
-            
-            // Show/hide action buttons based on status
-            if (request.status === 'pending') {
-                modalApproveBtn.style.display = 'inline-flex';
-                modalRejectBtn.style.display = 'inline-flex';
-            } else {
-                modalApproveBtn.style.display = 'none';
-                modalRejectBtn.style.display = 'none';
-            }
-            
-            // Show modal
-            detailsModal.classList.add('active');
-        }
-        
-        // Approve request
-        async function approveRequest() {
-            if (!currentRequestId) return;
-            
-            try {
-                if (!currentUser) {
-                    throw new Error('User not authenticated');
-                }
-                
-                // Update verification request
-                const { error } = await supabase
-                    .from('verification_requests')
-                    .update({
-                        status: 'approved',
-                        is_verified: true,
-                        reviewed_by: currentUser.email,
-                        reviewed_at: new Date().toISOString()
-                    })
-                    .eq('id', currentRequestId);
-                
-                if (error) throw error;
-                
-                // Get donor ID
-                const request = verificationRequests.find(r => r.id === currentRequestId);
-                if (request) {
-                    // Update donor verification status
-                    await supabase
-                        .from('donors')
-                        .update({ verification_status: 'approved', is_verified: true })
-                        .eq('id', request.donor_id);
-                }
-                
-                alert('Verification request approved successfully!');
-                detailsModal.classList.remove('active');
-                
-                // Reload requests
-                await loadVerificationRequests();
-                
-            } catch (error) {
-                console.error('Error approving request:', error);
-                alert('Error approving request: ' + error.message);
-            }
-        }
-        
-        // Reject request
-        async function rejectRequest(reason) {
-            if (!currentRequestId) return;
-            
-            try {
-                if (!currentUser) {
-                    throw new Error('User not authenticated');
-                }
-                
-                // Update verification request
-                const { error } = await supabase
-                    .from('verification_requests')
-                    .update({
-                        status: 'rejected',
-                        is_verified: false,
-                        reviewed_by: currentUser.email,
-                        reviewed_at: new Date().toISOString(),
-                        rejection_reason: reason
-                    })
-                    .eq('id', currentRequestId);
-                
-                if (error) throw error;
-                
-                // Get donor ID
-                const request = verificationRequests.find(r => r.id === currentRequestId);
-                if (request) {
-                    // Update donor verification status
-                    await supabase
-                        .from('donors')
-                        .update({ verification_status: 'rejected', is_verified: false })
-                        .eq('id', request.donor_id);
-                }
-                
-                alert('Verification request rejected successfully!');
-                detailsModal.classList.remove('active');
-                
-                // Reload requests
-                await loadVerificationRequests();
-                
-            } catch (error) {
-                console.error('Error rejecting request:', error);
-                alert('Error rejecting request: ' + error.message);
             }
         }
     </script>
